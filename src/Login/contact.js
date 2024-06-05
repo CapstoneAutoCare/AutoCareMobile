@@ -15,7 +15,7 @@ export default Contact = () => {
     const [modalVisible, setModalVisible] = useState(false);
     return (
         <SafeAreaView>
-            <View style={{ flexDirection: 'row', margin: 10, backgroundColor: 'grey', borderRadius: 10 }}>
+            <View style={{ flexDirection: 'row', margin: 10, backgroundColor: '#C0C0C0', borderRadius: 10 }}>
                 <View style={{ width: '50%' }}>
                     <Image
                         style={{
@@ -82,7 +82,7 @@ export default Contact = () => {
                                         padding: 10,
                                     }}></TextInput>
                                 </View>
-                                <Text>Tên xe</Text>
+                                <Text>...</Text>
                                 <View style={{ width: '100%' }}>
                                     <TextInput style={{
                                         marginBottom: 15,
@@ -91,7 +91,7 @@ export default Contact = () => {
                                         padding: 10,
                                     }}></TextInput>
                                 </View>
-                                <Text>Biển số xe</Text>
+                                <Text>...</Text>
                                 <View>
                                     <TextInput style={{
                                         marginBottom: 15,
@@ -131,7 +131,7 @@ const styles = StyleSheet.create({
         backgroundColor: "white",
         borderRadius: 20,
         padding: 10,
-        shadowColor: "#000",
+        shadowColor: "grey",
         shadowOffset: {
             width: 0,
             height: 2,
