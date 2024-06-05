@@ -51,13 +51,14 @@ export default Contact = () => {
                 >
                     <View style={styles.centeredView}>
                         <View style={styles.modalView}>
-                            <Text>Hãy cung cấp thêm thông tin</Text>
+                            <Text style={{ textAlign: 'center' }}>Hãy cung cấp thêm thông tin</Text>
                             <View style={{}}>
                                 <Image
                                     style={{
                                         resizeMode: 'cover',
                                         height: 100,
                                         width: 100,
+                                        marginLeft: 120,
                                     }}
                                     source={require('./images/electric-car.png')}
                                 />
@@ -65,14 +66,40 @@ export default Contact = () => {
                             <View style={{ width: '100%' }}>
                                 <Text>Tên xe</Text>
                                 <View style={{ width: '100%' }}>
-                                    <TextInput></TextInput>
+                                    <TextInput style={{
+                                        marginBottom: 15,
+                                        backgroundColor: '#C0C0C0',
+                                        borderRadius: 10,
+                                        padding: 10,
+                                    }}></TextInput>
                                 </View>
                                 <Text>Biển số xe</Text>
                                 <View>
-                                    <TextInput></TextInput>
-
+                                    <TextInput style={{
+                                        marginBottom: 15,
+                                        backgroundColor: '#C0C0C0',
+                                        borderRadius: 10,
+                                        padding: 10,
+                                    }}></TextInput>
                                 </View>
-
+                                <Text>Tên xe</Text>
+                                <View style={{ width: '100%' }}>
+                                    <TextInput style={{
+                                        marginBottom: 15,
+                                        backgroundColor: '#C0C0C0',
+                                        borderRadius: 10,
+                                        padding: 10,
+                                    }}></TextInput>
+                                </View>
+                                <Text>Biển số xe</Text>
+                                <View>
+                                    <TextInput style={{
+                                        marginBottom: 15,
+                                        backgroundColor: '#C0C0C0',
+                                        borderRadius: 10,
+                                        padding: 10,
+                                    }}></TextInput>
+                                </View>
                             </View>
                             <Button
                                 title="Add"
@@ -97,15 +124,13 @@ const styles = StyleSheet.create({
     centeredView: {
         flex: 1,
         justifyContent: "center",
-        alignItems: "center",
         backgroundColor: "rgba(0,0,0,0.5)",
     },
     modalView: {
         margin: 20,
         backgroundColor: "white",
         borderRadius: 20,
-        padding: 35,
-        alignItems: "center",
+        padding: 10,
         shadowColor: "#000",
         shadowOffset: {
             width: 0,
