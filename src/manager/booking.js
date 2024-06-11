@@ -1,0 +1,217 @@
+import {
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+  Image,
+  Pressable,
+} from "react-native";
+import { Octicons } from "@expo/vector-icons";
+import { Ionicons } from "@expo/vector-icons";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
+import { FontAwesome } from "@expo/vector-icons";
+
+const Booking = () => {
+  const data = [
+    {
+      id: "0",
+      name: "Tesla Model 3",
+      address: "TP. Hồ Chí Minh",
+      date: "13/6/2024",
+      pickuptime: "5h00 PM - 7h30 PM",
+      deliveryTime: "9h00 PM - 10h30 PM",
+      description: "xe còn mới và sạch sẽ",
+    },
+    {
+      id: "0",
+      name: "Tesla Model 3",
+      address: "TP. Hồ Chí Minh",
+      date: "13/6/2024",
+      pickuptime: "5h00 PM - 7h30 PM",
+      deliveryTime: "9h00 PM - 10h30 PM",
+      description: "xe còn mới và sạch sẽ",
+    },
+  ];
+  return (
+    <ScrollView style={{ marginTop: 50 }}>
+      <View style={{ padding: 12, height: 200, backgroundColor: "#DDD" }}>
+        <View
+          style={{
+            flexDirection: "row",
+            alignItems: "center",
+            justifyContent: "space-between",
+          }}
+        >
+          <Octicons name="three-bars" size={24} color="white" />
+        </View>
+
+        <View>
+          {data?.map((item, index) => (
+            <Pressable
+              style={{
+                marginVertical: 12,
+                backgroundColor: "white",
+                borderRadius: 7,
+              }}
+              key={index}
+            >
+              <View
+                style={{
+                  backgroundColor: "#0066b2",
+                  padding: 10,
+                  flexDirection: "row",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                  borderTopLeftRadius: 7,
+                  borderTopRightRadius: 7,
+                }}
+              >
+                <View>
+                  <Text
+                    style={{ color: "white", fontSize: 15, fontWeight: "500" }}
+                  >
+                    thông tin xe
+                  </Text>
+                  <Text
+                    style={{
+                      color: "white",
+                      fontSize: 15,
+                      fontWeight: "500",
+                      marginTop: 3,
+                    }}
+                  >
+                    {item?.name}
+                  </Text>
+                </View>
+
+                <View>
+                  <Text
+                    style={{ color: "white", fontSize: 15, fontWeight: "500" }}
+                  >
+                    Thanh toán
+                  </Text>
+                  <Text
+                    style={{
+                      color: "white",
+                      fontSize: 15,
+                      fontWeight: "500",
+                      marginTop: 4,
+                    }}
+                  >
+                    Thanh toán khi giao xe
+                  </Text>
+                </View>
+              </View>
+
+              <View
+                style={{
+                  backgroundColor: "white",
+                  marginHorizontal: 10,
+                  flexDirection: "row",
+                  justifyContent: "space-between",
+                }}
+              >
+                <View>
+                  <Text
+                    style={{
+                      marginTop: 10,
+                      fontSize: 14,
+                      fontWeight: "500",
+                      color: "gray",
+                      width: 200,
+                    }}
+                  >
+                    Địa chỉ : {item?.address}
+                  </Text>
+                  <Text
+                    style={{
+                      marginTop: 10,
+                      fontSize: 14,
+                      fontWeight: "500",
+                      color: "gray",
+                      width: 200,
+                    }}
+                  >
+                    Ngày đặt : {item?.date}
+                  </Text>
+                  <View style={{ marginTop: 10 }}>
+                    <Text style={{ fontSize: 13, fontWeight: "600" }}>
+                      Thời gian giao xe
+                    </Text>
+                    <Text style={{ fontSize: 15, marginTop: 4 }}>
+                      {item?.pickuptime}
+                    </Text>
+                  </View>
+                  <View style={{ marginTop: 10 }}>
+                    <Text style={{ fontSize: 13, fontWeight: "600" }}>
+                      Thời gian nhận xe
+                    </Text>
+                    <Text style={{ fontSize: 15, marginTop: 4 }}>
+                      {item?.deliveryTime}
+                    </Text>
+                  </View>
+                  <View style={{ marginBottom: 20 }} />
+                </View>
+
+                <View style={{ alignItems: "center" }}>
+                  <View
+                    style={{
+                      width: 32,
+                      height: 32,
+                      borderRadius: 16,
+                      backgroundColor: "#F0F8FF",
+                      justifyContent: "center",
+                      alignItems: "center",
+                      marginTop: 10,
+                    }}
+                  >
+                    <MaterialCommunityIcons
+                      name="note-outline"
+                      size={24}
+                      color="black"
+                    />
+                  </View>
+                  <Text
+                    style={{
+                      textAlign: "center",
+                      fontSize: 13,
+                      fontWeight: "500",
+                    }}
+                  >
+                    Thông tin
+                  </Text>
+                  <View
+                    style={{
+                      width: 32,
+                      height: 32,
+                      borderRadius: 16,
+                      backgroundColor: "#F0F8FF",
+                      justifyContent: "center",
+                      alignItems: "center",
+                      marginTop: 10,
+                    }}
+                  >
+                    <FontAwesome name="folder-open-o" size={24} color="black" />
+                  </View>
+                  <Text
+                    style={{
+                      textAlign: "center",
+                      fontSize: 13,
+                      fontWeight: "500",
+                    }}
+                  >
+                    Nhận xét
+                  </Text>
+                </View>
+              </View>
+            </Pressable>
+          ))}
+        </View>
+      </View>
+    </ScrollView>
+  );
+};
+
+export default Booking;
+
+const styles = StyleSheet.create({});
