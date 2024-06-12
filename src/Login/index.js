@@ -1,5 +1,6 @@
 import React from "react";
 import { View, Text, SafeAreaView, Image } from 'react-native';
+import { createDrawerNavigator } from "@react-navigation/drawer";
 import Login from "../Login/login.js";
 import Home from "../Login/home.js";
 import About from "../Login/about.js";
@@ -16,6 +17,7 @@ import Staff from "../manager/staff.js";
 import AddProduct from "../manager/addProduct.js";
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
+const Drawer = createDrawerNavigator();
 function MyTabs() {
     return (
         <Tab.Navigator>
@@ -34,64 +36,10 @@ function MyTabs() {
         </Tab.Navigator>
     )
 }
-function ManagerTabs() {
-    return (
-      <Tab.Navigator>
-        <Tab.Screen
-          name="Lịch đặt"
-          component={Booking}
-          options={{
-            tabBarIcon: () => (
-              <Image
-                style={{ width: 20, height: 20 }}
-                source={require("./images/clipboard.png")}
-              />
-            ),
-          }}
-        />
-        <Tab.Screen
-          name="Sản phẩm"
-          component={Product}
-          options={{
-            tabBarIcon: () => (
-              <Image
-                style={{ width: 20, height: 20 }}
-                source={require("./images/product.png")}
-              />
-            ),
-          }}
-        />
-        <Tab.Screen
-          name="Danh sách xe"
-          component={ListCar}
-          options={{
-            tabBarIcon: () => (
-              <Image
-                style={{ width: 20, height: 20 }}
-                source={require("./images/sedan.png")}
-              />
-            ),
-          }}
-        />
-        <Tab.Screen
-          name="Nhân viên"
-          component={Staff}
-          options={{
-            tabBarIcon: () => (
-              <Image
-                style={{ width: 20, height: 20 }}
-                source={require("./images/staff.png")}
-              />
-            ),
-          }}
-        />
-      </Tab.Navigator>
-    );
-}
 export default RootComponent = () => {
     return (
       <NavigationContainer>
-        <Stack.Navigator initialRouteName="Login">
+        {/* <Stack.Navigator initialRouteName="Login">
           <Stack.Screen
             options={{ headerShown: false }}
             name="Login"
@@ -108,12 +56,58 @@ export default RootComponent = () => {
             name="ManagerTab"
             component={ManagerTabs}
           />
-          <Stack.Screen
-            // options={{ headerShown: false }}
-            name="AddProduct"
-            component={AddProduct}
+          <Stack.Screen name="AddProduct" component={AddProduct} />
+        </Stack.Navigator> */}
+        <Drawer.Navigator initialRouteName="Home">
+          <Drawer.Screen
+            name="Lịch đặt"
+            component={Booking}
+            options={{
+              drawerIcon: () => (
+                <Image
+                  style={{ width: 20, height: 20 }}
+                  source={require("./images/clipboard.png")}
+                />
+              ),
+            }}
           />
-        </Stack.Navigator>
+          <Drawer.Screen
+            name="Sản phẩm"
+            component={Product}
+            options={{
+              drawerIcon: () => (
+                <Image
+                  style={{ width: 20, height: 20 }}
+                  source={require("./images/product.png")}
+                />
+              ),
+            }}
+          />
+          <Drawer.Screen
+            name="Danh sách xe"
+            component={ListCar}
+            options={{
+              drawerIcon: () => (
+                <Image
+                  style={{ width: 20, height: 20 }}
+                  source={require("./images/sedan.png")}
+                />
+              ),
+            }}
+          />
+          <Drawer.Screen
+            name="Nhân viên"
+            component={Staff}
+            options={{
+              drawerIcon: () => (
+                <Image
+                  style={{ width: 20, height: 20 }}
+                  source={require("./images/staff.png")}
+                />
+              ),
+            }}
+          />
+        </Drawer.Navigator>
       </NavigationContainer>
     );
 }
