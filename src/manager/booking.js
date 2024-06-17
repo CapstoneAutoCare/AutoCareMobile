@@ -16,7 +16,7 @@ const Booking = () => {
     {
       id: "0",
       name: "Tesla Model 3",
-      address: "TP. Hồ Chí Minh",
+      address: "TP. Hồ Chí Minh.",
       date: "13/6/2024",
       pickuptime: "5h00 PM - 7h30 PM",
       deliveryTime: "9h00 PM - 10h30 PM",
