@@ -1,8 +1,12 @@
 import { StyleSheet, Text, View } from 'react-native';
+import { Provider } from "react-redux";
 import RootComponent from './src/Login/index';
+import { store } from './src/app/store';
 export default function App() {
   return (
-    <RootComponent />
+    <Provider store={store}>
+      <RootComponent />
+    </Provider>
   );
 }
 

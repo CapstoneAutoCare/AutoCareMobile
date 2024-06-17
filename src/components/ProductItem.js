@@ -14,30 +14,51 @@ const ProductItem = ({ item }) => {
       />
 
       <Text numberOfLines={1} style={{ width: 150, marginTop: 10 }}>
-        {item?.title}
+        {item?.sparePartsItemName}
       </Text>
 
-      <View
-      >
-        <Text style={{ fontSize: 15, fontWeight: "bold" }}>giá: {item?.price} VND</Text>
+      <View>
+        <Text style={{ fontSize: 15, fontWeight: "bold" }}>
+          giá: {item?.responseSparePartsItemCosts.length> 0 ? item?.responseSparePartsItemCosts[0].acturalCost :"trống" } VND
+        </Text>
         <Text style={{ color: "#0066b2", fontWeight: "bold" }}>
-          màu: {item?.color}
+          status: {item?.status}
         </Text>
       </View>
 
-      <Pressable
+      <View
         style={{
-          backgroundColor: "#0066b2",
-          padding: 10,
-          borderRadius: 10,
-          justifyContent: "center",
+          flexDirection: "row",
           alignItems: "center",
-          marginHorizontal: 10,
-          marginTop: 10,
+          justifyContent: "center",
+          gap: "10px",
         }}
       >
-        <Text style={{ color: "white" }}>Thêm vào giỏ hàng</Text>
-      </Pressable>
+        <Pressable
+          style={{
+            backgroundColor: "#0066b2",
+            padding: 10,
+            borderRadius: 10,
+            justifyContent: "center",
+            alignItems: "center",
+            marginTop: 10,
+          }}
+        >
+          <Text style={{ color: "white" }}>edit</Text>
+        </Pressable>
+        <Pressable
+          style={{
+            backgroundColor: "#f5222d",
+            padding: 10,
+            borderRadius: 10,
+            justifyContent: "center",
+            alignItems: "center",
+            marginTop: 10,
+          }}
+        >
+          <Text style={{ color: "white" }}>delete</Text>
+        </Pressable>
+      </View>
     </Pressable>
   );
 };
