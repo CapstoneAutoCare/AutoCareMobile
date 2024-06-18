@@ -15,6 +15,7 @@ import ListCar from "../manager/listCar.js";
 import Product from "../manager/product.js";
 import Staff from "../manager/staff.js";
 import AddProduct from "../manager/addProduct.js";
+import Logout from "../manager/logout.js";
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
 const Drawer = createDrawerNavigator();
@@ -39,25 +40,6 @@ function MyTabs() {
 export default RootComponent = () => {
     return (
       <NavigationContainer>
-        {/* <Stack.Navigator initialRouteName="Login">
-          <Stack.Screen
-            options={{ headerShown: false }}
-            name="Login"
-            component={Login}
-          />
-          <Stack.Screen name="Register" component={Register} />
-          <Stack.Screen
-            options={{ headerShown: false }}
-            name="HomeTab"
-            component={MyTabs}
-          />
-          <Stack.Screen
-            options={{ headerShown: false }}
-            name="ManagerTab"
-            component={ManagerTabs}
-          />
-          <Stack.Screen name="AddProduct" component={AddProduct} />
-        </Stack.Navigator> */}
         <Drawer.Navigator initialRouteName="Home">
           <Drawer.Screen
             name="Lịch đặt"
@@ -98,6 +80,18 @@ export default RootComponent = () => {
           <Drawer.Screen
             name="Nhân viên"
             component={Staff}
+            options={{
+              drawerIcon: () => (
+                <Image
+                  style={{ width: 20, height: 20 }}
+                  source={require("./images/staff.png")}
+                />
+              ),
+            }}
+          />
+          <Drawer.Screen
+            name="Đăng xuất"
+            component={Logout}
             options={{
               drawerIcon: () => (
                 <Image

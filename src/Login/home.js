@@ -15,7 +15,7 @@ export default Home = () => {
     return (
         <SafeAreaView>
             <View style={styles.center}>
-                <Text>This is the contact screen</Text>
+                <Text>This is the contact screenzxczxc</Text>
             </View>
         </SafeAreaView>
     )
