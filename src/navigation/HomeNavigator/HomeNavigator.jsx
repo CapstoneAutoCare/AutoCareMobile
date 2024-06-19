@@ -4,15 +4,16 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import login from "../../Login/login";
 import register from "../../Login/register";
 import BottomTabNavigator from "../BottomTabNavigator/BottomTabNavigator";
+import ManagerNavigator from "../BottomTabNavigator/TabNavigator/ManagerNavigator";
 
 const Stack = createNativeStackNavigator();
 const HomeNavigator = ({ authenticated }) => {
   console.log(authenticated);
   return (
-    <Stack.Navigator>
+    <Stack.Navigator initialRouteName="Login">
       <Stack.Screen
-        name="nam"
-        children={() => <BottomTabNavigator authenticated={authenticated} />}
+        name="Home"
+        children={() => <ManagerNavigator authenticated={authenticated} />}
         options={{ headerShown: false }}
       />
       <Stack.Screen

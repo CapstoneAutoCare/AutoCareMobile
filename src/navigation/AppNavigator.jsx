@@ -5,7 +5,6 @@ import { useAppDispatch, useAppSelector } from "../app/hooks";
 import { loadAuthState } from "../features/userSlice";
 import HomeNavigator from "../navigation/HomeNavigator/HomeNavigator";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import ManagerNavigator from "./BottomTabNavigator/TabNavigator/ManagerNavigator";
 const Stack = createNativeStackNavigator();
 const AppNavigator = () => {
   const dispatch = useAppDispatch();
@@ -36,7 +35,7 @@ const AppNavigator = () => {
       <Stack.Navigator>
         <Stack.Screen
           name="tab"
-          children={() => <ManagerNavigator authenticated={authenticated} />}
+          children={() => <HomeNavigator authenticated={authenticated} />}
           options={{ headerShown: false }}
         />
         <Stack.Screen
