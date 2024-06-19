@@ -1,7 +1,9 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { userService } from "../services/userSevice";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { jwtDecode } from "jwt-decode";
 const initialState = {
+  role: "CLIENT",
   userInfo: null,
   profile: null,
   accessToken: "",
@@ -26,7 +28,10 @@ export const login = createAsyncThunk(
     //     "ACCOUNT_ID",
     //     JSON.stringify(response?.data?.accountId)
     //   );
-      return response.data;
+    const role = jwtDecode(response?.data?.token);
+      return role[
+        "http://schemas.microsoft.com/ws/2008/06/identity/claims/role"
+      ];
     } catch (error) {
       console.log(error);
       return rejectWithValue(error.response?.data);
@@ -76,7 +81,8 @@ export const userSlice = createSlice({
         state.authenticated = false;
       })
       .addCase(login.fulfilled, (state, action) => {
-        state.userInfo = action.payload;
+        // state.userInfo = action.payload;
+        state.role = action.payload;
         state.loading = false;
         state.authenticated = true;
       })

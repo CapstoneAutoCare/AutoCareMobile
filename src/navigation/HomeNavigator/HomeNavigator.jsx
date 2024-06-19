@@ -1,31 +1,42 @@
 import { StyleSheet } from "react-native";
 import React from "react";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import login from "../../Login/login";
-import register from "../../Login/register";
+import Login from "../../Login/login";
+import Register from "../../Login/register";
 import BottomTabNavigator from "../BottomTabNavigator/BottomTabNavigator";
 import ManagerNavigator from "../BottomTabNavigator/TabNavigator/ManagerNavigator";
 
 const Stack = createNativeStackNavigator();
-const HomeNavigator = ({ authenticated }) => {
-  console.log(authenticated);
+const HomeNavigator = ({ authenticated, role }) => {
+  console.log("authenticated home", authenticated, role);
   return (
     <Stack.Navigator initialRouteName="Login">
-      <Stack.Screen
-        name="Home"
-        children={() => <ManagerNavigator authenticated={authenticated} />}
-        options={{ headerShown: false }}
-      />
-      <Stack.Screen
-        name={"Login"}
-        component={login}
-        options={{ headerShown: false }}
-      />
-      <Stack.Screen
-        name={"Register"}
-        component={register}
-        options={{ headerShown: false }}
-      />
+      {!authenticated ? (
+        <>
+          <Stack.Screen
+            name="Login"
+            component={Login}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="Register"
+            component={Register}
+            options={{ headerShown: false }}
+          />
+        </>
+      ) : role === "CENTER" ? (
+        <Stack.Screen
+          name="Home"
+          component={ManagerNavigator}
+          options={{ headerShown: false }}
+        />
+      ) : (
+        <Stack.Screen
+          name="Home"
+          component={BottomTabNavigator}
+          options={{ headerShown: false }}
+        />
+      )}
     </Stack.Navigator>
   );
 };

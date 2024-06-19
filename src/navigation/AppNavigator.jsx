@@ -8,11 +8,11 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 const Stack = createNativeStackNavigator();
 const AppNavigator = () => {
   const dispatch = useAppDispatch();
-    const authenticated = useAppSelector((state) => state.user.authenticated);
+    const { authenticated ,role} = useAppSelector((state) => state.user);
   const fetchLoadAuthState = async () => {
     await dispatch(loadAuthState());
   };
-    console.log("authenticated: ", authenticated);
+    console.log("authenticated: ", authenticated, role);
   React.useEffect(() => {
     fetchLoadAuthState();
   }, []);
@@ -35,7 +35,9 @@ const AppNavigator = () => {
       <Stack.Navigator>
         <Stack.Screen
           name="tab"
-          children={() => <HomeNavigator authenticated={authenticated} />}
+          children={() => (
+            <HomeNavigator authenticated={authenticated} role={role} />
+          )}
           options={{ headerShown: false }}
         />
         <Stack.Screen
