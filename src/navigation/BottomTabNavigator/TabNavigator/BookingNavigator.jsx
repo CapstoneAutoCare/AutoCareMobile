@@ -2,28 +2,27 @@ import { StyleSheet } from "react-native";
 import React from "react";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import ROUTES from "../../../constants/routes";
-import AuthTabNavigator from "../../AuthTabNavigator/AuthTabNavigator";
 import home from "../../../Login/home";
+import PostBooking from "../../../screens/client/booking/postBooking";
+import Booking from "../../../screens/client/booking/booking";
 const Stack = createNativeStackNavigator();
-const HomeNavigator = ({ authenticated }) => {
+const BookingNavigator = ({ authenticated }) => {
   return (
     <Stack.Navigator>
       <Stack.Screen
-        name={ROUTES.HOME}
-        component={home}
+        name={ROUTES.BOOKING}
+        component={Booking}
         options={{ headerShown: false }}
       />
-      {!authenticated && (
-        <Stack.Screen
-          name={"AUTH_NAVIGATOR"}
-          component={AuthTabNavigator}
-          options={{ headerShown: false }}
-        />
-      )}
+      <Stack.Screen
+        name={"PostBooking"}
+        component={PostBooking}
+        options={{ headerShown: false }}
+      />
     </Stack.Navigator>
   );
 };
 
-export default HomeNavigator;
+export default BookingNavigator;
 
 const styles = StyleSheet.create({});

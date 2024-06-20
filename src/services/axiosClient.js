@@ -13,8 +13,6 @@ const axiosClient = axios.create({
 axiosClient.interceptors.request.use(async (config) => {
   const customHeaders = {};
   const accessToken = await AsyncStorage.getItem("ACCESS_TOKEN");
-
-  console.log("<AxiosClient> ACCESSTOKEN: ", accessToken);
   if (accessToken) {
     customHeaders.Authorization = `Bearer ${accessToken}`;
   } else {

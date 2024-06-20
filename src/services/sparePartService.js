@@ -5,4 +5,8 @@ export const sparePartService = {
     const url = `/SparePartItem/GetAll`;
     return axiosClient.get(url);
   },
+  getSparePartById: (id) => {
+    const url = `/SparePartItem/GetById?id=${id}`;
+    return axiosClient.get(url);
+  },
 };

@@ -13,3 +13,15 @@ export const getListSparePart = createAsyncThunk(
     }
   }
 );
+export const getSparePartById = createAsyncThunk(
+  "sparePart/getSparePartById",
+  async (id, { rejectWithValue }) => {
+    try {
+      const response = await sparePartService.getSparePartById(id);
+      return response.data;
+    } catch (error) {
+      console.log(error);
+      return rejectWithValue(error);
+    }
+  }
+);

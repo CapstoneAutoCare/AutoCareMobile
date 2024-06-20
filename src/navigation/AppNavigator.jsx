@@ -12,7 +12,6 @@ const AppNavigator = () => {
   const fetchLoadAuthState = async () => {
     await dispatch(loadAuthState());
   };
-    console.log("authenticated: ", authenticated, role);
   React.useEffect(() => {
     fetchLoadAuthState();
   }, []);

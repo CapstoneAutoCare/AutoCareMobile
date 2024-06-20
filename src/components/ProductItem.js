@@ -1,6 +1,8 @@
+import { useNavigation } from "@react-navigation/native";
 import { StyleSheet, Text, View, Pressable, Image } from "react-native";
 
 const ProductItem = ({ item }) => {
+  const navigation = useNavigation();
   return (
     <Pressable style={{ marginHorizontal: 20, marginVertical: 25 }}>
       <Image
@@ -19,7 +21,11 @@ const ProductItem = ({ item }) => {
 
       <View>
         <Text style={{ fontSize: 15, fontWeight: "bold" }}>
-          giá: {item?.responseSparePartsItemCosts.length> 0 ? item?.responseSparePartsItemCosts[0].acturalCost :"trống" } VND
+          giá:{" "}
+          {item?.responseSparePartsItemCosts.length > 0
+            ? item?.responseSparePartsItemCosts[0].acturalCost
+            : "trống"}{" "}
+          VND
         </Text>
         <Text style={{ color: "#0066b2", fontWeight: "bold" }}>
           status: {item?.status}
@@ -43,20 +49,13 @@ const ProductItem = ({ item }) => {
             alignItems: "center",
             marginTop: 10,
           }}
+          onPress={() =>
+            navigation.navigate("PRODUCT_DETAIL", {
+              sparePartsItemId: item.sparePartsItemId,
+            })
+          }
         >
-          <Text style={{ color: "white" }}>edit</Text>
-        </Pressable>
-        <Pressable
-          style={{
-            backgroundColor: "#f5222d",
-            padding: 10,
-            borderRadius: 10,
-            justifyContent: "center",
-            alignItems: "center",
-            marginTop: 10,
-          }}
-        >
-          <Text style={{ color: "white" }}>delete</Text>
+          <Text style={{ color: "white" }}>thông tin</Text>
         </Pressable>
       </View>
     </Pressable>

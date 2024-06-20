@@ -41,10 +41,10 @@ const AddProduct = () => {
           fontWeight: "bold",
         }}
       >
-        Thêm sản phẩm
+        Thêm phụ tùng
       </Text>
       <View style={{ padding: 10 }}>
-        <Text style={{ fontSize: 16, fontWeight: "bold" }}>Tên sản phẩm</Text>
+        <Text style={{ fontSize: 16, fontWeight: "bold" }}>Tên phụ tùng</Text>
         <TextInput
           placeholder=""
           placeholderTextColor={"black"}
@@ -88,7 +88,7 @@ const AddProduct = () => {
 
         <View style={{ marginVertical: 10 }}>
           <Text style={{ fontSize: 15, fontWeight: "bold" }}>
-            Thông tin sản phẩm
+            Thông tin phụ tùng
           </Text>
           <TextInput
             placeholderTextColor={"black"}

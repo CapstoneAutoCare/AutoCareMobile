@@ -1,49 +1,56 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import {
   ScrollView,
   StyleSheet,
   Text,
   View,
-  Image,
   Pressable,
 } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import moment from "moment";
-import { Octicons } from "@expo/vector-icons";
-import { Ionicons } from "@expo/vector-icons";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { FontAwesome } from "@expo/vector-icons";
-import { getListBooking } from "../app/Booking/actions";
+import { getListBookingByClient } from "../../../app/Booking/actions";
+import { useNavigation } from "@react-navigation/native";
 
 const Booking = () => {
+    const navigation = useNavigation();
    const dispatch = useDispatch();
-    const bookingList = useSelector((state) => state.booking.bookingList);
+    const { bookingListByClient } = useSelector((state) => state.booking);
     const fetchGetListBooking = async () => {
-      await dispatch(getListBooking());
+      await dispatch(getListBookingByClient());
     };
 
   useEffect(() => {
-    const fetch = async () => {
-      await fetchGetListBooking();
-    };
-    fetch();
-  }, []);
+    const unsubscribe = navigation.addListener("focus", () => {
+      fetchGetListBooking();
+    });
+    fetchGetListBooking();
+    return unsubscribe;
+  }, [navigation]);
   return (
     <ScrollView style={{ marginTop: 50 }}>
-      <View style={{ padding: 12, backgroundColor: "#DDD" }}>
+      <View style={{ padding: 12 }}>
         <View
-          style={{
-            flexDirection: "row",
-            alignItems: "center",
-            justifyContent: "space-between",
-          }}
         >
-          {/* <Octicons name="three-bars" size={24} color="white" /> */}
+          <Pressable
+            onPress={() => navigation.navigate("PostBooking")}
+            style={{
+              backgroundColor: "#52c41a",
+              padding: 10,
+              borderRadius: 10,
+              justifyContent: "center",
+              alignItems: "center",
+              marginHorizontal: 10,
+              marginTop: 10,
+            }}
+          >
+            <Text style={{ color: "white" }}>+ Lên lịch sửa xe</Text>
+          </Pressable>
         </View>
-
         <View>
-          {bookingList.length > 0 &&
-            bookingList.map((item, index) => (
+          {bookingListByClient.length > 0 &&
+            bookingListByClient.map((item, index) => (
               <Pressable
                 style={{
                   marginVertical: 12,
@@ -139,7 +146,7 @@ const Booking = () => {
                       }}
                     >
                       Ngày đặt :{" "}
-                      {moment(item?.bookingDate).format("DD/MM/YYYY")}
+                      {moment(item?.bookingDate).format("DD/MM/YYYY HH:mm")}
                     </Text>
                     <View style={{ marginTop: 10 }}>
                       <Text style={{ fontSize: 13, fontWeight: "600" }}>

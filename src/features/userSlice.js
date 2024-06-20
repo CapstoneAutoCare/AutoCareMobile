@@ -4,34 +4,26 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { jwtDecode } from "jwt-decode";
 const initialState = {
   role: "CLIENT",
-  userInfo: null,
-  profile: null,
   accessToken: "",
   data: [],
   authenticated: false,
-  isExitIntro: false,
-  loadingIntro: false,
   accountId: null,
   loading: false,
   error: null,
-  email: null,
 };
 export const login = createAsyncThunk(
   "user/login",
   async ({ email, password }, { rejectWithValue }) => {
     try {
       const response = await userService.login({ email, password });
-      console.log("<UserSlice>: " + response?.data);
+      const jwtCode = jwtDecode(response?.data?.token);
       await AsyncStorage.setItem("ACCESS_TOKEN", response?.data?.token);
-    //   await AsyncStorage.setItem("EMAIL", response?.data?.email);
-    //   await AsyncStorage.setItem(
-    //     "ACCOUNT_ID",
-    //     JSON.stringify(response?.data?.accountId)
-    //   );
-    const role = jwtDecode(response?.data?.token);
-      return role[
-        "http://schemas.microsoft.com/ws/2008/06/identity/claims/role"
-      ];
+      await AsyncStorage.setItem(
+        "ROLE",
+        jwtCode["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"]
+      );
+      await AsyncStorage.setItem("ACCOUNT_ID", jwtCode["sub"]);
+      return jwtCode;
     } catch (error) {
       console.log(error);
       return rejectWithValue(error.response?.data);
@@ -43,6 +35,8 @@ export const logout = createAsyncThunk(
   async (_, { rejectWithValue }) => {
     try {
       await AsyncStorage.removeItem("ACCESS_TOKEN");
+      await AsyncStorage.removeItem("ROLE");
+      await AsyncStorage.removeItem("ACCOUNT_ID");
       return true;
     } catch (error) {
       console.log(error);
@@ -55,13 +49,19 @@ export const loadAuthState = createAsyncThunk(
   async (_, { rejectWithValue }) => {
     try {
       const accessToken = await AsyncStorage.getItem("ACCESS_TOKEN");
+      const role = await AsyncStorage.getItem("ROLE");
+      const accountId = await AsyncStorage.getItem("ACCOUNT_ID");
       if (accessToken) {
         return {
           authenticated: true,
+          role,
+          accountId,
         };
       }
       return {
         authenticated: false,
+        role: "CLIENT",
+        accountId: null,
       };
     } catch (error) {
       console.log(error);
@@ -81,8 +81,11 @@ export const userSlice = createSlice({
         state.authenticated = false;
       })
       .addCase(login.fulfilled, (state, action) => {
-        // state.userInfo = action.payload;
-        state.role = action.payload;
+        state.accountId = action.payload["sub"];
+        state.role =
+          action.payload[
+            "http://schemas.microsoft.com/ws/2008/06/identity/claims/role"
+          ];
         state.loading = false;
         state.authenticated = true;
       })
@@ -94,8 +97,6 @@ export const userSlice = createSlice({
         state.loading = true;
       })
       .addCase(logout.fulfilled, (state, action) => {
-        state.userInfo = null;
-        state.profile = null;
         state.loading = false;
         state.data = null;
         state.authenticated = false;
@@ -111,12 +112,7 @@ export const userSlice = createSlice({
         state.loading = false;
         state.authenticated = action.payload.authenticated;
         state.accountId = action.payload.accountId;
-        state.userInfo = action.payload;
-        // Load userInfo from AsyncStorage
-        // const userInfoFromStorage = AsyncStorage.getItem("USER_INFO");
-        // if (userInfoFromStorage) {
-        //   state.userInfo = JSON.parse(userInfoFromStorage);
-        // }
+        state.role = action.payload.role;
       })
       .addCase(loadAuthState.rejected, (state, action) => {
         state.loading = true;

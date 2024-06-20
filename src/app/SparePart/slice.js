@@ -1,10 +1,11 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { getListSparePart } from "./actions";
+import { getListSparePart, getSparePartById } from "./actions";
 
 const accountSlice = createSlice({
   name: "sparePart",
   initialState: {
     sparePartList: [],
+    sparePartById: null,
     loading: null,
   },
   reducers: {},
@@ -12,6 +13,10 @@ const accountSlice = createSlice({
     builder.addCase(getListSparePart.fulfilled, (state, action) => {
       state.loading = false;
       state.sparePartList = action.payload;
+    });
+    builder.addCase(getSparePartById.fulfilled, (state, action) => {
+      state.loading = false;
+      state.sparePartById = action.payload;
     });
   },
 });

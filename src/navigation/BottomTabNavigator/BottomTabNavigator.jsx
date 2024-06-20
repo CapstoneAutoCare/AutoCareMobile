@@ -1,10 +1,12 @@
 import { Platform, StyleSheet } from "react-native";
 import React from "react";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import { FontAwesome, Ionicons } from "@expo/vector-icons";
+import { FontAwesome, Ionicons, Entypo } from "@expo/vector-icons";
 import HomeNavigator from "./TabNavigator/HomeNavigator";
 import ROUTES from "../../constants/routes";
-import ProfileNavigator from "./TabNavigator/ProfileNavigator";
+import SettingScreen from "../../screens/Profile/SettingScreen";
+import Booking from "../../screens/client/booking/booking";
+import BookingNavigator from "./TabNavigator/BookingNavigator";
 
 const Stack = createBottomTabNavigator();
 const BottomTabNavigator = ({ authenticated }) => {
@@ -38,8 +40,30 @@ const BottomTabNavigator = ({ authenticated }) => {
         }}
       />
       <Stack.Screen
-        name={ROUTES.SETTING_NAVIGATOR}
-        children={() => <ProfileNavigator authenticated={authenticated} />}
+        name={ROUTES.BOOKING_NAVIGATOR}
+        children={() => <BookingNavigator authenticated={authenticated} />}
+        options={{
+          headerShown: false,
+          title: "Lịch đặt",
+          tabBarIcon: ({ size, color }) => {
+            return <Entypo name="calendar" size={28} color={color} />;
+          },
+        }}
+      />
+      <Stack.Screen
+        name={ROUTES.CAR}
+        component={SettingScreen}
+        options={{
+          headerShown: false,
+          title: "Xe",
+          tabBarIcon: ({ size, color }) => {
+            return <FontAwesome name="car" size={28} color={color} />;
+          },
+        }}
+      />
+      <Stack.Screen
+        name={ROUTES.SETTING}
+        component={SettingScreen}
         options={{
           headerShown: false,
           title: "Setting",

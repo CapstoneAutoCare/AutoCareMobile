@@ -21,6 +21,7 @@ import * as ImagePicker from "expo-image-picker";
 import Constants from "expo-constants";
 import axios from "axios";
 import { RadioButton } from "react-native-paper";
+import { storeImageToFireBase, uploadImage } from "../configs/storeImageToFirebase";
 export default Register = ({ navigation }) => {
       const [firstName, setFirstName] = useState("");
       const [lastName, setLastName] = useState("");
@@ -33,7 +34,6 @@ export default Register = ({ navigation }) => {
       const [dob, setDob] = useState("");
       const [address, setAddress] = useState("");
       const [gender, setGender] = useState("");
-    const [modalVisible, setModalVisible] = useState(false);
       const [avatar, setAvatar] = useState(null);
       const [isAvatarSelected, setIsAvatarSelected] = useState(false);
   const pickImage = async () => {
@@ -70,6 +70,14 @@ export default Register = ({ navigation }) => {
         alert("Vui lòng điền đầy đủ thông tin");
         return;
       }
+            let avatarUrl =
+              "https://i.pinimg.com/736x/0d/64/98/0d64989794b1a4c9d89bff571d3d5842.jpg";
+            if (avatar) {
+              const uploadedAvatarUrl = await uploadImage(avatar);
+              if (uploadedAvatarUrl) {
+                avatarUrl = uploadedAvatarUrl;
+              }
+            }
 
       const response = await axios.post(
         "http://autocare.runasp.net/api/Clients/Post",
@@ -78,7 +86,7 @@ export default Register = ({ navigation }) => {
           password: passwordHash,
           gender: gender,
           phone: phone,
-          logo: "https://i.pinimg.com/736x/0d/64/98/0d64989794b1a4c9d89bff571d3d5842.jpg",
+          logo: avatarUrl,
           firstName: firstName,
           lastName: lastName,
           address: address,

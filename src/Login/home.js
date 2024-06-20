@@ -1,24 +1,29 @@
+import { useNavigation } from "@react-navigation/native";
 import React, { Component, useState } from "react";
 import {
-    SafeAreaView,
-    View,
-    Text,
-    TouchableOpacity,
-    ImageBackground,
-    StatusBar,
-    Dimensions,
-    TextInput,
-    Image,
-    StyleSheet, Button
-} from 'react-native';
+  SafeAreaView,
+  View,
+  Text,
+  TouchableOpacity,
+  ImageBackground,
+  StatusBar,
+  Dimensions,
+  TextInput,
+  Image,
+  StyleSheet,
+  Pressable,
+} from "react-native";
 export default Home = () => {
+      const navigation = useNavigation();
     return (
-        <SafeAreaView>
-            <View style={styles.center}>
-                <Text>This is the contact screenzxczxc</Text>
-            </View>
-        </SafeAreaView>
-    )
+      <SafeAreaView>
+        <View style={styles.center}>
+          <View>
+            <Text style={{ color: "white" }}>home</Text>
+          </View>
+        </View>
+      </SafeAreaView>
+    );
 }
 const styles = StyleSheet.create({
     center: {

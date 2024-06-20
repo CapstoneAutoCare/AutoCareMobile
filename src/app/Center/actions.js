@@ -1,11 +1,11 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
-import { bookingService } from "../../services/bookingService";
+import { centerService } from "../../services/centerService";
 
-export const getListBooking = createAsyncThunk(
-  "booking/GetListByCenter",
+export const getListCenter = createAsyncThunk(
+  "center/GetListByCenter",
   async (_, { rejectWithValue }) => {
     try {
-      const response = await bookingService.getListBooking();
+      const response = await centerService.getListCenter();
       return response.data;
     } catch (error) {
       console.log(error);
@@ -13,11 +13,11 @@ export const getListBooking = createAsyncThunk(
     }
   }
 );
-export const getListBookingByClient = createAsyncThunk(
-  "booking/getListBookingByClient",
+export const getListCenterByClient = createAsyncThunk(
+  "center/getListCenterByClient",
   async (_, { rejectWithValue }) => {
     try {
-      const response = await bookingService.getListBookingByClient();
+      const response = await centerService.getListCenterByClient();
       return response.data;
     } catch (error) {
       console.log(error);
