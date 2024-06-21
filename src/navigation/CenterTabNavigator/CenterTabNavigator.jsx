@@ -13,6 +13,7 @@ import ListCar from "../../manager/listCar";
 import Staff from "../../manager/staff";
 import Logout from "../../manager/logout";
 import SparePartNavigator from "./TabNavigator/SparePartNavigator";
+import ServiceNavigator from "./TabNavigator/ServiceNavigator";
 
 const Drawer = createDrawerNavigator();
 const CenterTabNavigator = ({ authenticated }) => {
@@ -63,6 +64,22 @@ const CenterTabNavigator = ({ authenticated }) => {
           title: "Phụ tùng",
           drawerIcon: (size, color) => {
             return <FontAwesome name="inbox" size={30} color={color} />;
+          },
+        }}
+      />
+      <Drawer.Screen
+        name="SERVICE"
+        children={() => <ServiceNavigator authenticated={authenticated} />}
+        options={{
+          title: "Dịch vụ",
+          drawerIcon: (size, color) => {
+            return (
+              <MaterialIcons
+                name="featured-play-list"
+                size={24}
+                color={color}
+              />
+            );
           },
         }}
       />

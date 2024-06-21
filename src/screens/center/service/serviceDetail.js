@@ -10,21 +10,21 @@ import {
 import { useSelector, useDispatch } from "react-redux";
 import { AntDesign } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
-import { getSparePartById } from "../../../app/SparePart/actions";
 import moment from "moment";
+import { getListServiceById } from "../../../app/Center/actions";
 
-const ProductDetail = ({ route }) => {
-  const { sparePartsItemId } = route.params;
+const ServiceDetail = ({ route }) => {
+  const { maintenanceServiceId } = route.params;
   const navigation = useNavigation();
   const dispatch = useDispatch();
-  const { sparePartById } = useSelector((state) => state.sparePart);
+  const { serviceById } = useSelector((state) => state.center);
 
   useEffect(() => {
     const fetchGetListSparePart = async () => {
-      await dispatch(getSparePartById(sparePartsItemId));
+      await dispatch(getListServiceById(maintenanceServiceId));
     };
     fetchGetListSparePart();
-  }, [sparePartsItemId]);
+  }, [maintenanceServiceId]);
 
   const handleNavigateBack = () => {
     navigation.goBack();
@@ -36,23 +36,24 @@ const ProductDetail = ({ route }) => {
         <Pressable onPress={handleNavigateBack} style={styles.backButton}>
           <AntDesign name="arrowleft" size={24} color="black" />
         </Pressable>
-        <Text style={styles.title}>Chi tiết sản phẩm</Text>
+        <Text style={styles.title}>Chi tiết dịch vụ</Text>
       </View>
-      {sparePartById && (
+
+      {serviceById && (
         <View style={styles.content}>
-          <Image style={styles.image} source={{ uri: sparePartById.image }} />
+          <Image style={styles.image} source={{ uri: serviceById.image }} />
 
-          <Text style={styles.name}>{sparePartById.sparePartsItemName}</Text>
+          <Text style={styles.name}>{serviceById.maintenanceServiceName}</Text>
 
-          <Text style={styles.status}>Trạng thái: {sparePartById.status}</Text>
+          <Text style={styles.status}>Trạng thái: {serviceById.status}</Text>
 
           <Text style={styles.centerName}>
-            Đơn vị bảo trì: {sparePartById.maintenanceCenterName}
+            Đơn vị bảo trì: {serviceById.maintenanceCenterName}
           </Text>
 
-          {sparePartById.responseSparePartsItemCosts.length > 0 && (
+          {serviceById.responseMaintenanceServiceCosts.length > 0 && (
             <Text style={styles.cost}>
-              Giá: {sparePartById.responseSparePartsItemCosts[0].acturalCost}{" "}
+              Giá: {serviceById.responseMaintenanceServiceCosts[0].acturalCost}{" "}
               VND
             </Text>
           )}
@@ -61,7 +62,7 @@ const ProductDetail = ({ route }) => {
 
           <Text style={styles.createdDate}>
             Ngày tạo:{" "}
-            {moment(sparePartById.createdDate).format("DD/MM/YYYY HH:mm")}
+            {moment(serviceById.createdDate).format("DD/MM/YYYY HH:mm")}
           </Text>
         </View>
       )}
@@ -126,4 +127,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default ProductDetail;
+export default ServiceDetail;

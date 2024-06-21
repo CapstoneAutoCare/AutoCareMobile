@@ -5,4 +5,12 @@ export const centerService = {
     const url = `/MaintenanceCenters/GetAll`;
     return axiosClient.get(url);
   },
+  getListService: () => {
+    const url = `/MaintenanceServices/GetListByCenter`;
+    return axiosClient.get(url);
+  },
+  getListServiceById: (id) => {
+    const url = `/MaintenanceServices/GetById?id=${id}`;
+    return axiosClient.get(url);
+  },
 };

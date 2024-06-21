@@ -25,3 +25,27 @@ export const getListCenterByClient = createAsyncThunk(
     }
   }
 );
+export const getListService = createAsyncThunk(
+  "center/getListService",
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await centerService.getListService();
+      return response.data;
+    } catch (error) {
+      console.log(error);
+      return rejectWithValue(error);
+    }
+  }
+);
+export const getListServiceById = createAsyncThunk(
+  "center/getListServiceById",
+  async (id, { rejectWithValue }) => {
+    try {
+      const response = await centerService.getListServiceById(id);
+      return response.data;
+    } catch (error) {
+      console.log(error);
+      return rejectWithValue(error);
+    }
+  }
+);
