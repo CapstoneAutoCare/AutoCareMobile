@@ -13,26 +13,126 @@ import axios from "axios";
 import { useNavigation } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useDispatch, useSelector } from "react-redux";
-import { getListCustomerCare } from "../../../app/CustomerCare/actions";
+import { getListCustomerCareByCenterId } from "../../../app/CustomerCare/actions";
 
 const CreateBookingHaveItem = ({ centerList, vehicleListByClient }) => {
   const dispatch = useDispatch();
   const navigation = useNavigation();
+  const [loadCenter, setLoadCenter] = useState(false);
   const [vehicle, setVehicle] = useState("");
   const [customerCare, setCustomerCare] = useState("");
   const [maintenanceCenter, setMaintenanceCenter] = useState("");
   const [note, setNote] = useState("");
-  const { customerCareList } = useSelector((state) => state.customerCare);
+  const [spareParts, setSpareParts] = useState([]);
+  const [services, setServices] = useState([]);
+  const [availableSpareParts, setAvailableSpareParts] = useState([]);
+  const [availableServices, setAvailableServices] = useState([]);
+
+  const { customerCareListByCenterId } = useSelector(
+    (state) => state.customerCare
+  );
+
   const fetchGetListCustomerCare = async () => {
-    await dispatch(getListCustomerCare());
+    await dispatch(getListCustomerCareByCenterId(maintenanceCenter));
+    setLoadCenter(false);
+  };
+
+  const fetchSpareParts = async () => {
+    try {
+      const accessToken = await AsyncStorage.getItem("ACCESS_TOKEN");
+      const response = await axios.get(
+        `http://autocare.runasp.net/api/SparePartsItemCosts/GetListByClient?centerId=${maintenanceCenter}`,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${accessToken}`,
+          },
+        }
+      );
+      setAvailableSpareParts(response.data);
+    } catch (error) {
+      console.error("Error fetching spare parts:", error);
+    }
+  };
+
+  const fetchServices = async () => {
+    try {
+      const accessToken = await AsyncStorage.getItem("ACCESS_TOKEN");
+      const response = await axios.get(
+        `http://autocare.runasp.net/api/MaintenanceServiceCosts/GetListByClient?centerId=${maintenanceCenter}`,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${accessToken}`,
+          },
+        }
+      );
+      setAvailableServices(response.data);
+    } catch (error) {
+      console.error("Error fetching services:", error);
+    }
   };
 
   useEffect(() => {
     const fetch = async () => {
+      setLoadCenter(true);
       await fetchGetListCustomerCare();
+      await fetchSpareParts();
+      await fetchServices();
     };
-    fetch();
-  }, []);
+    if (maintenanceCenter) {
+      fetch();
+    }
+  }, [maintenanceCenter]);
+
+  const handleAddSparePart = () => {
+    setSpareParts([
+      ...spareParts,
+      {
+        sparePartsItemCostId: "",
+        maintenanceSparePartInfoName: "",
+        quantity: 0,
+        actualCost: 0,
+        note: "",
+      },
+    ]);
+  };
+
+  const handleRemoveSparePart = (index) => {
+    const newSpareParts = spareParts.filter((_, idx) => idx !== index);
+    setSpareParts(newSpareParts);
+  };
+
+  const handleSparePartChange = (index, key, value) => {
+    const newSpareParts = [...spareParts];
+    newSpareParts[index][key] = value;
+    setSpareParts(newSpareParts);
+  };
+
+  const handleAddService = () => {
+    setServices([
+      ...services,
+      {
+        maintenanceServiceCostId: "",
+        maintenanceServiceInfoName: "",
+        quantity: 0,
+        actualCost: 0,
+        note: "",
+      },
+    ]);
+  };
+
+  const handleRemoveService = (index) => {
+    const newServices = services.filter((_, idx) => idx !== index);
+    setServices(newServices);
+  };
+
+  const handleServiceChange = (index, key, value) => {
+    const newServices = [...services];
+    newServices[index][key] = value;
+    setServices(newServices);
+  };
+
   const handleSignup = async () => {
     try {
       if (!note || !maintenanceCenter) {
@@ -53,34 +153,16 @@ const CreateBookingHaveItem = ({ centerList, vehicleListByClient }) => {
           bookingDate,
           createMaintenanceInformationHaveItemsByClient: {
             customerCareId: customerCare,
-            finishedDate: "2024-06-20T13:05:16.597Z",
-            createMaintenanceSparePartInfos: null,
-            createMaintenanceServiceInfos: null,
-            // createMaintenanceSparePartInfos: [
-            //   {
-            //     sparePartsItemCostId: "3fa85f64-5717-4562-b3fc-2c963f66afa6",
-            //     maintenanceSparePartInfoName: "string",
-            //     quantity: 0,
-            //     actualCost: 0,
-            //     note: "string",
-            //   },
-            // ],
-            // createMaintenanceServiceInfos: [
-            //   {
-            //     maintenanceServiceCostId:
-            //       "3fa85f64-5717-4562-b3fc-2c963f66afa6",
-            //     maintenanceServiceInfoName: "string",
-            //     quantity: 0,
-            //     actualCost: 0,
-            //     note: "string",
-            //   },
-            // ],
+            finishedDate: bookingDate,
+            createMaintenanceSparePartInfos:
+              spareParts.length > 0 ? spareParts : null,
+            createMaintenanceServiceInfos:
+              services.length > 0 ? services : null,
           },
         },
         {
           headers: {
-            "content-type": "application/json",
-            "Access-Control-Allow-Origin": "*",
+            "Content-Type": "application/json",
             Authorization: `Bearer ${accessToken}`,
           },
         }
@@ -129,22 +211,6 @@ const CreateBookingHaveItem = ({ centerList, vehicleListByClient }) => {
           </View>
           <View style={styles.inputContainer}>
             <Picker
-              selectedValue={customerCare}
-              onValueChange={(itemValue) => setCustomerCare(itemValue)}
-              style={styles.picker}
-            >
-              <Picker.Item label="Chọn CSKH" value="" />
-              {customerCareList.map((customerCare) => (
-                <Picker.Item
-                  key={customerCare.customerCareId}
-                  label={customerCare.firstName +" "+ customerCare.lastName}
-                  value={customerCare.customerCareId}
-                />
-              ))}
-            </Picker>
-          </View>
-          <View style={styles.inputContainer}>
-            <Picker
               selectedValue={vehicle}
               onValueChange={(itemValue) => setVehicle(itemValue)}
               style={styles.picker}
@@ -175,6 +241,173 @@ const CreateBookingHaveItem = ({ centerList, vehicleListByClient }) => {
               ))}
             </Picker>
           </View>
+          {maintenanceCenter !== "" && !loadCenter && (
+            <>
+              <View style={styles.inputContainer}>
+                <Picker
+                  selectedValue={customerCare}
+                  onValueChange={(itemValue) => setCustomerCare(itemValue)}
+                  style={styles.picker}
+                >
+                  <Picker.Item label="Chọn CSKH" value="" />
+                  {customerCareListByCenterId.map((customerCare) => (
+                    <Picker.Item
+                      key={customerCare.customerCareId}
+                      label={
+                        customerCare.firstName + " " + customerCare.lastName
+                      }
+                      value={customerCare.customerCareId}
+                    />
+                  ))}
+                </Picker>
+              </View>
+              <Text>Phụ Tùng</Text>
+              {spareParts.map((sparePart, index) => (
+                <View key={index} style={styles.inputContainerCost}>
+                  <Picker
+                    selectedValue={sparePart.sparePartsItemCostId}
+                    onValueChange={(value) =>
+                      handleSparePartChange(
+                        index,
+                        "sparePartsItemCostId",
+                        value
+                      )
+                    }
+                    style={styles.picker}
+                  >
+                    <Picker.Item label="Chọn phụ tùng" value="" />
+                    {availableSpareParts.map((part) => (
+                      <Picker.Item
+                        key={part.sparePartsItemCostId}
+                        label={part.sparePartsItemName}
+                        value={part.sparePartsItemCostId}
+                      />
+                    ))}
+                  </Picker>
+                  <TextInput
+                    style={styles.textInput}
+                    placeholder="Tên phụ tùng"
+                    value={sparePart.maintenanceSparePartInfoName}
+                    onChangeText={(text) =>
+                      handleSparePartChange(
+                        index,
+                        "maintenanceSparePartInfoName",
+                        text
+                      )
+                    }
+                  />
+                  <TextInput
+                    style={styles.textInput}
+                    placeholder="Số lượng"
+                    value={String(sparePart.quantity)}
+                    keyboardType="numeric"
+                    onChangeText={(text) =>
+                      handleSparePartChange(index, "quantity", parseInt(text))
+                    }
+                  />
+                  <TextInput
+                    style={styles.textInput}
+                    placeholder="Chi phí"
+                    value={String(sparePart.actualCost)}
+                    keyboardType="numeric"
+                    onChangeText={(text) =>
+                      handleSparePartChange(index, "actualCost", parseInt(text))
+                    }
+                  />
+                  <TextInput
+                    style={styles.textInput}
+                    placeholder="Ghi chú"
+                    value={sparePart.note}
+                    onChangeText={(text) =>
+                      handleSparePartChange(index, "note", text)
+                    }
+                  />
+                  <Pressable
+                    style={styles.button}
+                    onPress={() => handleRemoveSparePart(index)}
+                  >
+                    <Text style={styles.buttonText}>Xóa</Text>
+                  </Pressable>
+                </View>
+              ))}
+              <Pressable style={styles.button} onPress={handleAddSparePart}>
+                <Text style={styles.buttonText}>Thêm phụ tùng</Text>
+              </Pressable>
+
+              <Text>Dịch vụ</Text>
+              {services.map((service, index) => (
+                <View key={index} style={styles.inputContainerCost}>
+                  <Picker
+                    selectedValue={service.maintenanceServiceCostId}
+                    onValueChange={(value) =>
+                      handleServiceChange(
+                        index,
+                        "maintenanceServiceCostId",
+                        value
+                      )
+                    }
+                    style={styles.picker}
+                  >
+                    <Picker.Item label="Chọn dịch vụ" value="" />
+                    {availableServices.map((service) => (
+                      <Picker.Item
+                        key={service.maintenanceServiceCostId}
+                        label={service.maintenanceServiceName}
+                        value={service.maintenanceServiceCostId}
+                      />
+                    ))}
+                  </Picker>
+                  <TextInput
+                    style={styles.textInput}
+                    placeholder="Tên dịch vụ"
+                    value={service.maintenanceServiceInfoName}
+                    onChangeText={(text) =>
+                      handleServiceChange(
+                        index,
+                        "maintenanceServiceInfoName",
+                        text
+                      )
+                    }
+                  />
+                  <TextInput
+                    style={styles.textInput}
+                    placeholder="Số lượng"
+                    value={String(service.quantity)}
+                    keyboardType="numeric"
+                    onChangeText={(text) =>
+                      handleServiceChange(index, "quantity", parseInt(text))
+                    }
+                  />
+                  <TextInput
+                    style={styles.textInput}
+                    placeholder="Chi phí"
+                    value={String(service.actualCost)}
+                    keyboardType="numeric"
+                    onChangeText={(text) =>
+                      handleServiceChange(index, "actualCost", parseInt(text))
+                    }
+                  />
+                  <TextInput
+                    style={styles.textInput}
+                    placeholder="Ghi chú"
+                    value={service.note}
+                    onChangeText={(text) =>
+                      handleServiceChange(index, "note", text)
+                    }
+                  />
+                  <Pressable
+                    style={styles.button}
+                    onPress={() => handleRemoveService(index)}
+                  >
+                    <Text style={styles.buttonText}>Xóa</Text>
+                  </Pressable>
+                </View>
+              ))}
+              <Pressable style={styles.button} onPress={handleAddService}>
+                <Text style={styles.buttonText}>Thêm dịch vụ</Text>
+              </Pressable>
+            </>
+          )}
           <Pressable style={styles.button} onPress={handleSignup}>
             <Text style={styles.buttonText}>Tạo lịch</Text>
           </Pressable>
@@ -197,6 +430,15 @@ const styles = StyleSheet.create({
   inputContainer: {
     flexDirection: "row",
     alignItems: "center",
+    backgroundColor: COLORS.white,
+    paddingVertical: 10,
+    borderRadius: 10,
+    marginBottom: 12,
+    marginTop: 10,
+    paddingHorizontal: 10,
+  },
+  inputContainerCost: {
+    flexDirection: "flex",
     backgroundColor: COLORS.white,
     paddingVertical: 10,
     borderRadius: 10,

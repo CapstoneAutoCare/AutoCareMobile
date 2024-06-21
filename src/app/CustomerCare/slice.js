@@ -1,18 +1,21 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { getListCustomerCare } from "./actions";
+import { getListCustomerCareByCenterId } from "./actions";
 
 const accountSlice = createSlice({
   name: "customerCare",
   initialState: {
-    customerCareList: [],
+    customerCareListByCenterId: [],
     loading: null,
   },
   reducers: {},
   extraReducers: (builder) => {
-    builder.addCase(getListCustomerCare.fulfilled, (state, action) => {
-      state.loading = false;
-      state.customerCareList = action.payload;
-    });
+    builder.addCase(
+      getListCustomerCareByCenterId.fulfilled,
+      (state, action) => {
+        state.loading = false;
+        state.customerCareListByCenterId = action.payload;
+      }
+    );
   },
 });
 

@@ -28,7 +28,7 @@ const HomeNavigator = ({ authenticated, role }) => {
         </>
       ) : role === "CENTER" ? (
         <Stack.Screen
-          name="CENTER_BOOKING"
+          name="Home"
           component={CenterTabNavigator}
           options={{ headerShown: false }}
         />

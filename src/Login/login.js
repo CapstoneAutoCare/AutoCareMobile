@@ -16,7 +16,6 @@ export default Login = ({ navigation }) => {
   const [password, setPassword] = useState("");
   const handleLogin = async () => {
     try {
-      console.log("email: " + email, "password: " + password);
       await dispatch(login({ email: email, password: password })).then(
         (res) => {
           console.log(JSON.stringify(res.meta.requestStatus, null, 2));

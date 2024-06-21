@@ -1,11 +1,13 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import { customerCareService } from "../../services/customerCareService";
 
-export const getListCustomerCare = createAsyncThunk(
-  "customerCare/GetListByCustomerCare",
-  async (_, { rejectWithValue }) => {
+export const getListCustomerCareByCenterId = createAsyncThunk(
+  "customerCare/getListCustomerCareByCenterId",
+  async (id, { rejectWithValue }) => {
     try {
-      const response = await customerCareService.getListCustomerCare();
+      const response = await customerCareService.getListCustomerCareByCenterId(
+        id
+      );
       return response.data;
     } catch (error) {
       console.log(error);

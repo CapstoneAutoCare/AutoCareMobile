@@ -24,12 +24,13 @@ const Service = () => {
     await dispatch(getListService());
   };
 
-  useEffect(() => {
-    const fetch = async () => {
-      await fetchGetListSparePart();
-    };
-    fetch();
-  }, []);
+    useEffect(() => {
+      const unsubscribe = navigation.addListener("focus", () => {
+        fetchGetListSparePart();
+      });
+      fetchGetListSparePart();
+      return unsubscribe;
+    }, [navigation]);
   return (
     <ScrollView style={{ marginTop: 50 }}>
       <Text style={{ padding: 10, fontSize: 18, fontWeight: "bold" }}>

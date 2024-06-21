@@ -39,11 +39,11 @@ const AppNavigator = () => {
           )}
           options={{ headerShown: false }}
         />
-        <Stack.Screen
+        {/* <Stack.Screen
           name="Home"
           component={HomeNavigator}
           options={{ headerShown: false }}
-        />
+        /> */}
       </Stack.Navigator>
     )
   );

@@ -48,7 +48,7 @@ const CenterTabNavigator = ({ authenticated }) => {
       }}
     >
       <Drawer.Screen
-        name="CENTER_BOOKING"
+        name="CENTER_BOOKING_NAVIGATOR"
         component={Booking}
         options={{
           title: "Lịch đặt",

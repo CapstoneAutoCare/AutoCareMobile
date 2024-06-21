@@ -1,8 +1,8 @@
 import axiosClient from "./axiosClient";
 
 export const customerCareService = {
-  getListCustomerCare: () => {
-    const url = `/CustomerCares/GetAll`;
+  getListCustomerCareByCenterId: (id) => {
+    const url = `/CustomerCares/GetListByCenter?centerId=${id}`;
     return axiosClient.get(url);
   },
 };

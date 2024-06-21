@@ -6,30 +6,27 @@ import { AntDesign } from "@expo/vector-icons";
 import axios from "axios";
 import { useNavigation } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { postServiceCost } from "../../../app/Center/actions";
+import { useDispatch } from "react-redux";
 const ServicePost = () => {
+  const dispatch = useDispatch();
   const navigation = useNavigation();
-  const [vehicle, setVehicle] = useState("");
-  const [maintenanceCenter, setMaintenanceCenter] = useState("");
-  const [note, setNote] = useState("");
-
+  const [load, setLoad] = useState(false);
+  const [maintenanceServiceName, setMaintenanceServiceName] = useState("");
+  const [acturalCost, setActuralCost] = useState("");
   const handleSignup = async () => {
     try {
-      if (!note || !maintenanceCenter) {
+      if (!maintenanceServiceName || !acturalCost) {
         alert("Vui lòng điền đầy đủ thông tin");
         return;
       }
-      const now = new Date();
-      const vietnamTime = new Date(now.getTime() + 7 * 60 * 60 * 1000);
-      const bookingDate = vietnamTime.toISOString();
+      setLoad(true);
       const accessToken = await AsyncStorage.getItem("ACCESS_TOKEN");
       const response = await axios.post(
-        "http://autocare.runasp.net/api/Bookings/Post",
+        "http://autocare.runasp.net/api/MaintenanceServices/Post",
         {
-          vehicleId: vehicle,
-          maintenanceCenterId: maintenanceCenter,
-          maintananceScheduleId: null,
-          note: note,
-          bookingDate,
+          maintenanceServiceName: maintenanceServiceName,
+          serviceCareId: null,
         },
         {
           headers: {
@@ -39,12 +36,22 @@ const ServicePost = () => {
           },
         }
       );
-
-      if (response.status === 200) {
-        alert("Tạo lịch thành công!");
-        navigation.navigate("Booking");
+      if (
+        response.status === 200 &&
+        response.data &&
+        response.data.maintenanceServiceId
+      ) {
+        await dispatch(postServiceCost({
+          acturalCost: acturalCost,
+          note: "string",
+          maintenanceServiceId: response.data.maintenanceServiceId,
+        }));
+        setLoad(false);
+        alert("Tạo dịch vụ thành công!");
+        navigation.navigate("SERVICE");
       } else {
-        alert("Tạo lịch không thành công. Vui lòng thử lại.");
+        setLoad(false);
+        alert("Tạo dịch vụ không thành công. Vui lòng thử lại.");
       }
     } catch (error) {
       console.error("Error during:", error);
@@ -82,17 +89,29 @@ const ServicePost = () => {
           <TextInput
             style={styles.textInput}
             placeholder="tên dịch vụ"
-            value={note}
-            onChangeText={(text) => setNote(text)}
+            value={maintenanceServiceName}
+            onChangeText={(text) => setMaintenanceServiceName(text)}
             required={true}
           />
         </View>
-        <Pressable
-          style={styles.button}
-          // onPress={handleSignup}
-        >
-          <Text style={styles.buttonText}>Tạo dịch vụ</Text>
-        </Pressable>
+        <View style={styles.inputContainer}>
+          <TextInput
+            style={styles.textInput}
+            placeholder="chi phí dịch vụ"
+            value={acturalCost}
+            onChangeText={(text) => setActuralCost(text)}
+            required={true}
+          />
+        </View>
+        {load ? (
+          <Pressable style={styles.button} >
+            <Text style={styles.buttonText}>Đang tạo ...</Text>
+          </Pressable>
+        ) : (
+          <Pressable style={styles.button} onPress={handleSignup}>
+            <Text style={styles.buttonText}>Tạo dịch vụ</Text>
+          </Pressable>
+        )}
       </View>
     </View>
   );
