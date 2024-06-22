@@ -1,12 +1,19 @@
 import { Platform, StyleSheet } from "react-native";
 import React from "react";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import { FontAwesome, Ionicons, Entypo } from "@expo/vector-icons";
+import {
+  FontAwesome,
+  Ionicons,
+  Entypo,
+  MaterialCommunityIcons,
+} from "@expo/vector-icons";
 import HomeNavigator from "./TabNavigator/HomeNavigator";
 import ROUTES from "../../constants/routes";
 import SettingScreen from "../../screens/Profile/SettingScreen";
 import Booking from "../../screens/client/booking/booking";
 import BookingNavigator from "./TabNavigator/BookingNavigator";
+import VehicleNavigator from "./TabNavigator/VehicleNavigator";
+import MaintenanceCenters from "../../screens/client/maintenanceCenters/maintenanceCenters";
 
 const Stack = createBottomTabNavigator();
 const BottomTabNavigator = ({ authenticated }) => {
@@ -51,13 +58,30 @@ const BottomTabNavigator = ({ authenticated }) => {
         }}
       />
       <Stack.Screen
-        name={ROUTES.CAR}
-        component={SettingScreen}
+        name="VEHICLE_NAVIGATOR"
+        children={() => <VehicleNavigator authenticated={authenticated} />}
         options={{
           headerShown: false,
           title: "Xe",
           tabBarIcon: ({ size, color }) => {
             return <FontAwesome name="car" size={28} color={color} />;
+          },
+        }}
+      />
+      <Stack.Screen
+        name={"MAINTENANCE_CENTER"}
+        component={MaintenanceCenters}
+        options={{
+          headerShown: false,
+          title: "Setting",
+          tabBarIcon: ({ size, color }) => {
+            return (
+              <MaterialCommunityIcons
+                name="home-map-marker"
+                size={32}
+                color={color}
+              />
+            );
           },
         }}
       />

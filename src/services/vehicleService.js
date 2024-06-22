@@ -5,4 +5,8 @@ export const vehicleService = {
     const url = `/Vehicles/GetListByClient`;
     return axiosClient.get(url);
   },
+  getListVehicleModel: () => {
+    const url = `/VehicleModel/GetAll`;
+    return axiosClient.get(url);
+  },
 };

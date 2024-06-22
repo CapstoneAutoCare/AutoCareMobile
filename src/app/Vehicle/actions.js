@@ -13,3 +13,16 @@ export const getListVehicleByClient = createAsyncThunk(
     }
   }
 );
+
+export const getListVehicleModel = createAsyncThunk(
+  "vehicle/getListVehicleModel",
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await vehicleService.getListVehicleModel();
+      return response.data;
+    } catch (error) {
+      console.log(error);
+      return rejectWithValue(error);
+    }
+  }
+);
