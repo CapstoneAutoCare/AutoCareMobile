@@ -7,8 +7,11 @@ import {
   Pressable,
 } from "react-native";
 import React from "react";
+import moment from "moment";
+import { useNavigation } from "@react-navigation/native";
 
 const UserProfile = ({ item }) => {
+   const navigation = useNavigation();
   return (
     <View
       style={{
@@ -31,20 +34,25 @@ const UserProfile = ({ item }) => {
             borderRadius: 45,
             resizeMode: "cover",
           }}
-          source={{ uri: item?.profileImage }}
+          source={{ uri: item?.logo }}
         />
       </View>
 
       <View style={{ marginTop: 10 }}>
         <Text style={{ textAlign: "center", fontSize: 16, fontWeight: "600" }}>
-          {item?.name}
+          {item?.firstName + " " + item.lastName}
         </Text>
         <Text style={{ textAlign: "center", marginLeft: 1, marginTop: 2 }}>
-          {item?.phone}
+          {moment(item?.birthday).format("DD/MM/YYYY")}
         </Text>
       </View>
 
       <Pressable
+        onPress={() =>
+          navigation.navigate("STAFF_DETAIL", {
+            staffCareId: item.staffCareId,
+          })
+        }
         style={{
           marginLeft: "auto",
           marginRight: "auto",

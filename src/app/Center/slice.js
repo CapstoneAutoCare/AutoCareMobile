@@ -1,5 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { getListCenter, getListService, getListServiceById } from "./actions";
+import { getListCenter, getListService, getListServiceById, getListStaff, getListStaffById } from "./actions";
 
 const accountSlice = createSlice({
   name: "center",
@@ -7,6 +7,8 @@ const accountSlice = createSlice({
     centerList: [],
     serviceList: [],
     serviceById: null,
+    staffList: [],
+    staffById: null,
     loading: null,
   },
   reducers: {},
@@ -22,6 +24,14 @@ const accountSlice = createSlice({
     builder.addCase(getListServiceById.fulfilled, (state, action) => {
       state.loading = false;
       state.serviceById = action.payload;
+    });
+    builder.addCase(getListStaff.fulfilled, (state, action) => {
+      state.loading = false;
+      state.staffList = action.payload;
+    });
+    builder.addCase(getListStaffById.fulfilled, (state, action) => {
+      state.loading = false;
+      state.staffById = action.payload;
     });
   },
 });

@@ -14,6 +14,7 @@ import Staff from "../../manager/staff";
 import Logout from "../../manager/logout";
 import SparePartNavigator from "./TabNavigator/SparePartNavigator";
 import ServiceNavigator from "./TabNavigator/ServiceNavigator";
+import StaffNavigator from "./TabNavigator/StaffNavigator";
 
 const Drawer = createDrawerNavigator();
 const CenterTabNavigator = ({ authenticated }) => {
@@ -58,7 +59,7 @@ const CenterTabNavigator = ({ authenticated }) => {
         }}
       />
       <Drawer.Screen
-        name="PRODUCT"
+        name="PRODUCT_NAVIGATOR"
         children={() => <SparePartNavigator authenticated={authenticated} />}
         options={{
           title: "Phụ tùng",
@@ -68,7 +69,7 @@ const CenterTabNavigator = ({ authenticated }) => {
         }}
       />
       <Drawer.Screen
-        name="SERVICE"
+        name="SERVICE_NAVIGATOR"
         children={() => <ServiceNavigator authenticated={authenticated} />}
         options={{
           title: "Dịch vụ",
@@ -94,12 +95,22 @@ const CenterTabNavigator = ({ authenticated }) => {
         }}
       />
       <Drawer.Screen
-        name="STAFF"
-        component={Staff}
+        name="STAFF_NAVIGATOR"
+        children={() => <StaffNavigator authenticated={authenticated} />}
         options={{
-          title: "Nhân viên",
+          title: "Nhân viên kĩ thuật",
           drawerIcon: (size, color) => {
             return <FontAwesome name="user" size={32} color={color} />;
+          },
+        }}
+      />
+      <Drawer.Screen
+        name="CSKH"
+        component={Staff}
+        options={{
+          title: "Nhân viên CSKH",
+          drawerIcon: (size, color) => {
+            return <FontAwesome name="user-md" size={32} color={color} />;
           },
         }}
       />

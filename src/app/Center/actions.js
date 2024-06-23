@@ -88,3 +88,28 @@ export const patchServiceCost = createAsyncThunk(
     }
   }
 );
+
+export const getListStaff = createAsyncThunk(
+  "center/getListStaff",
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await centerService.getListStaff();
+      return response.data;
+    } catch (error) {
+      console.log(error);
+      return rejectWithValue(error);
+    }
+  }
+);
+export const getListStaffById = createAsyncThunk(
+  "center/getListStaffById",
+  async (id, { rejectWithValue }) => {
+    try {
+      const response = await centerService.getListStaffById(id);
+      return response.data;
+    } catch (error) {
+      console.log(error);
+      return rejectWithValue(error);
+    }
+  }
+);
