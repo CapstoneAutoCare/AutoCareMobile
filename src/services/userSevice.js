@@ -5,4 +5,8 @@ export const userService = {
     const url = `Accounts/Login?email=${email}&password=${password}`;
     return axiosClient.post(url);
   },
+  getProfile: () => {
+    const url = `Accounts/Profile`;
+    return axiosClient.get(url);
+  },
 };

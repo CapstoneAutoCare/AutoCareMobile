@@ -73,7 +73,7 @@ const BottomTabNavigator = ({ authenticated }) => {
         component={MaintenanceCenters}
         options={{
           headerShown: false,
-          title: "Setting",
+          title: "Trung tâm",
           tabBarIcon: ({ size, color }) => {
             return (
               <MaterialCommunityIcons
@@ -90,7 +90,7 @@ const BottomTabNavigator = ({ authenticated }) => {
         component={SettingScreen}
         options={{
           headerShown: false,
-          title: "Setting",
+          title: "Hồ sơ",
           tabBarIcon: ({ size, color }) => {
             return <Ionicons name="settings" size={28} color={color} />;
           },

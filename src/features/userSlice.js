@@ -8,6 +8,7 @@ const initialState = {
   data: [],
   authenticated: false,
   accountId: null,
+  profile: null,
   loading: false,
   error: null,
 };
@@ -69,6 +70,19 @@ export const loadAuthState = createAsyncThunk(
     }
   }
 );
+export const getProfile = createAsyncThunk(
+  "user/getSparePartById",
+  async (id, { rejectWithValue }) => {
+    try {
+      const response = await userService.getProfile(id);
+      return response.data;
+    } catch (error) {
+      console.log(error);
+      return rejectWithValue(error);
+    }
+  }
+);
+
 
 export const userSlice = createSlice({
   name: "user",
@@ -117,6 +131,10 @@ export const userSlice = createSlice({
       .addCase(loadAuthState.rejected, (state, action) => {
         state.loading = true;
       })
+    builder.addCase(getProfile.fulfilled, (state, action) => {
+      state.loading = false;
+      state.profile = action.payload;
+    });
   },
 });
 export default userSlice.reducer;

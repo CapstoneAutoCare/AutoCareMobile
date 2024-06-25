@@ -8,6 +8,7 @@ import {
   ScrollView,
 } from "react-native";
 import { Picker } from "@react-native-picker/picker";
+import DateTimePicker from "@react-native-community/datetimepicker";
 import COLORS from "./../../../constants/colors";
 import axios from "axios";
 import { useNavigation } from "@react-navigation/native";
@@ -27,7 +28,9 @@ const CreateBookingHaveItem = ({ centerList, vehicleListByClient }) => {
   const [services, setServices] = useState([]);
   const [availableSpareParts, setAvailableSpareParts] = useState([]);
   const [availableServices, setAvailableServices] = useState([]);
-
+  const [bookingDate, setBookingDate] = useState(new Date());
+  const [showDatePicker, setShowDatePicker] = useState(false);
+  const [showTimePicker, setShowTimePicker] = useState(false);
   const { customerCareListByCenterId } = useSelector(
     (state) => state.customerCare
   );
@@ -141,7 +144,6 @@ const CreateBookingHaveItem = ({ centerList, vehicleListByClient }) => {
       }
       const now = new Date();
       const vietnamTime = new Date(now.getTime() + 7 * 60 * 60 * 1000);
-      const bookingDate = vietnamTime.toISOString();
       const accessToken = await AsyncStorage.getItem("ACCESS_TOKEN");
       const response = await axios.post(
         "http://autocare.runasp.net/api/Bookings/PostHaveItems",
@@ -150,10 +152,10 @@ const CreateBookingHaveItem = ({ centerList, vehicleListByClient }) => {
           maintenanceCenterId: maintenanceCenter,
           maintananceScheduleId: null,
           note: note,
-          bookingDate,
+          bookingDate: bookingDate.toISOString(),
           createMaintenanceInformationHaveItemsByClient: {
             customerCareId: customerCare,
-            finishedDate: bookingDate,
+            finishedDate: vietnamTime.toISOString(),
             createMaintenanceSparePartInfos:
               spareParts.length > 0 ? spareParts : null,
             createMaintenanceServiceInfos:
@@ -195,9 +197,26 @@ const CreateBookingHaveItem = ({ centerList, vehicleListByClient }) => {
       }
     }
   };
+  const onDateChange = (event, selectedDate) => {
+    const currentDate = selectedDate || bookingDate;
+    setShowDatePicker(false);
+    setBookingDate(currentDate);
+    if (event.type === "set") {
+      setShowTimePicker(true); // Show time picker after date is selected
+    }
+  };
+
+  const onTimeChange = (event, selectedTime) => {
+    const currentTime = selectedTime || bookingDate;
+    setShowTimePicker(false);
+    const updatedDate = new Date(
+      bookingDate.setHours(currentTime.getHours(), currentTime.getMinutes())
+    );
+    setBookingDate(updatedDate);
+  };
 
   return (
-    <ScrollView style={{ marginTop: 50 }}>
+    <ScrollView style={{ marginTop: 20 }}>
       <View style={styles.container}>
         <View style={styles.form}>
           <View style={styles.inputContainer}>
@@ -408,6 +427,34 @@ const CreateBookingHaveItem = ({ centerList, vehicleListByClient }) => {
               </Pressable>
             </>
           )}
+          <View style={styles.inputContainer}>
+            <Pressable
+              onPress={() => setShowDatePicker(true)}
+              style={styles.datePickerButton}
+            >
+              <Text style={styles.datePickerText}>
+                {bookingDate
+                  ? bookingDate.toLocaleString()
+                  : "Chọn ngày và giờ"}
+              </Text>
+            </Pressable>
+            {showDatePicker && (
+              <DateTimePicker
+                value={bookingDate}
+                mode="date"
+                display="default"
+                onChange={onDateChange}
+              />
+            )}
+            {showTimePicker && (
+              <DateTimePicker
+                value={bookingDate}
+                mode="time"
+                display="default"
+                onChange={onTimeChange}
+              />
+            )}
+          </View>
           <Pressable style={styles.button} onPress={handleSignup}>
             <Text style={styles.buttonText}>Tạo lịch</Text>
           </Pressable>
@@ -452,6 +499,18 @@ const styles = StyleSheet.create({
   },
   picker: {
     flex: 1,
+  },
+  datePickerButton: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+    paddingVertical: 10,
+    backgroundColor: COLORS.white,
+    borderRadius: 10,
+  },
+  datePickerText: {
+    fontSize: 16,
+    color: COLORS.black,
   },
   button: {
     backgroundColor: "red",
