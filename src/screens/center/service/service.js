@@ -32,7 +32,7 @@ const Service = () => {
       return unsubscribe;
     }, [navigation]);
   return (
-    <ScrollView style={{ marginTop: 50 }}>
+    <ScrollView style={{ marginTop: 20 }}>
       <Text style={{ padding: 10, fontSize: 18, fontWeight: "bold" }}>
         Danh sách dịch vụ
       </Text>
@@ -82,10 +82,23 @@ const Service = () => {
           flexWrap: "wrap",
         }}
       >
-        {serviceList.length > 0 &&
+        {serviceList.length > 0 ? (
           serviceList.map((item, index) => (
             <ServiceItem item={item} key={index} />
-          ))}
+          ))
+        ) : (
+          <View style={{ justifyContent: "center", alignItems: "center" }}>
+            <Text
+              style={{
+                color: "black",
+                fontSize: 15,
+                fontWeight: "500",
+              }}
+            >
+              không có dịch vụ
+            </Text>
+          </View>
+        )}
       </View>
     </ScrollView>
   );

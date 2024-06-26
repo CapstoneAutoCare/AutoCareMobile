@@ -50,7 +50,7 @@ const UserProfile = ({ item }) => {
       <Pressable
         onPress={() =>
           navigation.navigate("STAFF_DETAIL", {
-            staffCareId: item.staffCareId,
+            staffCareId: item.technicianId,
           })
         }
         style={{

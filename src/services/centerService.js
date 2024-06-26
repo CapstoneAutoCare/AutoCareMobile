@@ -26,15 +26,15 @@ export const centerService = {
     return axiosClient.get(url);
   },
   getListStaff: () => {
-    const url = `/StaffCares/GetAll`;
+    const url = `/Technicians/GetAll`;
     return axiosClient.get(url);
   },
   postStaff: (data) => {
-    const url = `/StaffCares/Post`;
+    const url = `/Technicians/Post`;
     return axiosClient.post(url, data);
   },
   getListStaffById: (id) => {
-    const url = `/StaffCares/GetById?id=${id}`;
+    const url = `/Technicians/GetById?id=${id}`;
     return axiosClient.get(url);
   },
 };

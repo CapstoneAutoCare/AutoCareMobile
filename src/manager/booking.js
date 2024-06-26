@@ -227,7 +227,7 @@ const Booking = () => {
                   fontWeight: "500",
                 }}
               >
-                không có lịch đặt xe nào
+                không có lịch đặt xe
               </Text>
             </View>
           )}

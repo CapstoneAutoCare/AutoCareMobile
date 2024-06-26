@@ -84,7 +84,7 @@ const CenterTabNavigator = ({ authenticated }) => {
           },
         }}
       />
-      <Drawer.Screen
+      {/* <Drawer.Screen
         name="CENTER_CAR"
         component={ListCar}
         options={{
@@ -93,7 +93,7 @@ const CenterTabNavigator = ({ authenticated }) => {
             return <FontAwesome name="car" size={22} color={color} />;
           },
         }}
-      />
+      /> */}
       <Drawer.Screen
         name="STAFF_NAVIGATOR"
         children={() => <StaffNavigator authenticated={authenticated} />}
@@ -104,7 +104,7 @@ const CenterTabNavigator = ({ authenticated }) => {
           },
         }}
       />
-      <Drawer.Screen
+      {/* <Drawer.Screen
         name="CSKH"
         component={Staff}
         options={{
@@ -113,7 +113,7 @@ const CenterTabNavigator = ({ authenticated }) => {
             return <FontAwesome name="user-md" size={32} color={color} />;
           },
         }}
-      />
+      /> */}
       <Drawer.Screen
         name="LOGOUT"
         component={Logout}
