@@ -29,7 +29,7 @@ const Booking = () => {
     fetch();
   }, []);
   return (
-    <ScrollView style={{ marginTop: 50 }}>
+    <ScrollView style={{ marginTop: 20 }}>
       <View style={{ padding: 12, backgroundColor: "#DDD" }}>
         <View
           style={{
@@ -42,7 +42,7 @@ const Booking = () => {
         </View>
 
         <View>
-          {bookingList.length > 0 &&
+          {bookingList.length > 0 ? (
             bookingList.map((item, index) => (
               <Pressable
                 style={{
@@ -217,7 +217,20 @@ const Booking = () => {
                   </View>
                 </View>
               </Pressable>
-            ))}
+            ))
+          ) : (
+            <View style={{ justifyContent: "center", alignItems: "center" }}>
+              <Text
+                style={{
+                  color: "black",
+                  fontSize: 15,
+                  fontWeight: "500",
+                }}
+              >
+                không có lịch đặt xe nào
+              </Text>
+            </View>
+          )}
         </View>
       </View>
     </ScrollView>

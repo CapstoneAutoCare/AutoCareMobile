@@ -10,29 +10,38 @@ import {
 import { useNavigation, useRoute } from "@react-navigation/native";
 import Icon from "react-native-vector-icons/MaterialIcons";
 import { useAppDispatch } from "../../app/hooks";
-import { logout } from "../../features/userSlice";
+import { getProfile, logout } from "../../features/userSlice";
 import { useSelector } from "react-redux";
 const SettingScreen = () => {
   const dispatch = useAppDispatch();
   const navigation = useNavigation();
-  // const { profile } = useSelector((state) => state.user);
-  const profile = {
-    accountId: "17cd9ff4-f95b-4db7-92a1-f6cb2d60e7bf",
-    clientId: "d3ea88fa-3fe2-4ed1-b8c2-f51bf138aa0e",
-    email: "c1",
-    password: "1",
-    role: "CLIENT",
-    gender: "1",
-    phone: "1",
-    createdDate: "2024-06-17T16:45:00.8971832",
-    logo: "https://i.pinimg.com/736x/0d/64/98/0d64989794b1a4c9d89bff571d3d5842.jpg",
-    firstName: "P",
-    lastName: "D",
-    address: "98C Đ. Hồ Bá Phấn, Phước Long A, Thủ Đức, Thành phố Hồ Chí Minh",
-    birthday: "2024-06-17T16:45:00.8971825",
-    status: "ACTIVE",
-  };
-  console.log("🚀 ~ SettingScreen ~ profile:", profile)
+  const { profile } = useSelector((state) => state.user);
+  // const profile = {
+  //   accountId: "17cd9ff4-f95b-4db7-92a1-f6cb2d60e7bf",
+  //   clientId: "d3ea88fa-3fe2-4ed1-b8c2-f51bf138aa0e",
+  //   email: "c1",
+  //   password: "1",
+  //   role: "CLIENT",
+  //   gender: "1",
+  //   phone: "1",
+  //   createdDate: "2024-06-17T16:45:00.8971832",
+  //   logo: "https://i.pinimg.com/736x/0d/64/98/0d64989794b1a4c9d89bff571d3d5842.jpg",
+  //   firstName: "P",
+  //   lastName: "D",
+  //   address: "98C Đ. Hồ Bá Phấn, Phước Long A, Thủ Đức, Thành phố Hồ Chí Minh",
+  //   birthday: "2024-06-17T16:45:00.8971825",
+  //   status: "ACTIVE",
+  // };
+      const fetchGetListBooking = async () => {
+        await dispatch(getProfile());
+      };
+  useEffect(() => {
+    const unsubscribe = navigation.addListener("focus", () => {
+      fetchGetListBooking();
+    });
+    fetchGetListBooking();
+    return unsubscribe;
+  }, [navigation]);
   const handleLogout = async () => {
     await dispatch(logout());
     navigation.navigate("Login");
@@ -51,48 +60,40 @@ const SettingScreen = () => {
         {profile && (
           <>
             <View style={styles.profileContainer}>
-              <Image source={{ uri: profile.logo }} style={styles.avatar} />
+              <Image source={{ uri: profile.Logo }} style={styles.avatar} />
               <Text style={styles.profileName}>
-                {profile.firstName} {profile.lastName}
+                {profile.FirstName} {profile.LastName}
               </Text>
             </View>
             <View style={styles.card}>
-              {/* <Text style={styles.profileItem}>
-                <Text style={styles.boldText}>ID tài khoản:</Text>{" "}
-                {profile.accountId}
+              <Text style={styles.profileItem}>
+                <Text style={styles.boldText}>Email:</Text> {profile.Email}
               </Text>
               <Text style={styles.profileItem}>
-                <Text style={styles.boldText}>ID khách hàng:</Text>{" "}
-                {profile.clientId}
-              </Text> */}
-              <Text style={styles.profileItem}>
-                <Text style={styles.boldText}>Email:</Text> {profile.email}
-              </Text>
-              <Text style={styles.profileItem}>
-                <Text style={styles.boldText}>Role:</Text> {profile.role}
+                <Text style={styles.boldText}>Role:</Text> {profile.Role}
               </Text>
               <Text style={styles.profileItem}>
                 <Text style={styles.boldText}>Giới tính:</Text>{" "}
-                {profile.gender === "1" ? "Nam" : "Nữ"}
+                {profile.Gender === "1" ? "Nam" : "Nữ"}
               </Text>
               <Text style={styles.profileItem}>
                 <Text style={styles.boldText}>Số điện thoại:</Text>{" "}
-                {profile.phone}
+                {profile.Phone}
               </Text>
               <Text style={styles.profileItem}>
                 <Text style={styles.boldText}>Ngày tạo:</Text>{" "}
-                {new Date(profile.createdDate).toLocaleDateString()}
+                {new Date(profile.CreatedDate).toLocaleDateString()}
               </Text>
               <Text style={styles.profileItem}>
-                <Text style={styles.boldText}>Địa chỉ:</Text> {profile.address}
+                <Text style={styles.boldText}>Địa chỉ:</Text> {profile.Address}
               </Text>
               <Text style={styles.profileItem}>
                 <Text style={styles.boldText}>Ngày sinh:</Text>{" "}
-                {new Date(profile.birthday).toLocaleDateString()}
+                {new Date(profile.Birthday).toLocaleDateString()}
               </Text>
               <Text style={styles.profileItem}>
                 <Text style={styles.boldText}>Trạng thái:</Text>{" "}
-                {profile.status}
+                {profile.Status}
               </Text>
             </View>
           </>
