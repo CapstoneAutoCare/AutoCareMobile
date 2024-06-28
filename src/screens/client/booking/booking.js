@@ -31,10 +31,13 @@ const Booking = () => {
   return (
     <ScrollView style={{ marginTop: 50 }}>
       <View style={{ padding: 12 }}>
-        <View
-        >
+        <View>
           <Pressable
-            onPress={() => navigation.navigate("PostBooking")}
+            onPress={() =>
+              navigation.navigate("PostBooking", {
+                maintenanceCenterId: "",
+              })
+            }
             style={{
               backgroundColor: "#52c41a",
               padding: 10,

@@ -49,9 +49,12 @@ const UserProfile = ({ item }) => {
 
       <Pressable
         onPress={() =>
-          navigation.navigate("STAFF_DETAIL", {
-            staffCareId: item.technicianId,
-          })
+          navigation.navigate(
+            `${item?.technicianId ? "STAFF_DETAIL" : "CARE_DETAIL"}`,
+            {
+              staffCareId: item?.technicianId || item?.customerCareId,
+            }
+          )
         }
         style={{
           marginLeft: "auto",

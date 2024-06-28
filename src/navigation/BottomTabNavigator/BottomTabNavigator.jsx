@@ -14,6 +14,7 @@ import Booking from "../../screens/client/booking/booking";
 import BookingNavigator from "./TabNavigator/BookingNavigator";
 import VehicleNavigator from "./TabNavigator/VehicleNavigator";
 import MaintenanceCenters from "../../screens/client/maintenanceCenters/maintenanceCenters";
+import CentersNavigator from "./TabNavigator/CentersNavigator";
 
 const Stack = createBottomTabNavigator();
 const BottomTabNavigator = ({ authenticated }) => {
@@ -70,7 +71,7 @@ const BottomTabNavigator = ({ authenticated }) => {
       />
       <Stack.Screen
         name={"MAINTENANCE_CENTER"}
-        component={MaintenanceCenters}
+        children={() => <CentersNavigator authenticated={authenticated} />}
         options={{
           headerShown: false,
           title: "Trung tâm",

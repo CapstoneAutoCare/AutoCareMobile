@@ -9,9 +9,10 @@ import CreateBookingHaveItem from "./createBookingHaveItem";
 import { getListCenter } from "../../../app/Center/actions";
 import { getListVehicleByClient } from "../../../app/Vehicle/actions";
 
-const PostBooking = () => {
+const PostBooking = ({ route }) => {
   const navigation = useNavigation();
   const dispatch = useDispatch();
+  const { maintenanceCenterId } = route.params;
   const Tab = createMaterialTopTabNavigator();
   const { centerList } = useSelector((state) => state.center);
   const { vehicleListByClient } = useSelector((state) => state.vehicle);
@@ -59,6 +60,7 @@ const PostBooking = () => {
           component={() => (
             <CreateBooking
               centerList={centerList}
+              maintenanceCenterId={maintenanceCenterId}
               vehicleListByClient={vehicleListByClient}
             />
           )}
@@ -68,6 +70,7 @@ const PostBooking = () => {
           component={() => (
             <CreateBookingHaveItem
               centerList={centerList}
+              maintenanceCenterId={maintenanceCenterId}
               vehicleListByClient={vehicleListByClient}
             />
           )}

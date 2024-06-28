@@ -11,17 +11,17 @@ import { useSelector, useDispatch } from "react-redux";
 import { AntDesign } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import moment from "moment";
-import { getListStaffById } from "../../../app/Center/actions";
+import { getListCareById } from "../../../app/Center/actions";
 
-const StaffDetail = ({ route }) => {
+const CareDetail = ({ route }) => {
   const { staffCareId } = route.params;
   const navigation = useNavigation();
   const dispatch = useDispatch();
-  const { staffById } = useSelector((state) => state.center);
+  const { careById } = useSelector((state) => state.center);
 
   useEffect(() => {
     const fetchGetListSparePart = async () => {
-      await dispatch(getListStaffById(staffCareId));
+      await dispatch(getListCareById(staffCareId));
     };
     fetchGetListSparePart();
   }, [staffCareId]);
@@ -39,25 +39,25 @@ const StaffDetail = ({ route }) => {
         <Text style={styles.title}>Chi tiết nhân viên</Text>
       </View>
 
-      {staffById && (
+      {careById && (
         <View style={styles.content}>
-          <Image style={styles.image} source={{ uri: staffById.logo }} />
+          <Image style={styles.image} source={{ uri: careById.logo }} />
 
           <Text style={styles.name}>
-            {staffById.firstName} {staffById.lastName}
+            {careById.firstName} {careById.lastName}
           </Text>
 
-          <Text style={styles.status}>email: {staffById.email}</Text>
+          <Text style={styles.status}>email: {careById.email}</Text>
 
           <Text style={styles.centerName}>
-            số điên thoại: {staffById.phone}
+            số điên thoại: {careById.phone}
           </Text>
           <Text style={styles.centerName}>
-            ngày sinh: {moment(staffById?.birthday).format("DD/MM/YYYY")}
+            ngày sinh: {moment(careById?.birthday).format("DD/MM/YYYY")}
           </Text>
-          <Text style={styles.status}>địa chỉ : {staffById.address}</Text>
+          <Text style={styles.status}>địa chỉ : {careById.address}</Text>
           <Text style={styles.createdDate}>
-            Ngày tạo: {moment(staffById.createdDate).format("DD/MM/YYYY HH:mm")}
+            Ngày tạo: {moment(careById.createdDate).format("DD/MM/YYYY HH:mm")}
           </Text>
         </View>
       )}
@@ -122,4 +122,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default StaffDetail;
+export default CareDetail;

@@ -143,6 +143,26 @@ const MaintenanceCenters = () => {
                     <View style={{ marginBottom: 20 }} />
                   </View>
                 </View>
+                <View style={{ paddingBottom: 12 }}>
+                  <Pressable
+                    onPress={() =>
+                      navigation.navigate("PostBooking", {
+                        maintenanceCenterId: item?.maintenanceCenterId,
+                      })
+                    }
+                    style={{
+                      backgroundColor: "#52c41a",
+                      padding: 10,
+                      borderRadius: 10,
+                      justifyContent: "center",
+                      alignItems: "center",
+                      marginHorizontal: 10,
+                      marginTop: 10,
+                    }}
+                  >
+                    <Text style={{ color: "white" }}>+ Lên lịch sửa xe</Text>
+                  </Pressable>
+                </View>
               </Pressable>
             ))}
         </View>

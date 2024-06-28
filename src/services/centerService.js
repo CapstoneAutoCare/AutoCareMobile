@@ -37,4 +37,16 @@ export const centerService = {
     const url = `/Technicians/GetById?id=${id}`;
     return axiosClient.get(url);
   },
+  getListCare: () => {
+    const url = `/CustomerCares/GetAll`;
+    return axiosClient.get(url);
+  },
+  postCare: (data) => {
+    const url = `/CustomerCares/Post`;
+    return axiosClient.post(url, data);
+  },
+  getListCareById: (id) => {
+    const url = `/CustomerCares/GetById?id=${id}`;
+    return axiosClient.get(url);
+  },
 };

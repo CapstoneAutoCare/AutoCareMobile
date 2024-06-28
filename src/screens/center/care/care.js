@@ -11,15 +11,15 @@ import {
 } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigation } from "@react-navigation/native";
-import { getListStaff } from "../../../app/Center/actions";
+import { getListCare } from "../../../app/Center/actions";
 import UserProfile from "../../../components/UserProfile";
 
-const Staff = () => {
+const Care = () => {
   const navigation = useNavigation();
   const dispatch = useDispatch();
-  const { staffList } = useSelector((state) => state.center);
+  const { careList } = useSelector((state) => state.center);
   const fetchGetListSparePart = async () => {
-    await dispatch(getListStaff());
+    await dispatch(getListCare());
   };
 
   useEffect(() => {
@@ -32,7 +32,7 @@ const Staff = () => {
   return (
     <ScrollView style={{ marginTop: 20 }}>
       <Pressable
-        onPress={() => navigation.navigate("STAFF_POST")}
+        onPress={() => navigation.navigate("CARE_POST")}
         style={{
           backgroundColor: "#52c41a",
           padding: 10,
@@ -46,10 +46,10 @@ const Staff = () => {
         <Text style={{ color: "white" }}>+ Thêm nhân viên</Text>
       </Pressable>
       <Text style={{ padding: 10, fontSize: 18, fontWeight: "bold" }}>
-        Danh sách nhân viên kĩ thuật
+        Danh sách nhân viên CSKH
       </Text>
       <FlatList
-        data={staffList}
+        data={careList}
         columnWrapperStyle={{ justifyContent: "space-between" }}
         numColumns={2}
         keyExtractor={(item) => item._id}
@@ -59,6 +59,6 @@ const Staff = () => {
   );
 };
 
-export default Staff;
+export default Care;
 
 const styles = StyleSheet.create({});

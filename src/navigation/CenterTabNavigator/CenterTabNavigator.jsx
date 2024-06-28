@@ -15,6 +15,7 @@ import Logout from "../../manager/logout";
 import SparePartNavigator from "./TabNavigator/SparePartNavigator";
 import ServiceNavigator from "./TabNavigator/ServiceNavigator";
 import StaffNavigator from "./TabNavigator/StaffNavigator";
+import CareNavigator from "./TabNavigator/CareNavigator";
 
 const Drawer = createDrawerNavigator();
 const CenterTabNavigator = ({ authenticated }) => {
@@ -104,16 +105,16 @@ const CenterTabNavigator = ({ authenticated }) => {
           },
         }}
       />
-      {/* <Drawer.Screen
-        name="CSKH"
-        component={Staff}
+      <Drawer.Screen
+        name="CARE_NAVIGATOR"
+        children={() => <CareNavigator authenticated={authenticated} />}
         options={{
           title: "Nhân viên CSKH",
           drawerIcon: (size, color) => {
             return <FontAwesome name="user-md" size={32} color={color} />;
           },
         }}
-      /> */}
+      />
       <Drawer.Screen
         name="LOGOUT"
         component={Logout}

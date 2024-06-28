@@ -113,3 +113,27 @@ export const getListStaffById = createAsyncThunk(
     }
   }
 );
+export const getListCare = createAsyncThunk(
+  "center/getListCare",
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await centerService.getListCare();
+      return response.data;
+    } catch (error) {
+      console.log(error);
+      return rejectWithValue(error);
+    }
+  }
+);
+export const getListCareById = createAsyncThunk(
+  "center/getListCareById",
+  async (id, { rejectWithValue }) => {
+    try {
+      const response = await centerService.getListCareById(id);
+      return response.data;
+    } catch (error) {
+      console.log(error);
+      return rejectWithValue(error);
+    }
+  }
+);

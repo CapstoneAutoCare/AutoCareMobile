@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -14,15 +14,18 @@ import axios from "axios";
 import { useNavigation } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-const CreateBooking = ({ centerList, vehicleListByClient }) => {
+const CreateBooking = ({
+  centerList,
+  maintenanceCenterId,
+  vehicleListByClient,
+}) => {
   const navigation = useNavigation();
   const [vehicle, setVehicle] = useState("");
-  const [maintenanceCenter, setMaintenanceCenter] = useState("");
+  const [maintenanceCenter, setMaintenanceCenter] = useState(maintenanceCenterId || "");
   const [note, setNote] = useState("");
   const [bookingDate, setBookingDate] = useState(new Date());
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [showTimePicker, setShowTimePicker] = useState(false);
-
   const handleSignup = async () => {
     try {
       if (!note || !maintenanceCenter) {
