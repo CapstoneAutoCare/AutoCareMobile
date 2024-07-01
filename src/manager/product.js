@@ -27,12 +27,13 @@ const Product = () => {
     await dispatch(getListSparePart());
   };
 
-  useEffect(() => {
-    const fetch = async () => {
-      await fetchGetListSparePart();
-    };
-    fetch();
-  }, []);
+    useEffect(() => {
+      const unsubscribe = navigation.addListener("focus", () => {
+        fetchGetListSparePart();
+      });
+      fetchGetListSparePart();
+      return unsubscribe;
+    }, [navigation]);
   return (
     <ScrollView style={{ marginTop: 50 }}>
       <Text style={{ padding: 10, fontSize: 18, fontWeight: "bold" }}>
@@ -46,7 +47,7 @@ const Product = () => {
         }}
       >
         <Pressable
-          onPress={() => navigation.navigate("AddProduct")}
+          onPress={() => navigation.navigate("PRODUCT_POST")}
           style={{
             backgroundColor: "#52c41a",
             padding: 10,

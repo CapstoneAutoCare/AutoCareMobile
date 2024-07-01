@@ -21,6 +21,14 @@ export const centerService = {
     const url = `/MaintenanceServiceCosts/PatchStatus?id=${id}&status=ACTIVE`;
     return axiosClient.patch(url);
   },
+  postSparePartCost: (data) => {
+    const url = `/SparePartsItemCosts/Post`;
+    return axiosClient.post(url, data);
+  },
+  patchSparePartCost: (id) => {
+    const url = `/SparePartsItemCosts/PatchStatus?id=${id}&status=ACTIVE`;
+    return axiosClient.patch(url);
+  },
   getListServiceById: (id) => {
     const url = `/MaintenanceServices/GetById?id=${id}`;
     return axiosClient.get(url);

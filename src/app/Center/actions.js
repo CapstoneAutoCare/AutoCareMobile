@@ -76,6 +76,21 @@ export const postServiceCost = createAsyncThunk(
     }
   }
 );
+export const postSparePartCost = createAsyncThunk(
+  "center/postSparePartCost",
+  async (data, { rejectWithValue }) => {
+    try {
+      const responseId = await centerService.postSparePartCost(data);
+      const response = await centerService.patchSparePartCost(
+        responseId.data.sparePartsItemCostId
+      );
+      return response;
+    } catch (error) {
+      console.log(error);
+      return rejectWithValue(error);
+    }
+  }
+);
 export const patchServiceCost = createAsyncThunk(
   "center/patchServiceCost",
   async (id, { rejectWithValue }) => {

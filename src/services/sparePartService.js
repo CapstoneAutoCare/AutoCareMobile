@@ -2,7 +2,7 @@ import axiosClient from "./axiosClient";
 
 export const sparePartService = {
   getListSparePart: () => {
-    const url = `/SparePartItem/GetAll`;
+    const url = `/SparePartItem/GetListByCenter`;
     return axiosClient.get(url);
   },
   getSparePartById: (id) => {
