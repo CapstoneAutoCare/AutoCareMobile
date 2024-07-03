@@ -37,7 +37,7 @@ const ServiceItem = ({ item }) => {
           flexDirection: "row",
           alignItems: "center",
           justifyContent: "center",
-          gap: "10px",
+          marginHorizontal: 5, // Thay vì sử dụng gap, sử dụng marginHorizontal
         }}
       >
         <Pressable
