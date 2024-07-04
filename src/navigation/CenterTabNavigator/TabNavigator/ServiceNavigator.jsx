@@ -4,6 +4,7 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import Service from "../../../screens/center/service/service";
 import ServiceDetail from "../../../screens/center/service/serviceDetail";
 import ServicePost from "../../../screens/center/service/servicePost";
+import ServicePut from './../../../screens/center/service/servicePut';
 const Stack = createNativeStackNavigator();
 const ServiceNavigator = ({ authenticated }) => {
   return (
@@ -16,6 +17,11 @@ const ServiceNavigator = ({ authenticated }) => {
       <Stack.Screen
         name={"SERVICE_POST"}
         component={ServicePost}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name={"SERVICE_PUT"}
+        component={ServicePut}
         options={{ headerShown: false }}
       />
       <Stack.Screen

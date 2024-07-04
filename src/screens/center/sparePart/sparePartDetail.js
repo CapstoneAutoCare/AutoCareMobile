@@ -12,6 +12,7 @@ import { AntDesign } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import { getSparePartById } from "../../../app/SparePart/actions";
 import moment from "moment";
+import { deleteSparePartById } from "../../../app/Center/actions";
 
 const ProductDetail = ({ route }) => {
   const { sparePartsItemId } = route.params;
@@ -29,6 +30,11 @@ const ProductDetail = ({ route }) => {
   const handleNavigateBack = () => {
     navigation.goBack();
   };
+    const handleDeleteSparePart = async () => {
+      await dispatch(deleteSparePartById(sparePartsItemId));
+      alert("xóa phụ tùng thành công!");
+      navigation.goBack();
+    };
 
   return (
     <ScrollView style={styles.container}>
@@ -65,6 +71,42 @@ const ProductDetail = ({ route }) => {
           </Text>
         </View>
       )}
+      <View
+        style={{
+          flexDirection: "row",
+          alignItems: "center",
+          justifyContent: "center",
+        }}
+      >
+        <Pressable
+          // onPress={() => navigation.navigate("SERVICE_POST")}
+          style={{
+            backgroundColor: "#1677ff",
+            padding: 10,
+            borderRadius: 10,
+            justifyContent: "center",
+            alignItems: "center",
+            marginHorizontal: 10,
+            marginTop: 10,
+          }}
+        >
+          <Text style={{ color: "white" }}>sửa phụ tùng</Text>
+        </Pressable>
+        <Pressable
+          onPress={handleDeleteSparePart}
+          style={{
+            backgroundColor: "#f5222d",
+            padding: 10,
+            borderRadius: 10,
+            justifyContent: "center",
+            alignItems: "center",
+            marginHorizontal: 10,
+            marginTop: 10,
+          }}
+        >
+          <Text style={{ color: "white" }}>xóa phụ tùng</Text>
+        </Pressable>
+      </View>
     </ScrollView>
   );
 };

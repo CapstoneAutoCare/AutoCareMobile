@@ -11,7 +11,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { AntDesign } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import moment from "moment";
-import { getListServiceById } from "../../../app/Center/actions";
+import { deleteServiceById, getListServiceById } from "../../../app/Center/actions";
 
 const ServiceDetail = ({ route }) => {
   const { maintenanceServiceId } = route.params;
@@ -29,6 +29,11 @@ const ServiceDetail = ({ route }) => {
   const handleNavigateBack = () => {
     navigation.goBack();
   };
+  const handleDeleteService = async () => {
+    await dispatch(deleteServiceById(maintenanceServiceId));
+     alert("xóa dịch vụ thành công!");
+    navigation.goBack();
+  };
 
   return (
     <ScrollView style={styles.container}>
@@ -40,7 +45,7 @@ const ServiceDetail = ({ route }) => {
       </View>
 
       {serviceById && (
-        <View style={styles.content}>
+        <View style={styles.card}>
           <Image style={styles.image} source={{ uri: serviceById.image }} />
 
           <Text style={styles.name}>{serviceById.maintenanceServiceName}</Text>
@@ -66,6 +71,49 @@ const ServiceDetail = ({ route }) => {
           </Text>
         </View>
       )}
+      <View
+        style={{
+          flexDirection: "row",
+          alignItems: "center",
+          justifyContent: "center",
+        }}
+      >
+        <Pressable
+          onPress={() =>
+            navigation.navigate("SERVICE_PUT", {
+              maintenanceServiceId: maintenanceServiceId,
+              serviceName: serviceById.maintenanceServiceName,
+              image: serviceById.image,
+              status: serviceById.status,
+            })
+          }
+          style={{
+            backgroundColor: "#1677ff",
+            padding: 10,
+            borderRadius: 10,
+            justifyContent: "center",
+            alignItems: "center",
+            marginHorizontal: 10,
+            marginTop: 10,
+          }}
+        >
+          <Text style={{ color: "white" }}>sửa dịch vụ</Text>
+        </Pressable>
+        <Pressable
+          onPress={handleDeleteService}
+          style={{
+            backgroundColor: "#f5222d",
+            padding: 10,
+            borderRadius: 10,
+            justifyContent: "center",
+            alignItems: "center",
+            marginHorizontal: 10,
+            marginTop: 10,
+          }}
+        >
+          <Text style={{ color: "white" }}>xóa dịch vụ</Text>
+        </Pressable>
+      </View>
     </ScrollView>
   );
 };
@@ -124,6 +172,22 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: "#666666",
     marginTop: 12,
+  },
+  card: {
+    backgroundColor: "white",
+    alignItems: "center",
+    padding: 20,
+    margin: 40,
+    borderRadius: 10,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
+    marginBottom: 20,
   },
 });
 

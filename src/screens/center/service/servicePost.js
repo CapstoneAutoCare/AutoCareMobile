@@ -41,11 +41,13 @@ const ServicePost = () => {
         response.data &&
         response.data.maintenanceServiceId
       ) {
-        await dispatch(postServiceCost({
-          acturalCost: acturalCost,
-          note: "string",
-          maintenanceServiceId: response.data.maintenanceServiceId,
-        }));
+        await dispatch(
+          postServiceCost({
+            acturalCost: acturalCost,
+            note: "string",
+            maintenanceServiceId: response.data.maintenanceServiceId,
+          })
+        );
         setLoad(false);
         alert("Tạo dịch vụ thành công!");
         navigation.navigate("SERVICE");
@@ -104,7 +106,7 @@ const ServicePost = () => {
           />
         </View>
         {load ? (
-          <Pressable style={styles.button} >
+          <Pressable style={styles.button}>
             <Text style={styles.buttonText}>Đang tạo ...</Text>
           </Pressable>
         ) : (

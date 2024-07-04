@@ -152,3 +152,27 @@ export const getListCareById = createAsyncThunk(
     }
   }
 );
+export const deleteServiceById = createAsyncThunk(
+  "center/deleteServiceById",
+  async (id, { rejectWithValue }) => {
+    try {
+      const response = await centerService.deleteServiceById(id);
+      return response.data;
+    } catch (error) {
+      console.log(error);
+      return rejectWithValue(error);
+    }
+  }
+);
+export const deleteSparePartById = createAsyncThunk(
+  "center/deleteSparePartById",
+  async (id, { rejectWithValue }) => {
+    try {
+      const response = await centerService.deleteSparePartById(id);
+      return response.data;
+    } catch (error) {
+      console.log(error);
+      return rejectWithValue(error);
+    }
+  }
+);

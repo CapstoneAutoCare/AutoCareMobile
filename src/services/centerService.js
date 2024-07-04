@@ -57,4 +57,12 @@ export const centerService = {
     const url = `/CustomerCares/GetById?id=${id}`;
     return axiosClient.get(url);
   },
+  deleteServiceById: (id) => {
+    const url = `/MaintenanceServices/Remove?id=${id}`;
+    return axiosClient.delete(url);
+  },
+  deleteSparePartById: (id) => {
+    const url = `/SparePartItem/Remove?id=${id}`;
+    return axiosClient.delete(url);
+  },
 };
