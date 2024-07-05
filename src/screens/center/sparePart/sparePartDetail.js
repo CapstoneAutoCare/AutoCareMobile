@@ -45,30 +45,31 @@ const ProductDetail = ({ route }) => {
         <Text style={styles.title}>Chi tiết sản phẩm</Text>
       </View>
       {sparePartById && (
-        <View style={styles.content}>
+        <View style={styles.card}>
           <Image style={styles.image} source={{ uri: sparePartById.image }} />
 
-          <Text style={styles.name}>{sparePartById.sparePartsItemName}</Text>
+          <View style={{ alignItems: "left" }}>
+            <Text style={styles.name}>{sparePartById.sparePartsItemName}</Text>
 
-          <Text style={styles.status}>Trạng thái: {sparePartById.status}</Text>
-
-          <Text style={styles.centerName}>
-            Đơn vị bảo trì: {sparePartById.maintenanceCenterName}
-          </Text>
-
-          {sparePartById.responseSparePartsItemCosts.length > 0 && (
-            <Text style={styles.cost}>
-              Giá: {sparePartById.responseSparePartsItemCosts[0].acturalCost}{" "}
-              VND
+            <Text style={styles.status}>
+              Trạng thái: {sparePartById.status}
             </Text>
-          )}
 
-          {/* Additional fields can be rendered similarly */}
+            <Text style={styles.centerName}>
+              Đơn vị bảo trì: {sparePartById.maintenanceCenterName}
+            </Text>
 
-          <Text style={styles.createdDate}>
-            Ngày tạo:{" "}
-            {moment(sparePartById.createdDate).format("DD/MM/YYYY HH:mm")}
-          </Text>
+            {sparePartById.responseSparePartsItemCosts.length > 0 && (
+              <Text style={styles.cost}>
+                Giá: {sparePartById.responseSparePartsItemCosts[0].acturalCost}{" "}
+                VND
+              </Text>
+            )}
+            <Text style={styles.createdDate}>
+              Ngày tạo:{" "}
+              {moment(sparePartById.createdDate).format("DD/MM/YYYY HH:mm")}
+            </Text>
+          </View>
         </View>
       )}
       <View
@@ -79,7 +80,14 @@ const ProductDetail = ({ route }) => {
         }}
       >
         <Pressable
-          // onPress={() => navigation.navigate("SERVICE_POST")}
+          onPress={() =>
+            navigation.navigate("PRODUCT_PUT", {
+              sparePartsItemId: sparePartsItemId,
+              sparePartsItemName: sparePartById.sparePartsItemName,
+              image: sparePartById.image,
+              status: sparePartById.status,
+            })
+          }
           style={{
             backgroundColor: "#1677ff",
             padding: 10,
@@ -115,7 +123,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#ffffff",
-    marginTop: 50,
+    marginTop: 10,
   },
   header: {
     flexDirection: "row",
@@ -165,6 +173,22 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: "#666666",
     marginTop: 12,
+  },
+  card: {
+    backgroundColor: "white",
+    alignItems: "center",
+    padding: 20,
+    margin: 40,
+    borderRadius: 10,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
+    marginBottom: 20,
   },
 });
 

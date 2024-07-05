@@ -47,28 +47,31 @@ const ServiceDetail = ({ route }) => {
       {serviceById && (
         <View style={styles.card}>
           <Image style={styles.image} source={{ uri: serviceById.image }} />
-
-          <Text style={styles.name}>{serviceById.maintenanceServiceName}</Text>
-
-          <Text style={styles.status}>Trạng thái: {serviceById.status}</Text>
-
-          <Text style={styles.centerName}>
-            Đơn vị bảo trì: {serviceById.maintenanceCenterName}
-          </Text>
-
-          {serviceById.responseMaintenanceServiceCosts.length > 0 && (
-            <Text style={styles.cost}>
-              Giá: {serviceById.responseMaintenanceServiceCosts[0].acturalCost}{" "}
-              VND
+          <View style={{ alignItems: "left" }}>
+            <Text style={styles.name}>
+              {serviceById.maintenanceServiceName}
             </Text>
-          )}
 
-          {/* Additional fields can be rendered similarly */}
+            <Text style={styles.status}>Trạng thái: {serviceById.status}</Text>
 
-          <Text style={styles.createdDate}>
-            Ngày tạo:{" "}
-            {moment(serviceById.createdDate).format("DD/MM/YYYY HH:mm")}
-          </Text>
+            <Text style={styles.centerName}>
+              Đơn vị bảo trì: {serviceById.maintenanceCenterName}
+            </Text>
+
+            {serviceById.responseMaintenanceServiceCosts.length > 0 && (
+              <Text style={styles.cost}>
+                Giá:{" "}
+                {serviceById.responseMaintenanceServiceCosts[0].acturalCost} VND
+              </Text>
+            )}
+
+            {/* Additional fields can be rendered similarly */}
+
+            <Text style={styles.createdDate}>
+              Ngày tạo:{" "}
+              {moment(serviceById.createdDate).format("DD/MM/YYYY HH:mm")}
+            </Text>
+          </View>
         </View>
       )}
       <View
@@ -122,7 +125,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#ffffff",
-    marginTop: 50,
+    marginTop: 10,
   },
   header: {
     flexDirection: "row",

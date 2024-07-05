@@ -4,6 +4,7 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import ProductDetail from "../../../screens/center/sparePart/sparePartDetail";
 import Product from "../../../manager/product";
 import SparePartPost from "../../../screens/center/sparePart/sparePartPost";
+import SparePartPut from './../../../screens/center/sparePart/sparePartPut';
 const Stack = createNativeStackNavigator();
 const SparePartNavigator = ({ authenticated }) => {
   return (
@@ -16,6 +17,11 @@ const SparePartNavigator = ({ authenticated }) => {
       <Stack.Screen
         name="PRODUCT_POST"
         component={SparePartPost}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="PRODUCT_PUT"
+        component={SparePartPut}
         options={{ headerShown: false }}
       />
       <Stack.Screen
