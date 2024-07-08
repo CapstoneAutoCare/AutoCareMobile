@@ -9,6 +9,10 @@ export const centerService = {
     const url = `/MaintenanceServices/GetListByCenter`;
     return axiosClient.get(url);
   },
+  getServiceByCenter: (id) => {
+    const url = `/MaintenanceServiceCosts/GetListByClient?centerId=${id}`;
+    return axiosClient.get(url);
+  },
   postService: (data) => {
     const url = `/MaintenanceServices/Post`;
     return axiosClient.post(url, data);
@@ -64,5 +68,9 @@ export const centerService = {
   deleteSparePartById: (id) => {
     const url = `/SparePartItem/Remove?id=${id}`;
     return axiosClient.delete(url);
+  },
+  getCenterById: (id) => {
+    const url = `/MaintenanceCenters/GetById?id=${id}`;
+    return axiosClient.get(url);
   },
 };

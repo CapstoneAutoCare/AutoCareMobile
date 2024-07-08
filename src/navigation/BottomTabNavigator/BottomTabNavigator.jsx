@@ -51,7 +51,7 @@ const BottomTabNavigator = ({ authenticated }) => {
         name={ROUTES.BOOKING_NAVIGATOR}
         children={() => <BookingNavigator authenticated={authenticated} />}
         options={{
-          headerShown: false,
+          // headerShown: false,
           title: "Lịch đặt",
           tabBarIcon: ({ size, color }) => {
             return <Entypo name="calendar" size={28} color={color} />;
@@ -73,7 +73,7 @@ const BottomTabNavigator = ({ authenticated }) => {
         name={"MAINTENANCE_CENTER"}
         children={() => <CentersNavigator authenticated={authenticated} />}
         options={{
-          headerShown: false,
+          // headerShown: false,
           title: "Trung tâm",
           tabBarIcon: ({ size, color }) => {
             return (

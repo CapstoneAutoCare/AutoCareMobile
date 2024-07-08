@@ -16,13 +16,19 @@ const ProductItem = ({ item }) => {
       />
 
       <Text numberOfLines={1} style={{ width: 150, marginTop: 10 }}>
-        {item?.sparePartsItemName}
+        {item?.maintenanceSparePartInfoName
+          ? item?.maintenanceSparePartInfoName
+          : item?.sparePartsItemName}
       </Text>
 
       <View>
         <Text style={{ fontSize: 15, fontWeight: "bold" }}>
           giá:{" "}
-          {item?.responseSparePartsItemCosts.length > 0
+          {item?.totalCost
+            ? item?.totalCost
+            : item?.acturalCost
+            ? item?.acturalCost
+            : item?.responseSparePartsItemCosts.length > 0
             ? item?.responseSparePartsItemCosts[0].acturalCost
             : "trống"}{" "}
           VND
@@ -31,33 +37,34 @@ const ProductItem = ({ item }) => {
           status: {item?.status}
         </Text>
       </View>
-
-      <View
-        style={{
-          flexDirection: "row",
-          alignItems: "center",
-          justifyContent: "center",
-          marginHorizontal: 5, // Thay vì sử dụng gap, sử dụng marginHorizontal
-        }}
-      >
-        <Pressable
+      {item?.sparePartsItemId && (
+        <View
           style={{
-            backgroundColor: "#0066b2",
-            padding: 10,
-            borderRadius: 10,
-            justifyContent: "center",
+            flexDirection: "row",
             alignItems: "center",
-            marginTop: 10,
+            justifyContent: "center",
+            marginHorizontal: 5, // Thay vì sử dụng gap, sử dụng marginHorizontal
           }}
-          onPress={() =>
-            navigation.navigate("PRODUCT_DETAIL", {
-              sparePartsItemId: item.sparePartsItemId,
-            })
-          }
         >
-          <Text style={{ color: "white" }}>thông tin</Text>
-        </Pressable>
-      </View>
+          <Pressable
+            style={{
+              backgroundColor: "#0066b2",
+              padding: 10,
+              borderRadius: 10,
+              justifyContent: "center",
+              alignItems: "center",
+              marginTop: 10,
+            }}
+            onPress={() =>
+              navigation.navigate("PRODUCT_DETAIL", {
+                sparePartsItemId: item.sparePartsItemId,
+              })
+            }
+          >
+            <Text style={{ color: "white" }}>thông tin</Text>
+          </Pressable>
+        </View>
+      )}
     </Pressable>
   );
 };

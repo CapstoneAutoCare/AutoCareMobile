@@ -25,3 +25,15 @@ export const getListBookingByClient = createAsyncThunk(
     }
   }
 );
+export const getListBookingById = createAsyncThunk(
+  "booking/getListBookingById",
+  async (id, { rejectWithValue }) => {
+    try {
+      const response = await bookingService.getListBookingById(id);
+      return response.data;
+    } catch (error) {
+      console.log(error);
+      return rejectWithValue(error);
+    }
+  }
+);

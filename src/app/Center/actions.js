@@ -2,7 +2,7 @@ import { createAsyncThunk } from "@reduxjs/toolkit";
 import { centerService } from "../../services/centerService";
 
 export const getListCenter = createAsyncThunk(
-  "center/GetListByCenter",
+  "MaintenanceCenters/GetAll",
   async (_, { rejectWithValue }) => {
     try {
       const response = await centerService.getListCenter();
@@ -30,6 +30,18 @@ export const getListService = createAsyncThunk(
   async (_, { rejectWithValue }) => {
     try {
       const response = await centerService.getListService();
+      return response.data;
+    } catch (error) {
+      console.log(error);
+      return rejectWithValue(error);
+    }
+  }
+);
+export const getServiceByCenter = createAsyncThunk(
+  "center/getServiceByCenter",
+  async (id, { rejectWithValue }) => {
+    try {
+      const response = await centerService.getServiceByCenter(id);
       return response.data;
     } catch (error) {
       console.log(error);
@@ -169,6 +181,18 @@ export const deleteSparePartById = createAsyncThunk(
   async (id, { rejectWithValue }) => {
     try {
       const response = await centerService.deleteSparePartById(id);
+      return response.data;
+    } catch (error) {
+      console.log(error);
+      return rejectWithValue(error);
+    }
+  }
+);
+export const getCenterById = createAsyncThunk(
+  "sparePart/getCenterById",
+  async (id, { rejectWithValue }) => {
+    try {
+      const response = await centerService.getCenterById(id);
       return response.data;
     } catch (error) {
       console.log(error);

@@ -1,15 +1,23 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { ScrollView, StyleSheet, Text, View, Pressable } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
-import moment from "moment";
+import {
+  FontAwesome,
+  AntDesign,
+  MaterialCommunityIcons,
+} from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import { getListCenter } from "../../../app/Center/actions";
-import { AntDesign } from "@expo/vector-icons";
+import { getProfile } from "../../../features/userSlice";
+import levenshtein from "fast-levenshtein";
 const MaintenanceCenters = () => {
   const navigation = useNavigation();
   const dispatch = useDispatch();
+  const { profile } = useSelector((state) => state.user);
   const { centerList } = useSelector((state) => state.center);
+  const [sortedStores, setSortedStores] = useState([]);
   const fetchGetListBooking = async () => {
+    await dispatch(getProfile());
     await dispatch(getListCenter());
   };
 
@@ -20,12 +28,25 @@ const MaintenanceCenters = () => {
     fetchGetListBooking();
     return unsubscribe;
   }, [navigation]);
+  useEffect(() => {
+    const sortStoresByAddressSimilarity = () => {
+      const storesWithSimilarity = centerList.map((store) => {
+        const similarity = levenshtein.get(profile?.Address, store.address);
+        return { ...store, similarity };
+      });
+      const sorted = storesWithSimilarity.sort(
+        (a, b) => a.similarity - b.similarity
+      );
+      setSortedStores(sorted);
+    };
+    sortStoresByAddressSimilarity();
+  }, [centerList]);
   return (
-    <ScrollView style={{ marginTop: 50 }}>
+    <ScrollView style={{ marginTop: 10 }}>
       <View style={{ padding: 12 }}>
         <View>
-          {centerList.length > 0 &&
-            centerList.map((item, index) => (
+          {sortedStores.length > 0 &&
+            sortedStores.map((item, index) => (
               <Pressable
                 style={{
                   marginVertical: 12,
@@ -143,7 +164,7 @@ const MaintenanceCenters = () => {
                     <View style={{ marginBottom: 20 }} />
                   </View>
                 </View>
-                <View style={{ paddingBottom: 12 }}>
+                <View style={{ paddingBottom: 12, flexDirection: "row", justifyContent: "space-between" }}>
                   <Pressable
                     onPress={() =>
                       navigation.navigate("PostBooking", {
@@ -161,6 +182,24 @@ const MaintenanceCenters = () => {
                     }}
                   >
                     <Text style={{ color: "white" }}>+ Lên lịch sửa xe</Text>
+                  </Pressable>
+                  <Pressable
+                    onPress={() =>
+                      navigation.navigate("CenterDetail", {
+                        maintenanceCenterId: item?.maintenanceCenterId,
+                      })
+                    }
+                    style={{
+                      backgroundColor: "#0066b2",
+                      padding: 10,
+                      borderRadius: 10,
+                      justifyContent: "center",
+                      alignItems: "center",
+                      marginHorizontal: 10,
+                      marginTop: 10,
+                    }}
+                  >
+                    <Text style={{ color: "white" }}>Thông tin</Text>
                   </Pressable>
                 </View>
               </Pressable>

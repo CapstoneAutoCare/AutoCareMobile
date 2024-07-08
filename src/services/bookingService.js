@@ -9,4 +9,8 @@ export const bookingService = {
     const url = `/Bookings/GetListByClient`;
     return axiosClient.get(url);
   },
+  getListBookingById: (id) => {
+    const url = `/Bookings/GetById?id=${id}`;
+    return axiosClient.get(url);
+  },
 };

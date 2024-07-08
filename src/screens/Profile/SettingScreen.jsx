@@ -16,22 +16,6 @@ const SettingScreen = () => {
   const dispatch = useAppDispatch();
   const navigation = useNavigation();
   const { profile } = useSelector((state) => state.user);
-  // const profile = {
-  //   accountId: "17cd9ff4-f95b-4db7-92a1-f6cb2d60e7bf",
-  //   clientId: "d3ea88fa-3fe2-4ed1-b8c2-f51bf138aa0e",
-  //   email: "c1",
-  //   password: "1",
-  //   role: "CLIENT",
-  //   gender: "1",
-  //   phone: "1",
-  //   createdDate: "2024-06-17T16:45:00.8971832",
-  //   logo: "https://i.pinimg.com/736x/0d/64/98/0d64989794b1a4c9d89bff571d3d5842.jpg",
-  //   firstName: "P",
-  //   lastName: "D",
-  //   address: "98C Đ. Hồ Bá Phấn, Phước Long A, Thủ Đức, Thành phố Hồ Chí Minh",
-  //   birthday: "2024-06-17T16:45:00.8971825",
-  //   status: "ACTIVE",
-  // };
       const fetchGetListBooking = async () => {
         await dispatch(getProfile());
       };

@@ -1,11 +1,16 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { getListBooking, getListBookingByClient } from "./actions";
+import {
+  getListBooking,
+  getListBookingByClient,
+  getListBookingById,
+} from "./actions";
 
 const accountSlice = createSlice({
   name: "booking",
   initialState: {
     bookingList: [],
     bookingListByClient: [],
+    bookingById: null,
     loading: null,
   },
   reducers: {},
@@ -17,6 +22,10 @@ const accountSlice = createSlice({
     builder.addCase(getListBookingByClient.fulfilled, (state, action) => {
       state.loading = false;
       state.bookingListByClient = action.payload;
+    });
+    builder.addCase(getListBookingById.fulfilled, (state, action) => {
+      state.loading = false;
+      state.bookingById = action.payload;
     });
   },
 });

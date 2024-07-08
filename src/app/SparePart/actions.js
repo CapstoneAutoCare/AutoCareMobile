@@ -25,3 +25,15 @@ export const getSparePartById = createAsyncThunk(
     }
   }
 );
+export const getSparePartByCenter = createAsyncThunk(
+  "sparePart/getSparePartByCenter",
+  async (id, { rejectWithValue }) => {
+    try {
+      const response = await sparePartService.getSparePartByCenter(id);
+      return response.data;
+    } catch (error) {
+      console.log(error);
+      return rejectWithValue(error);
+    }
+  }
+);

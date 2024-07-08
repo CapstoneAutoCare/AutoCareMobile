@@ -29,7 +29,7 @@ const Booking = () => {
     return unsubscribe;
   }, [navigation]);
   return (
-    <ScrollView style={{ marginTop: 50 }}>
+    <ScrollView style={{ marginTop: 10 }}>
       <View style={{ padding: 12 }}>
         <View>
           <Pressable
@@ -172,7 +172,7 @@ const Booking = () => {
                   </View>
 
                   <View style={{ alignItems: "center" }}>
-                    <View
+                    {/* <View
                       style={{
                         width: 32,
                         height: 32,
@@ -197,7 +197,7 @@ const Booking = () => {
                       }}
                     >
                       Thông tin
-                    </Text>
+                    </Text> */}
                     <View
                       style={{
                         width: 32,
@@ -225,6 +225,38 @@ const Booking = () => {
                       Nhận xét
                     </Text>
                   </View>
+                </View>
+                <View
+                  style={{
+                    paddingBottom: 12,
+                    flexDirection: "row",
+                    justifyContent: "space-between",
+                  }}
+                >
+                  <Pressable
+                    onPress={() =>
+                      navigation.navigate("BookingDetail", {
+                        bookingId: item?.bookingId,
+                      })
+                    }
+                    style={{
+                      flexDirection: "row",
+                      backgroundColor: "#0066b2",
+                      padding: 10,
+                      borderRadius: 10,
+                      justifyContent: "center",
+                      alignItems: "center",
+                      marginHorizontal: 10,
+                      marginTop: 10,
+                    }}
+                  >
+                    <MaterialCommunityIcons
+                      name="note-outline"
+                      size={24}
+                      color="white"
+                    />
+                    <Text style={{ color: "white" }}>Thông tin</Text>
+                  </Pressable>
                 </View>
               </Pressable>
             ))}

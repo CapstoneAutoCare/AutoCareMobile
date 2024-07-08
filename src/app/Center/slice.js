@@ -1,5 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { getListCare, getListCareById, getListCenter, getListService, getListServiceById, getListStaff, getListStaffById } from "./actions";
+import { getCenterById, getListCare, getListCareById, getListCenter, getListService, getListServiceById, getListStaff, getListStaffById, getServiceByCenter } from "./actions";
 
 const accountSlice = createSlice({
   name: "center",
@@ -7,6 +7,8 @@ const accountSlice = createSlice({
     centerList: [],
     serviceList: [],
     serviceById: null,
+    centerById: null,
+    serviceByCenter: [],
     staffList: [],
     careList: [],
     staffById: null,
@@ -19,9 +21,17 @@ const accountSlice = createSlice({
       state.loading = false;
       state.centerList = action.payload;
     });
+    builder.addCase(getCenterById.fulfilled, (state, action) => {
+      state.loading = false;
+      state.centerById = action.payload;
+    });
     builder.addCase(getListService.fulfilled, (state, action) => {
       state.loading = false;
       state.serviceList = action.payload;
+    });
+    builder.addCase(getServiceByCenter.fulfilled, (state, action) => {
+      state.loading = false;
+      state.serviceByCenter = action.payload;
     });
     builder.addCase(getListServiceById.fulfilled, (state, action) => {
       state.loading = false;
@@ -35,14 +45,14 @@ const accountSlice = createSlice({
       state.loading = false;
       state.staffById = action.payload;
     });
-        builder.addCase(getListCare.fulfilled, (state, action) => {
-          state.loading = false;
-          state.careList = action.payload;
-        });
-        builder.addCase(getListCareById.fulfilled, (state, action) => {
-          state.loading = false;
-          state.careById = action.payload;
-        });
+    builder.addCase(getListCare.fulfilled, (state, action) => {
+      state.loading = false;
+      state.careList = action.payload;
+    });
+    builder.addCase(getListCareById.fulfilled, (state, action) => {
+      state.loading = false;
+      state.careById = action.payload;
+    });
   },
 });
 

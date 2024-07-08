@@ -16,13 +16,19 @@ const ServiceItem = ({ item }) => {
       />
 
       <Text numberOfLines={1} style={{ width: 150, marginTop: 10 }}>
-        {item?.maintenanceServiceName}
+        {item?.maintenanceServiceInfoName
+          ? item?.maintenanceServiceInfoName
+          : item?.maintenanceServiceName}
       </Text>
 
       <View>
         <Text style={{ fontSize: 15, fontWeight: "bold" }}>
           giá:{" "}
-          {item?.responseMaintenanceServiceCosts.length > 0
+          {item?.totalCost
+            ? item?.totalCost
+            : item?.acturalCost
+            ? item?.acturalCost
+            : item?.responseMaintenanceServiceCosts.length > 0
             ? item?.responseMaintenanceServiceCosts[0].acturalCost
             : "trống"}{" "}
           VND
@@ -31,33 +37,34 @@ const ServiceItem = ({ item }) => {
           status: {item?.status}
         </Text>
       </View>
-
-      <View
-        style={{
-          flexDirection: "row",
-          alignItems: "center",
-          justifyContent: "center",
-          marginHorizontal: 5, // Thay vì sử dụng gap, sử dụng marginHorizontal
-        }}
-      >
-        <Pressable
+      {item?.maintenanceServiceId && (
+        <View
           style={{
-            backgroundColor: "#0066b2",
-            padding: 10,
-            borderRadius: 10,
-            justifyContent: "center",
+            flexDirection: "row",
             alignItems: "center",
-            marginTop: 10,
+            justifyContent: "center",
+            marginHorizontal: 5, // Thay vì sử dụng gap, sử dụng marginHorizontal
           }}
-          onPress={() =>
-            navigation.navigate("SERVICE_DETAIL", {
-              maintenanceServiceId: item.maintenanceServiceId,
-            })
-          }
         >
-          <Text style={{ color: "white" }}>thông tin</Text>
-        </Pressable>
-      </View>
+          <Pressable
+            style={{
+              backgroundColor: "#0066b2",
+              padding: 10,
+              borderRadius: 10,
+              justifyContent: "center",
+              alignItems: "center",
+              marginTop: 10,
+            }}
+            onPress={() =>
+              navigation.navigate("SERVICE_DETAIL", {
+                maintenanceServiceId: item.maintenanceServiceId,
+              })
+            }
+          >
+            <Text style={{ color: "white" }}>thông tin</Text>
+          </Pressable>
+        </View>
+      )}
     </Pressable>
   );
 };

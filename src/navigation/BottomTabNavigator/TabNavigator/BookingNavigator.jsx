@@ -5,6 +5,7 @@ import ROUTES from "../../../constants/routes";
 import home from "../../../Login/home";
 import PostBooking from "../../../screens/client/booking/postBooking";
 import Booking from "../../../screens/client/booking/booking";
+import BookingDetail from "../../../screens/client/booking/bookingDetail";
 const Stack = createNativeStackNavigator();
 const BookingNavigator = ({ authenticated }) => {
   return (
@@ -17,6 +18,11 @@ const BookingNavigator = ({ authenticated }) => {
       <Stack.Screen
         name={"PostBooking"}
         component={PostBooking}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name={"BookingDetail"}
+        component={BookingDetail}
         options={{ headerShown: false }}
       />
     </Stack.Navigator>
