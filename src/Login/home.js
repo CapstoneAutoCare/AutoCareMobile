@@ -14,21 +14,21 @@ import {
   Pressable,
 } from "react-native";
 export default Home = () => {
-      const navigation = useNavigation();
-    return (
-      <SafeAreaView>
-        <View style={styles.center}>
-          <View>
-            <Text style={{ color: "white" }}>home</Text>
-          </View>
+  const navigation = useNavigation();
+  return (
+    <SafeAreaView>
+      <View style={styles.center}>
+        <View>
+          <Text style={{ color: "red" }}>home</Text>
         </View>
-      </SafeAreaView>
-    );
+      </View>
+    </SafeAreaView>
+  );
 }
 const styles = StyleSheet.create({
-    center: {
-        justifyContent: "center",
-        alignItems: "center",
-        textAlign: "center",
-    },
+  center: {
+    justifyContent: "center",
+    alignItems: "center",
+    textAlign: "center",
+  },
 });
