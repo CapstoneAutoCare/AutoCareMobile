@@ -28,23 +28,23 @@ const MaintenanceCenters = () => {
     fetchGetListBooking();
     return unsubscribe;
   }, [navigation]);
-  // useEffect(() => {
-  //   const sortStoresByAddressSimilarity = () => {
-  //     const storesWithSimilarity = centerList.map((store) => {
-  //       const similarity = levenshtein.get(profile?.Address, store.address);
-  //       return { ...store, similarity };
-  //     });
-  //     const sorted = storesWithSimilarity.sort(
-  //       (a, b) => a.similarity - b.similarity
-  //     );
-  //     setSortedStores(sorted);
-  //   };
-  //   sortStoresByAddressSimilarity();
-  // }, [centerList]);
+  useEffect(() => {
+    const sortStoresByAddressSimilarity = () => {
+      const storesWithSimilarity = centerList.map((store) => {
+        const similarity = levenshtein.get(profile?.Address, store.address);
+        return { ...store, similarity };
+      });
+      const sorted = storesWithSimilarity.sort(
+        (a, b) => a.similarity - b.similarity
+      );
+      setSortedStores(sorted);
+    };
+    sortStoresByAddressSimilarity();
+  }, [centerList]);
   return (
     <ScrollView style={{ marginTop: 10 }}>
       <View style={{ padding: 12 }}>
-        {/* <View>
+        <View>
           {sortedStores.length > 0 &&
             sortedStores.map((item, index) => (
               <Pressable
@@ -204,7 +204,7 @@ const MaintenanceCenters = () => {
                 </View>
               </Pressable>
             ))}
-        </View> */}
+        </View>
       </View>
     </ScrollView>
   );
