@@ -14,14 +14,15 @@ import { Ionicons } from "@expo/vector-icons";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { FontAwesome } from "@expo/vector-icons";
 import { getListBooking } from "../app/Booking/actions";
+import { getProfile } from "../features/userSlice";
 
 const Booking = () => {
    const dispatch = useDispatch();
     const bookingList = useSelector((state) => state.booking.bookingList);
     const fetchGetListBooking = async () => {
       await dispatch(getListBooking());
+      await dispatch(getProfile());
     };
-
   useEffect(() => {
     const fetch = async () => {
       await fetchGetListBooking();

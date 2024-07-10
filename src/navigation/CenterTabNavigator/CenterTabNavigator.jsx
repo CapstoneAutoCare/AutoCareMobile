@@ -6,7 +6,7 @@ import {
   DrawerItemList,
   DrawerItem,
 } from "@react-navigation/drawer";
-import { FontAwesome, MaterialIcons } from "@expo/vector-icons";
+import { FontAwesome, MaterialIcons, Feather } from "@expo/vector-icons";
 import Booking from './../../manager/booking';
 import Product from "../../manager/product";
 import ListCar from "../../manager/listCar";
@@ -16,6 +16,8 @@ import SparePartNavigator from "./TabNavigator/SparePartNavigator";
 import ServiceNavigator from "./TabNavigator/ServiceNavigator";
 import StaffNavigator from "./TabNavigator/StaffNavigator";
 import CareNavigator from "./TabNavigator/CareNavigator";
+import changePassword from "../../screens/center/Profile/changePassword";
+import UpdateProfile from './../../screens/center/Profile/updateProfile';
 
 const Drawer = createDrawerNavigator();
 const CenterTabNavigator = ({ authenticated }) => {
@@ -112,6 +114,26 @@ const CenterTabNavigator = ({ authenticated }) => {
           title: "Nhân viên CSKH",
           drawerIcon: (size, color) => {
             return <FontAwesome name="user-md" size={32} color={color} />;
+          },
+        }}
+      />
+      <Drawer.Screen
+        name="UPDATE_CENTER_NAVIGATOR"
+        component={UpdateProfile}
+        options={{
+          title: "Sửa thông tin",
+          drawerIcon: (size, color) => {
+            return <Feather name="edit" size={24} color={color} />;
+          },
+        }}
+      />
+      <Drawer.Screen
+        name={"CHANGE_PASSWORD_CENTER"}
+        component={changePassword}
+        options={{
+          title: "Đổi mật khẩu",
+          drawerIcon: ({ size, color }) => {
+            return <MaterialIcons name="password" size={24} color={color} />;
           },
         }}
       />

@@ -12,11 +12,13 @@ import { AntDesign } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import moment from "moment";
 import { deleteServiceById, getListServiceById } from "../../../app/Center/actions";
+import { useAppSelector } from "../../../app/hooks";
 
 const ServiceDetail = ({ route }) => {
   const { maintenanceServiceId } = route.params;
   const navigation = useNavigation();
   const dispatch = useDispatch();
+   const { role } = useAppSelector((state) => state.user);
   const { serviceById } = useSelector((state) => state.center);
 
   useEffect(() => {
@@ -74,49 +76,51 @@ const ServiceDetail = ({ route }) => {
           </View>
         </View>
       )}
-      <View
-        style={{
-          flexDirection: "row",
-          alignItems: "center",
-          justifyContent: "center",
-        }}
-      >
-        <Pressable
-          onPress={() =>
-            navigation.navigate("SERVICE_PUT", {
-              maintenanceServiceId: maintenanceServiceId,
-              serviceName: serviceById.maintenanceServiceName,
-              image: serviceById.image,
-              status: serviceById.status,
-            })
-          }
+      {role === "CENTER" && (
+        <View
           style={{
-            backgroundColor: "#1677ff",
-            padding: 10,
-            borderRadius: 10,
-            justifyContent: "center",
+            flexDirection: "row",
             alignItems: "center",
-            marginHorizontal: 10,
-            marginTop: 10,
+            justifyContent: "center",
           }}
         >
-          <Text style={{ color: "white" }}>sửa dịch vụ</Text>
-        </Pressable>
-        <Pressable
-          onPress={handleDeleteService}
-          style={{
-            backgroundColor: "#f5222d",
-            padding: 10,
-            borderRadius: 10,
-            justifyContent: "center",
-            alignItems: "center",
-            marginHorizontal: 10,
-            marginTop: 10,
-          }}
-        >
-          <Text style={{ color: "white" }}>xóa dịch vụ</Text>
-        </Pressable>
-      </View>
+          <Pressable
+            onPress={() =>
+              navigation.navigate("SERVICE_PUT", {
+                maintenanceServiceId: maintenanceServiceId,
+                serviceName: serviceById.maintenanceServiceName,
+                image: serviceById.image,
+                status: serviceById.status,
+              })
+            }
+            style={{
+              backgroundColor: "#1677ff",
+              padding: 10,
+              borderRadius: 10,
+              justifyContent: "center",
+              alignItems: "center",
+              marginHorizontal: 10,
+              marginTop: 10,
+            }}
+          >
+            <Text style={{ color: "white" }}>sửa dịch vụ</Text>
+          </Pressable>
+          <Pressable
+            onPress={handleDeleteService}
+            style={{
+              backgroundColor: "#f5222d",
+              padding: 10,
+              borderRadius: 10,
+              justifyContent: "center",
+              alignItems: "center",
+              marginHorizontal: 10,
+              marginTop: 10,
+            }}
+          >
+            <Text style={{ color: "white" }}>xóa dịch vụ</Text>
+          </Pressable>
+        </View>
+      )}
     </ScrollView>
   );
 };

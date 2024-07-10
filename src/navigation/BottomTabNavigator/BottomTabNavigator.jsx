@@ -15,6 +15,7 @@ import BookingNavigator from "./TabNavigator/BookingNavigator";
 import VehicleNavigator from "./TabNavigator/VehicleNavigator";
 import MaintenanceCenters from "../../screens/client/maintenanceCenters/maintenanceCenters";
 import CentersNavigator from "./TabNavigator/CentersNavigator";
+import ProfileNavigator from "./TabNavigator/ProfileNavigator";
 
 const Stack = createBottomTabNavigator();
 const BottomTabNavigator = ({ authenticated }) => {
@@ -87,8 +88,8 @@ const BottomTabNavigator = ({ authenticated }) => {
         }}
       />
       <Stack.Screen
-        name={ROUTES.SETTING}
-        component={SettingScreen}
+        name={ROUTES.SETTING_NAVIGATOR}
+        children={() => <ProfileNavigator authenticated={authenticated} />}
         options={{
           headerShown: false,
           title: "Hồ sơ",

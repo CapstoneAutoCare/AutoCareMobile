@@ -7,10 +7,10 @@ import {
   ScrollView,
   Image,
 } from "react-native";
-import { useNavigation, useRoute } from "@react-navigation/native";
+import { useNavigation } from "@react-navigation/native";
 import Icon from "react-native-vector-icons/MaterialIcons";
 import { useAppDispatch } from "../../app/hooks";
-import { getProfile, logout } from "../../features/userSlice";
+import { getProfile } from "../../features/userSlice";
 import { useSelector } from "react-redux";
 const SettingScreen = () => {
   const dispatch = useAppDispatch();
@@ -26,21 +26,10 @@ const SettingScreen = () => {
     fetchGetListBooking();
     return unsubscribe;
   }, [navigation]);
-  const handleLogout = async () => {
-    await dispatch(logout());
-    navigation.navigate("Login");
-  };
 
   return (
     <ScrollView style={{ marginTop: 50 }}>
       <View style={styles.container}>
-        <View style={styles.headerContainer}>
-          <Text style={styles.headerTitle}>Hồ sơ</Text>
-          <TouchableOpacity onPress={handleLogout} style={styles.logout}>
-            <Text style={styles.textlogout}>Đăng xuất</Text>
-          </TouchableOpacity>
-        </View>
-
         {profile && (
           <>
             <View style={styles.profileContainer}>

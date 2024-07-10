@@ -13,11 +13,13 @@ import { useNavigation } from "@react-navigation/native";
 import { getSparePartById } from "../../../app/SparePart/actions";
 import moment from "moment";
 import { deleteSparePartById } from "../../../app/Center/actions";
+import { useAppSelector } from "../../../app/hooks";
 
 const ProductDetail = ({ route }) => {
   const { sparePartsItemId } = route.params;
   const navigation = useNavigation();
   const dispatch = useDispatch();
+  const { role } = useAppSelector((state) => state.user);
   const { sparePartById } = useSelector((state) => state.sparePart);
 
   useEffect(() => {
@@ -72,49 +74,51 @@ const ProductDetail = ({ route }) => {
           </View>
         </View>
       )}
-      <View
-        style={{
-          flexDirection: "row",
-          alignItems: "center",
-          justifyContent: "center",
-        }}
-      >
-        <Pressable
-          onPress={() =>
-            navigation.navigate("PRODUCT_PUT", {
-              sparePartsItemId: sparePartsItemId,
-              sparePartsItemName: sparePartById.sparePartsItemName,
-              image: sparePartById.image,
-              status: sparePartById.status,
-            })
-          }
+      {role === "CENTER" && (
+        <View
           style={{
-            backgroundColor: "#1677ff",
-            padding: 10,
-            borderRadius: 10,
-            justifyContent: "center",
+            flexDirection: "row",
             alignItems: "center",
-            marginHorizontal: 10,
-            marginTop: 10,
+            justifyContent: "center",
           }}
         >
-          <Text style={{ color: "white" }}>sửa phụ tùng</Text>
-        </Pressable>
-        <Pressable
-          onPress={handleDeleteSparePart}
-          style={{
-            backgroundColor: "#f5222d",
-            padding: 10,
-            borderRadius: 10,
-            justifyContent: "center",
-            alignItems: "center",
-            marginHorizontal: 10,
-            marginTop: 10,
-          }}
-        >
-          <Text style={{ color: "white" }}>xóa phụ tùng</Text>
-        </Pressable>
-      </View>
+          <Pressable
+            onPress={() =>
+              navigation.navigate("PRODUCT_PUT", {
+                sparePartsItemId: sparePartsItemId,
+                sparePartsItemName: sparePartById.sparePartsItemName,
+                image: sparePartById.image,
+                status: sparePartById.status,
+              })
+            }
+            style={{
+              backgroundColor: "#1677ff",
+              padding: 10,
+              borderRadius: 10,
+              justifyContent: "center",
+              alignItems: "center",
+              marginHorizontal: 10,
+              marginTop: 10,
+            }}
+          >
+            <Text style={{ color: "white" }}>sửa phụ tùng</Text>
+          </Pressable>
+          <Pressable
+            onPress={handleDeleteSparePart}
+            style={{
+              backgroundColor: "#f5222d",
+              padding: 10,
+              borderRadius: 10,
+              justifyContent: "center",
+              alignItems: "center",
+              marginHorizontal: 10,
+              marginTop: 10,
+            }}
+          >
+            <Text style={{ color: "white" }}>xóa phụ tùng</Text>
+          </Pressable>
+        </View>
+      )}
     </ScrollView>
   );
 };
