@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { View, Text, TextInput, Pressable, StyleSheet } from "react-native";
 import { Picker } from "@react-native-picker/picker";
 import COLORS from "../../../constants/colors";
@@ -7,16 +7,30 @@ import axios from "axios";
 import { useNavigation } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { postServiceCost, postSparePartCost } from "../../../app/Center/actions";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { getSparePart } from "../../../app/SparePart/actions";
 const SparePartPost = () => {
   const dispatch = useDispatch();
   const navigation = useNavigation();
+   const { sparePartAllList } = useSelector((state) => state.sparePart);
   const [load, setLoad] = useState(false);
+  const [sparePart, setSparePart] = useState("");
+  const [note, setNote] = useState("");
   const [sparePartsItemName, setSparePartsItemName] = useState("");
   const [acturalCost, setActuralCost] = useState("");
+    const fetchGetListSparePart = async () => {
+      await dispatch(getSparePart());
+    };
+    useEffect(() => {
+      const fetch = async () => {
+        await fetchGetListSparePart();
+      };
+      fetch();
+    }, []);
+
   const handleSignup = async () => {
     try {
-      if (!sparePartsItemName || !acturalCost) {
+      if (!sparePartsItemName || !acturalCost || !note) {
         alert("Vui lòng điền đầy đủ thông tin");
         return;
       }
@@ -26,7 +40,7 @@ const SparePartPost = () => {
         "http://autocare.runasp.net/api/SparePartItem/Post",
         {
           sparePartsItemName: sparePartsItemName,
-          sparePartsId: null,
+          sparePartsId: sparePart||null,
         },
         {
           headers: {
@@ -44,7 +58,7 @@ const SparePartPost = () => {
         await dispatch(
           postSparePartCost({
             acturalCost: acturalCost,
-            note: "string",
+            note: note,
             sparePartsItemId: response.data.sparePartsItemId,
           })
         );
@@ -97,11 +111,36 @@ const SparePartPost = () => {
           />
         </View>
         <View style={styles.inputContainer}>
+          <Picker
+            selectedValue={sparePart}
+            onValueChange={(itemValue) => setSparePart(itemValue)}
+            style={styles.picker}
+          >
+            <Picker.Item label="Chọn phụ tùng" value="" />
+            {sparePartAllList.map((vehicle) => (
+              <Picker.Item
+                key={vehicle.sparePartId}
+                label={vehicle.sparePartName}
+                value={vehicle.sparePartId}
+              />
+            ))}
+          </Picker>
+        </View>
+        <View style={styles.inputContainer}>
           <TextInput
             style={styles.textInput}
             placeholder="chi phí phụ tùng"
             value={acturalCost}
             onChangeText={(text) => setActuralCost(text)}
+            required={true}
+          />
+        </View>
+        <View style={styles.inputContainer}>
+          <TextInput
+            style={styles.textInput}
+            placeholder="lưu ý"
+            value={note}
+            onChangeText={(text) => setNote(text)}
             required={true}
           />
         </View>

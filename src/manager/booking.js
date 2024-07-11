@@ -15,20 +15,23 @@ import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { FontAwesome } from "@expo/vector-icons";
 import { getListBooking } from "../app/Booking/actions";
 import { getProfile } from "../features/userSlice";
+import { useNavigation } from "@react-navigation/native";
 
 const Booking = () => {
+  const navigation = useNavigation();
    const dispatch = useDispatch();
     const bookingList = useSelector((state) => state.booking.bookingList);
     const fetchGetListBooking = async () => {
       await dispatch(getListBooking());
       await dispatch(getProfile());
     };
-  useEffect(() => {
-    const fetch = async () => {
-      await fetchGetListBooking();
-    };
-    fetch();
-  }, []);
+    useEffect(() => {
+      const unsubscribe = navigation.addListener("focus", () => {
+        fetchGetListBooking();
+      });
+      fetchGetListBooking();
+      return unsubscribe;
+    }, [navigation]);
   return (
     <ScrollView style={{ marginTop: 20 }}>
       <View style={{ padding: 12, backgroundColor: "#DDD" }}>
@@ -162,7 +165,7 @@ const Booking = () => {
                     <View style={{ marginBottom: 20 }} />
                   </View>
 
-                  <View style={{ alignItems: "center" }}>
+                  {/* <View style={{ alignItems: "center" }}>
                     <View
                       style={{
                         width: 32,
@@ -215,7 +218,39 @@ const Booking = () => {
                     >
                       Nhận xét
                     </Text>
-                  </View>
+                  </View> */}
+                </View>
+                <View
+                  style={{
+                    paddingBottom: 12,
+                    flexDirection: "row",
+                    justifyContent: "space-between",
+                  }}
+                >
+                  <Pressable
+                    onPress={() =>
+                      navigation.navigate("BookingDetail", {
+                        bookingId: item?.bookingId,
+                      })
+                    }
+                    style={{
+                      flexDirection: "row",
+                      backgroundColor: "#0066b2",
+                      padding: 10,
+                      borderRadius: 10,
+                      justifyContent: "center",
+                      alignItems: "center",
+                      marginHorizontal: 10,
+                      marginTop: 10,
+                    }}
+                  >
+                    <MaterialCommunityIcons
+                      name="note-outline"
+                      size={24}
+                      color="white"
+                    />
+                    <Text style={{ color: "white" }}>Thông tin</Text>
+                  </Pressable>
                 </View>
               </Pressable>
             ))

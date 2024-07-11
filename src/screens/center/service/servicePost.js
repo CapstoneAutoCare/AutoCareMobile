@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { View, Text, TextInput, Pressable, StyleSheet } from "react-native";
 import { Picker } from "@react-native-picker/picker";
 import COLORS from "./../../../constants/colors";
@@ -6,17 +6,29 @@ import { AntDesign } from "@expo/vector-icons";
 import axios from "axios";
 import { useNavigation } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { postServiceCost } from "../../../app/Center/actions";
-import { useDispatch } from "react-redux";
+import { getService, postServiceCost } from "../../../app/Center/actions";
+import { useDispatch, useSelector } from "react-redux";
 const ServicePost = () => {
   const dispatch = useDispatch();
   const navigation = useNavigation();
+   const { service } = useSelector((state) => state.center);
   const [load, setLoad] = useState(false);
+    const [serviceAll, setServiceAll] = useState("");
+  const [note, setNote] = useState("");
   const [maintenanceServiceName, setMaintenanceServiceName] = useState("");
   const [acturalCost, setActuralCost] = useState("");
+      const fetchGetListSparePart = async () => {
+        await dispatch(getService());
+      };
+      useEffect(() => {
+        const fetch = async () => {
+          await fetchGetListSparePart();
+        };
+        fetch();
+      }, []);
   const handleSignup = async () => {
     try {
-      if (!maintenanceServiceName || !acturalCost) {
+      if (!maintenanceServiceName || !acturalCost || !note) {
         alert("Vui lòng điền đầy đủ thông tin");
         return;
       }
@@ -26,7 +38,7 @@ const ServicePost = () => {
         "http://autocare.runasp.net/api/MaintenanceServices/Post",
         {
           maintenanceServiceName: maintenanceServiceName,
-          serviceCareId: null,
+          serviceCareId:serviceAll || null,
         },
         {
           headers: {
@@ -44,7 +56,7 @@ const ServicePost = () => {
         await dispatch(
           postServiceCost({
             acturalCost: acturalCost,
-            note: "string",
+            note: note,
             maintenanceServiceId: response.data.maintenanceServiceId,
           })
         );
@@ -97,11 +109,36 @@ const ServicePost = () => {
           />
         </View>
         <View style={styles.inputContainer}>
+          <Picker
+            selectedValue={serviceAll}
+            onValueChange={(itemValue) => setServiceAll(itemValue)}
+            style={styles.picker}
+          >
+            <Picker.Item label="Chọn dịch vụ" value="" />
+            {service.map((vehicle) => (
+              <Picker.Item
+                key={vehicle.sparePartId}
+                label={vehicle.sparePartName}
+                value={vehicle.sparePartId}
+              />
+            ))}
+          </Picker>
+        </View>
+        <View style={styles.inputContainer}>
           <TextInput
             style={styles.textInput}
             placeholder="chi phí dịch vụ"
             value={acturalCost}
             onChangeText={(text) => setActuralCost(text)}
+            required={true}
+          />
+        </View>
+        <View style={styles.inputContainer}>
+          <TextInput
+            style={styles.textInput}
+            placeholder="lưu ý"
+            value={note}
+            onChangeText={(text) => setNote(text)}
             required={true}
           />
         </View>

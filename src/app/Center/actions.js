@@ -37,6 +37,18 @@ export const getListService = createAsyncThunk(
     }
   }
 );
+export const getService = createAsyncThunk(
+  "center/getService",
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await centerService.getService();
+      return response.data;
+    } catch (error) {
+      console.log(error);
+      return rejectWithValue(error);
+    }
+  }
+);
 export const getServiceByCenter = createAsyncThunk(
   "center/getServiceByCenter",
   async (id, { rejectWithValue }) => {

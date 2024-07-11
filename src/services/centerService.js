@@ -9,6 +9,10 @@ export const centerService = {
     const url = `/MaintenanceServices/GetListByCenter`;
     return axiosClient.get(url);
   },
+  getService: () => {
+    const url = `/Services/GetAll`;
+    return axiosClient.get(url);
+  },
   getServiceByCenter: (id) => {
     const url = `/MaintenanceServiceCosts/GetListByClient?centerId=${id}`;
     return axiosClient.get(url);

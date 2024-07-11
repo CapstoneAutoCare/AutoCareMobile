@@ -18,6 +18,7 @@ import StaffNavigator from "./TabNavigator/StaffNavigator";
 import CareNavigator from "./TabNavigator/CareNavigator";
 import changePassword from "../../screens/center/Profile/changePassword";
 import UpdateProfile from './../../screens/center/Profile/updateProfile';
+import BookingNavigator from "./TabNavigator/BookingNavigator";
 
 const Drawer = createDrawerNavigator();
 const CenterTabNavigator = ({ authenticated }) => {
@@ -53,7 +54,7 @@ const CenterTabNavigator = ({ authenticated }) => {
     >
       <Drawer.Screen
         name="CENTER_BOOKING_NAVIGATOR"
-        component={Booking}
+        children={() => <BookingNavigator authenticated={authenticated} />}
         options={{
           title: "Lịch đặt",
           drawerIcon: (size, color) => {
