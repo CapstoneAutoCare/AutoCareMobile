@@ -304,7 +304,12 @@ const CreateBookingHaveItem = ({
                       {availableSpareParts.map((part) => (
                         <Picker.Item
                           key={part.sparePartsItemCostId}
-                          label={part.sparePartsItemName}
+                          label={
+                            part.sparePartsItemName +
+                            " - " +
+                            part.acturalCost +
+                            "VND"
+                          }
                           value={part.sparePartsItemCostId}
                         />
                       ))}
@@ -392,7 +397,12 @@ const CreateBookingHaveItem = ({
                       {availableServices.map((service) => (
                         <Picker.Item
                           key={service.maintenanceServiceCostId}
-                          label={service.maintenanceServiceName}
+                          label={
+                            service.maintenanceServiceName +
+                            " - " +
+                            service.acturalCost +
+                            "VND"
+                          }
                           value={service.maintenanceServiceCostId}
                         />
                       ))}
