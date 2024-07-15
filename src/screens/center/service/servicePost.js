@@ -28,7 +28,7 @@ const ServicePost = () => {
       }, []);
   const handleSignup = async () => {
     try {
-      if (!maintenanceServiceName || !acturalCost || !note) {
+      if (!maintenanceServiceName) {
         alert("Vui lòng điền đầy đủ thông tin");
         return;
       }
@@ -53,13 +53,13 @@ const ServicePost = () => {
         response.data &&
         response.data.maintenanceServiceId
       ) {
-        await dispatch(
-          postServiceCost({
-            acturalCost: acturalCost,
-            note: note,
-            maintenanceServiceId: response.data.maintenanceServiceId,
-          })
-        );
+        // await dispatch(
+        //   postServiceCost({
+        //     acturalCost: acturalCost,
+        //     note: note,
+        //     maintenanceServiceId: response.data.maintenanceServiceId,
+        //   })
+        // );
         setLoad(false);
         alert("Tạo dịch vụ thành công!");
         navigation.navigate("SERVICE");
@@ -111,20 +111,28 @@ const ServicePost = () => {
         <View style={styles.inputContainer}>
           <Picker
             selectedValue={serviceAll}
-            onValueChange={(itemValue) => setServiceAll(itemValue)}
+            onValueChange={(itemValue) => {
+              const selectedSparePart = service.find(
+                (item) => item.serviceCareId === itemValue
+              );
+              setServiceAll(itemValue);
+              setMaintenanceServiceName(
+                selectedSparePart ? selectedSparePart.serviceCareName : ""
+              );
+            }}
             style={styles.picker}
           >
             <Picker.Item label="Chọn dịch vụ" value="" />
             {service.map((vehicle) => (
               <Picker.Item
-                key={vehicle.sparePartId}
-                label={vehicle.sparePartName}
-                value={vehicle.sparePartId}
+                key={vehicle.serviceCareId}
+                label={vehicle.serviceCareName}
+                value={vehicle.serviceCareId}
               />
             ))}
           </Picker>
         </View>
-        <View style={styles.inputContainer}>
+        {/* <View style={styles.inputContainer}>
           <TextInput
             style={styles.textInput}
             placeholder="chi phí dịch vụ"
@@ -141,7 +149,7 @@ const ServicePost = () => {
             onChangeText={(text) => setNote(text)}
             required={true}
           />
-        </View>
+        </View> */}
         {load ? (
           <Pressable style={styles.button}>
             <Text style={styles.buttonText}>Đang tạo ...</Text>

@@ -5,6 +5,7 @@ import Service from "../../../screens/center/service/service";
 import ServiceDetail from "../../../screens/center/service/serviceDetail";
 import ServicePost from "../../../screens/center/service/servicePost";
 import ServicePut from './../../../screens/center/service/servicePut';
+import ServiceCost from "../../../screens/center/service/serviceCost";
 const Stack = createNativeStackNavigator();
 const ServiceNavigator = ({ authenticated }) => {
   return (
@@ -17,6 +18,11 @@ const ServiceNavigator = ({ authenticated }) => {
       <Stack.Screen
         name={"SERVICE_POST"}
         component={ServicePost}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name={"SERVICE_COST"}
+        component={ServiceCost}
         options={{ headerShown: false }}
       />
       <Stack.Screen

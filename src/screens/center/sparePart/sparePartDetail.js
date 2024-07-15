@@ -84,6 +84,24 @@ const ProductDetail = ({ route }) => {
         >
           <Pressable
             onPress={() =>
+              navigation.navigate("PRODUCT_COST", {
+                sparePartsItemId: sparePartsItemId,
+              })
+            }
+            style={{
+              backgroundColor: "#52c41a",
+              padding: 10,
+              borderRadius: 10,
+              justifyContent: "center",
+              alignItems: "center",
+              marginHorizontal: 10,
+              marginTop: 10,
+            }}
+          >
+            <Text style={{ color: "white" }}>Tạo giá</Text>
+          </Pressable>
+          <Pressable
+            onPress={() =>
               navigation.navigate("PRODUCT_PUT", {
                 sparePartsItemId: sparePartsItemId,
                 sparePartsItemName: sparePartById.sparePartsItemName,

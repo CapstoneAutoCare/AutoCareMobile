@@ -6,31 +6,37 @@ import { AntDesign } from "@expo/vector-icons";
 import axios from "axios";
 import { useNavigation } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { postServiceCost, postSparePartCost } from "../../../app/Center/actions";
+import {
+  postServiceCost,
+  postSparePartCost,
+} from "../../../app/Center/actions";
 import { useDispatch, useSelector } from "react-redux";
 import { getSparePart } from "../../../app/SparePart/actions";
+
 const SparePartPost = () => {
   const dispatch = useDispatch();
   const navigation = useNavigation();
-   const { sparePartAllList } = useSelector((state) => state.sparePart);
+  const { sparePartAllList } = useSelector((state) => state.sparePart);
   const [load, setLoad] = useState(false);
   const [sparePart, setSparePart] = useState("");
   const [note, setNote] = useState("");
   const [sparePartsItemName, setSparePartsItemName] = useState("");
   const [acturalCost, setActuralCost] = useState("");
-    const fetchGetListSparePart = async () => {
-      await dispatch(getSparePart());
+
+  const fetchGetListSparePart = async () => {
+    await dispatch(getSparePart());
+  };
+
+  useEffect(() => {
+    const fetch = async () => {
+      await fetchGetListSparePart();
     };
-    useEffect(() => {
-      const fetch = async () => {
-        await fetchGetListSparePart();
-      };
-      fetch();
-    }, []);
+    fetch();
+  }, []);
 
   const handleSignup = async () => {
     try {
-      if (!sparePartsItemName || !acturalCost || !note) {
+      if (!sparePartsItemName) {
         alert("Vui lòng điền đầy đủ thông tin");
         return;
       }
@@ -40,7 +46,7 @@ const SparePartPost = () => {
         "http://autocare.runasp.net/api/SparePartItem/Post",
         {
           sparePartsItemName: sparePartsItemName,
-          sparePartsId: sparePart||null,
+          sparePartsId: sparePart || null,
         },
         {
           headers: {
@@ -55,13 +61,13 @@ const SparePartPost = () => {
         response.data &&
         response.data.sparePartsItemId
       ) {
-        await dispatch(
-          postSparePartCost({
-            acturalCost: acturalCost,
-            note: note,
-            sparePartsItemId: response.data.sparePartsItemId,
-          })
-        );
+        // await dispatch(
+        //   postSparePartCost({
+        //     acturalCost: acturalCost,
+        //     note: note,
+        //     sparePartsItemId: response.data.sparePartsItemId,
+        //   })
+        // );
         setLoad(false);
         alert("Tạo phụ tùng thành công!");
         navigation.navigate("PRODUCT");
@@ -90,9 +96,11 @@ const SparePartPost = () => {
       }
     }
   };
+
   const handleNavigateBack = () => {
     navigation.goBack();
   };
+
   return (
     <View style={styles.container}>
       <View style={styles.header}>
@@ -113,7 +121,15 @@ const SparePartPost = () => {
         <View style={styles.inputContainer}>
           <Picker
             selectedValue={sparePart}
-            onValueChange={(itemValue) => setSparePart(itemValue)}
+            onValueChange={(itemValue) => {
+              const selectedSparePart = sparePartAllList.find(
+                (item) => item.sparePartId === itemValue
+              );
+              setSparePart(itemValue);
+              setSparePartsItemName(
+                selectedSparePart ? selectedSparePart.sparePartName : ""
+              );
+            }}
             style={styles.picker}
           >
             <Picker.Item label="Chọn phụ tùng" value="" />
@@ -126,7 +142,7 @@ const SparePartPost = () => {
             ))}
           </Picker>
         </View>
-        <View style={styles.inputContainer}>
+        {/* <View style={styles.inputContainer}>
           <TextInput
             style={styles.textInput}
             placeholder="chi phí phụ tùng"
@@ -143,14 +159,14 @@ const SparePartPost = () => {
             onChangeText={(text) => setNote(text)}
             required={true}
           />
-        </View>
+        </View> */}
         {load ? (
           <Pressable style={styles.button}>
             <Text style={styles.buttonText}>Đang tạo ...</Text>
           </Pressable>
         ) : (
           <Pressable style={styles.button} onPress={handleSignup}>
-            <Text style={styles.buttonText}>Tạo dịch vụ</Text>
+            <Text style={styles.buttonText}>Tạo phụ tùng</Text>
           </Pressable>
         )}
       </View>
@@ -161,8 +177,6 @@ const SparePartPost = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    // justifyContent: "center",
-    // alignItems: "center",
   },
   header: {
     flexDirection: "row",

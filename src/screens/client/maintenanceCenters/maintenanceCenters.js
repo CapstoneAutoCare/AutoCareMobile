@@ -25,6 +25,7 @@ const MaintenanceCenters = () => {
     const unsubscribe = navigation.addListener("focus", () => {
       fetchGetListBooking();
     });
+    
     fetchGetListBooking();
     return unsubscribe;
   }, [navigation]);
@@ -39,13 +40,14 @@ const MaintenanceCenters = () => {
       );
       setSortedStores(sorted);
     };
+    
     sortStoresByAddressSimilarity();
   }, [centerList]);
   return (
     <ScrollView style={{ marginTop: 10 }}>
       <View style={{ padding: 12 }}>
         <View>
-          {sortedStores.length > 0 &&
+          {sortedStores?.length > 0 &&
             sortedStores.map((item, index) => (
               <Pressable
                 style={{

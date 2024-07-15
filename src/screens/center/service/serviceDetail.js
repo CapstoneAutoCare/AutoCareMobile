@@ -86,6 +86,24 @@ const ServiceDetail = ({ route }) => {
         >
           <Pressable
             onPress={() =>
+              navigation.navigate("SERVICE_COST", {
+                maintenanceServiceId: maintenanceServiceId,
+              })
+            }
+            style={{
+              backgroundColor: "#52c41a",
+              padding: 10,
+              borderRadius: 10,
+              justifyContent: "center",
+              alignItems: "center",
+              marginHorizontal: 10,
+              marginTop: 10,
+            }}
+          >
+            <Text style={{ color: "white" }}>Tạo giá</Text>
+          </Pressable>
+          <Pressable
+            onPress={() =>
               navigation.navigate("SERVICE_PUT", {
                 maintenanceServiceId: maintenanceServiceId,
                 serviceName: serviceById.maintenanceServiceName,
