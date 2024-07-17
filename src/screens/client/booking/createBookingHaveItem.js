@@ -334,13 +334,13 @@ const CreateBookingHaveItem = ({
                       style={styles.textInput}
                       placeholder="Tên phụ tùng"
                       value={sparePart.maintenanceSparePartInfoName}
-                      onChangeText={(text) =>
+                      onChangeText={(text) => {
                         handleSparePartChange(
                           index,
                           "maintenanceSparePartInfoName",
                           text
-                        )
-                      }
+                        );
+                      }}
                     />
                   </View>
                   <View style={styles.inputContainerCost}>
@@ -349,16 +349,28 @@ const CreateBookingHaveItem = ({
                       placeholder="Số lượng"
                       value={String(sparePart.quantity)}
                       keyboardType="numeric"
-                      onChangeText={(text) =>
-                        handleSparePartChange(index, "quantity", parseInt(text))
-                      }
+                      onChangeText={(text) => {
+                        handleSparePartChange(
+                          index,
+                          "quantity",
+                          parseInt(text) || 0
+                        );
+                        // handleSparePartChange(
+                        //   index,
+                        //   "actualCost",
+                        //   sparePart.actualCost * parseInt(text) || 0
+                        // );
+                      }}
                     />
                   </View>
                   <View style={styles.inputContainerCost}>
                     <TextInput
                       style={styles.textInput}
                       placeholder="Chi phí"
-                      value={String(sparePart.actualCost)}
+                      value={String(
+                        sparePart.actualCost * sparePart.quantity ||
+                          sparePart.actualCost
+                      )}
                       keyboardType="numeric"
                       editable={false}
                       // onChangeText={(text) =>
