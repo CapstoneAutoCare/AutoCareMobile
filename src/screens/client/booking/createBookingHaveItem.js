@@ -291,13 +291,27 @@ const CreateBookingHaveItem = ({
                   <View style={styles.inputContainerCost}>
                     <Picker
                       selectedValue={sparePart.sparePartsItemCostId}
-                      onValueChange={(value) =>
+                      onValueChange={(value) => {
+                        const list = availableSpareParts.find(
+                          (item) => item.sparePartsItemCostId === value
+                        );
                         handleSparePartChange(
                           index,
                           "sparePartsItemCostId",
                           value
-                        )
-                      }
+                        );
+                        handleSparePartChange(
+                          index,
+                          "maintenanceSparePartInfoName",
+                          list?.sparePartsItemName || ""
+                        );
+                        handleSparePartChange(index, "quantity", 1);
+                        handleSparePartChange(
+                          index,
+                          "actualCost",
+                          list?.acturalCost || 0
+                        );
+                      }}
                       style={styles.picker}
                     >
                       <Picker.Item label="Chọn phụ tùng" value="" />
@@ -346,13 +360,14 @@ const CreateBookingHaveItem = ({
                       placeholder="Chi phí"
                       value={String(sparePart.actualCost)}
                       keyboardType="numeric"
-                      onChangeText={(text) =>
-                        handleSparePartChange(
-                          index,
-                          "actualCost",
-                          parseInt(text)
-                        )
-                      }
+                      editable={false}
+                      // onChangeText={(text) =>
+                      //   handleSparePartChange(
+                      //     index,
+                      //     "actualCost",
+                      //     parseInt(text)
+                      //   )
+                      // }
                     />
                   </View>
                   <View style={styles.inputContainerCost}>
@@ -384,13 +399,27 @@ const CreateBookingHaveItem = ({
                   <View style={styles.inputContainerCost}>
                     <Picker
                       selectedValue={service.maintenanceServiceCostId}
-                      onValueChange={(value) =>
+                      onValueChange={(value) => {
+                        const list = availableServices.find(
+                          (item) => item.maintenanceServiceCostId === value
+                        );
                         handleServiceChange(
                           index,
                           "maintenanceServiceCostId",
                           value
-                        )
-                      }
+                        );
+                        handleServiceChange(
+                          index,
+                          "maintenanceServiceInfoName",
+                          list?.maintenanceServiceName || ""
+                        );
+                        handleServiceChange(index, "quantity", 1);
+                        handleServiceChange(
+                          index,
+                          "actualCost",
+                          list?.acturalCost || 0
+                        );
+                      }}
                       style={styles.picker}
                     >
                       <Picker.Item label="Chọn dịch vụ" value="" />
@@ -428,9 +457,10 @@ const CreateBookingHaveItem = ({
                       placeholder="Số lượng"
                       value={String(service.quantity)}
                       keyboardType="numeric"
-                      onChangeText={(text) =>
-                        handleServiceChange(index, "quantity", parseInt(text))
-                      }
+                      editable={false}
+                      // onChangeText={(text) =>
+                      //   handleServiceChange(index, "quantity", parseInt(text))
+                      // }
                     />
                   </View>
                   <View style={styles.inputContainerCost}>
@@ -439,9 +469,10 @@ const CreateBookingHaveItem = ({
                       placeholder="Chi phí"
                       value={String(service.actualCost)}
                       keyboardType="numeric"
-                      onChangeText={(text) =>
-                        handleServiceChange(index, "actualCost", parseInt(text))
-                      }
+                      editable={false}
+                      // onChangeText={(text) =>
+                      //   handleServiceChange(index, "actualCost", parseInt(text))
+                      // }
                     />
                   </View>
                   <View style={styles.inputContainerCost}>
