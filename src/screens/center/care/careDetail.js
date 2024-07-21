@@ -49,9 +49,7 @@ const CareDetail = ({ route }) => {
 
           <Text style={styles.status}>email: {careById.email}</Text>
 
-          <Text style={styles.centerName}>
-            số điên thoại: {careById.phone}
-          </Text>
+          <Text style={styles.centerName}>số điên thoại: {careById.phone}</Text>
           <Text style={styles.centerName}>
             ngày sinh: {moment(careById?.birthday).format("DD/MM/YYYY")}
           </Text>
@@ -61,6 +59,39 @@ const CareDetail = ({ route }) => {
           </Text>
         </View>
       )}
+      <View
+        style={{
+          flexDirection: "row",
+          alignItems: "center",
+          justifyContent: "center",
+        }}
+      >
+        <Pressable
+          onPress={() =>
+            navigation.navigate("CARE_PUT", {
+              customercareId: staffCareId,
+              gender: careById.gender,
+              logo: careById.logo,
+              phone: careById.phone,
+              firstName: careById.firstName,
+              lastName: careById.lastName,
+              address: careById.address,
+              birthday: careById.birthday,
+            })
+          }
+          style={{
+            backgroundColor: "#1677ff",
+            padding: 10,
+            borderRadius: 10,
+            justifyContent: "center",
+            alignItems: "center",
+            marginHorizontal: 10,
+            marginTop: 10,
+          }}
+        >
+          <Text style={{ color: "white" }}>sửa thông tin</Text>
+        </Pressable>
+      </View>
     </ScrollView>
   );
 };

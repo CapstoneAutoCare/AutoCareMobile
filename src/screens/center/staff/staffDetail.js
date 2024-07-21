@@ -61,6 +61,39 @@ const StaffDetail = ({ route }) => {
           </Text>
         </View>
       )}
+      <View
+        style={{
+          flexDirection: "row",
+          alignItems: "center",
+          justifyContent: "center",
+        }}
+      >
+        <Pressable
+          onPress={() =>
+            navigation.navigate("STAFF_PUT", {
+              technicianId: staffCareId,
+              gender: staffById.gender,
+              logo: staffById.logo,
+              phone: staffById.phone,
+              firstName: staffById.firstName,
+              lastName: staffById.lastName,
+              address: staffById.address,
+              birthday: staffById.birthday,
+            })
+          }
+          style={{
+            backgroundColor: "#1677ff",
+            padding: 10,
+            borderRadius: 10,
+            justifyContent: "center",
+            alignItems: "center",
+            marginHorizontal: 10,
+            marginTop: 10,
+          }}
+        >
+          <Text style={{ color: "white" }}>sửa thông tin</Text>
+        </Pressable>
+      </View>
     </ScrollView>
   );
 };
