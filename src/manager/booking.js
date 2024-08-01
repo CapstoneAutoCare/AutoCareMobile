@@ -128,7 +128,7 @@ const Booking = () => {
                         fontSize: 14,
                         fontWeight: "500",
                         color: "gray",
-                        width: 200,
+                        // width: 200,
                       }}
                     >
                       note : {item?.note}
@@ -139,7 +139,7 @@ const Booking = () => {
                         fontSize: 14,
                         fontWeight: "500",
                         color: "gray",
-                        width: 200,
+                        // width: 200,
                       }}
                     >
                       Ngày đặt :{" "}

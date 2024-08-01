@@ -3,37 +3,62 @@ import {
   StyleSheet,
   Text,
   View,
-  SafeAreaView,
-  TextInput,
   ScrollView,
   Pressable,
-  Image,
+  Modal,
+  TouchableOpacity,
 } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
-import { AntDesign } from "@expo/vector-icons";
-import Types from "../components/Types";
-import Quick from "../components/Quick";
 import { Ionicons } from "@expo/vector-icons";
-import MenuItem from "../components/MenuItem";
-import ProductItem from "../components/ProductItem";
 import { useNavigation } from "@react-navigation/native";
+import ProductItem from "../components/ProductItem";
 import { getListSparePart } from "../app/SparePart/actions";
 
 const Product = () => {
   const navigation = useNavigation();
   const dispatch = useDispatch();
   const sparePartList = useSelector((state) => state.sparePart.sparePartList);
+
+  const [sortedSparePartList, setSortedSparePartList] = useState([]);
+  const [sortOrder, setSortOrder] = useState("asc"); // asc for ascending, desc for descending
+  const [modalVisible, setModalVisible] = useState(false); // Modal visibility state
+
   const fetchGetListSparePart = async () => {
     await dispatch(getListSparePart());
   };
 
-    useEffect(() => {
-      const unsubscribe = navigation.addListener("focus", () => {
-        fetchGetListSparePart();
-      });
+  useEffect(() => {
+    const unsubscribe = navigation.addListener("focus", () => {
       fetchGetListSparePart();
-      return unsubscribe;
-    }, [navigation]);
+    });
+    fetchGetListSparePart();
+    return unsubscribe;
+  }, [navigation]);
+
+  useEffect(() => {
+    setSortedSparePartList(sparePartList);
+  }, [sparePartList]);
+
+  const handleSort = (order) => {
+    const sortedList = [...sortedSparePartList].sort((a, b) => {
+      const priceA = a?.responseSparePartsItemCosts?.length
+        ? a.responseSparePartsItemCosts[0].acturalCost
+        : 0;
+      const priceB = b?.responseSparePartsItemCosts?.length
+        ? b.responseSparePartsItemCosts[0].acturalCost
+        : 0;
+
+      if (order === "asc") {
+        return priceA - priceB;
+      } else {
+        return priceB - priceA;
+      }
+    });
+    setSortedSparePartList(sortedList);
+    setSortOrder(order);
+    setModalVisible(false); // Close the modal after sorting
+  };
+
   return (
     <ScrollView style={{ marginTop: 50 }}>
       <Text style={{ padding: 10, fontSize: 18, fontWeight: "bold" }}>
@@ -61,6 +86,7 @@ const Product = () => {
           <Text style={{ color: "white" }}>+ Thêm phụ tùng</Text>
         </Pressable>
         <Pressable
+          onPress={() => setModalVisible(true)} // Show the modal on press
           style={{
             marginHorizontal: 10,
             flexDirection: "row",
@@ -85,15 +111,104 @@ const Product = () => {
           flexWrap: "wrap",
         }}
       >
-        {sparePartList.length > 0 &&
-          sparePartList.map((item, index) => (
+        {sortedSparePartList.length > 0 ? (
+          sortedSparePartList.map((item, index) => (
             <ProductItem item={item} key={index} />
-          ))}
+          ))
+        ) : (
+          <View style={{ justifyContent: "center", alignItems: "center" }}>
+            <Text
+              style={{
+                color: "black",
+                fontSize: 15,
+                fontWeight: "500",
+              }}
+            >
+              Không có phụ tùng
+            </Text>
+          </View>
+        )}
       </View>
+
+      {/* Modal for sorting options */}
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={modalVisible}
+        onRequestClose={() => {
+          setModalVisible(!modalVisible);
+        }}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalView}>
+            <Text style={styles.modalText}>Chọn cách sắp xếp</Text>
+            <TouchableOpacity
+              style={styles.modalButton}
+              onPress={() => handleSort("asc")}
+            >
+              <Text style={styles.textStyle}>Giá thấp đến cao</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.modalButton}
+              onPress={() => handleSort("desc")}
+            >
+              <Text style={styles.textStyle}>Giá cao đến thấp</Text>
+            </TouchableOpacity>
+            <Pressable
+              style={[styles.modalButton, { backgroundColor: "#f44336" }]}
+              onPress={() => setModalVisible(!modalVisible)}
+            >
+              <Text style={styles.textStyle}>Đóng</Text>
+            </Pressable>
+          </View>
+        </View>
+      </Modal>
     </ScrollView>
   );
 };
 
 export default Product;
 
-const styles = StyleSheet.create({});
+const styles = StyleSheet.create({
+  modalOverlay: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
+  },
+  modalView: {
+    margin: 20,
+    backgroundColor: "white",
+    borderRadius: 20,
+    padding: 35,
+    alignItems: "center",
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
+  },
+  modalText: {
+    marginBottom: 15,
+    textAlign: "center",
+    fontSize: 18,
+    fontWeight: "bold",
+  },
+  modalButton: {
+    borderRadius: 20,
+    padding: 10,
+    elevation: 2,
+    backgroundColor: "#2196F3",
+    marginBottom: 10,
+    width: 200,
+    alignItems: "center",
+  },
+  textStyle: {
+    color: "white",
+    fontWeight: "bold",
+    textAlign: "center",
+  },
+});

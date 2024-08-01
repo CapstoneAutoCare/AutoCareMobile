@@ -11,14 +11,14 @@ import {
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useAppDispatch } from "../app/hooks";
 import { login } from "../features/userSlice";
-export default Login = ({ navigation }) => {
+export default LoginCenter = ({ navigation }) => {
   const dispatch = useAppDispatch();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const handleLogin = async () => {
     try {
       await dispatch(
-        login({ email: email, password: password, role: "CUSTOMER" })
+        login({ email: email, password: password, role: "CENTER" })
       ).then((res) => {
         if (res?.meta?.requestStatus === "fulfilled") {
           alert("Đăng nhập thành công");
@@ -49,7 +49,7 @@ export default Login = ({ navigation }) => {
           color: "red",
         }}
       >
-        AUTO CARE
+        AUTO CARE CENTER
       </Text>
       <View style={{ width: "100%" }}>
         <View style={{ padding: 20 }}>
@@ -75,7 +75,7 @@ export default Login = ({ navigation }) => {
             Đăng nhập
           </Text>
         </TouchableOpacity>
-        <TouchableOpacity onPress={() => navigation.navigate("LoginCenter")}>
+        <TouchableOpacity onPress={() => navigation.navigate("Login")}>
           <Text
             style={{
               fontSize: 15,
@@ -84,14 +84,14 @@ export default Login = ({ navigation }) => {
               marginBottom: 10,
             }}
           >
-            Đăng nhập trung tâm ?
+            Đăng nhập khách hàng ?
           </Text>
         </TouchableOpacity>
-        <TouchableOpacity onPress={() => navigation.navigate("Register")}>
+        {/* <TouchableOpacity onPress={() => navigation.navigate("Register")}>
           <Text style={{ fontSize: 15, color: "red", textAlign: "center" }}>
             Đăng ký
           </Text>
-        </TouchableOpacity>
+        </TouchableOpacity> */}
       </View>
     </SafeAreaView>
   );

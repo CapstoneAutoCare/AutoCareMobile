@@ -62,11 +62,16 @@ const ServiceDetail = ({ route }) => {
 
             {serviceById.responseMaintenanceServiceCosts.length > 0 && (
               <Text style={styles.cost}>
-                Giá:{" "}
+                Giá mới:{" "}
                 {serviceById.responseMaintenanceServiceCosts[0].acturalCost} VND
               </Text>
             )}
-
+            {serviceById.responseMaintenanceServiceCosts.length > 1 && (
+              <Text style={styles.cost}>
+                Giá cũ:{" "}
+                {serviceById.responseMaintenanceServiceCosts[1].acturalCost} VND
+              </Text>
+            )}
             {/* Additional fields can be rendered similarly */}
 
             <Text style={styles.createdDate}>

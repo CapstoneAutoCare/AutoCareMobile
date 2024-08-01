@@ -1,5 +1,3 @@
-import { useNavigation } from "@react-navigation/native";
-import React, { Component, useState } from "react";
 import {
   SafeAreaView,
   View,
@@ -11,17 +9,18 @@ import {
   TextInput,
   Image,
   StyleSheet,
-  Pressable,
+  Linking,
 } from "react-native";
+import QRCodeScanner from "../components/QRCodeScanner";
 export default Home = () => {
-  const navigation = useNavigation();
   return (
-    <SafeAreaView>
+    <SafeAreaView
+      style={{ width: "100%", height: "100%", marginTop: 50 }}
+    >
       <View style={styles.center}>
-        <View>
-          <Text style={{ color: "red" }}>home</Text>
-        </View>
+        <Text style={{ color: "red" }}>home</Text>
       </View>
+      <QRCodeScanner />
     </SafeAreaView>
   );
 }
@@ -30,5 +29,6 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     textAlign: "center",
+    padding: 10,
   },
 });

@@ -3,6 +3,7 @@ import React from "react";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { createDrawerNavigator } from "@react-navigation/drawer";
 import Login from "../../Login/login";
+import LoginCenter from "../../Login/loginCenter";
 import Register from "../../Login/register";
 import BottomTabNavigator from "../BottomTabNavigator/BottomTabNavigator";
 import ManagerNavigator from "../BottomTabNavigator/TabNavigator/ManagerNavigator";
@@ -18,6 +19,11 @@ const HomeNavigator = ({ authenticated, role }) => {
           <Stack.Screen
             name="Login"
             component={Login}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="LoginCenter"
+            component={LoginCenter}
             options={{ headerShown: false }}
           />
           <Stack.Screen

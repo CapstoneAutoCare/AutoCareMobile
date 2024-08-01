@@ -63,8 +63,14 @@ const ProductDetail = ({ route }) => {
 
             {sparePartById.responseSparePartsItemCosts.length > 0 && (
               <Text style={styles.cost}>
-                Giá: {sparePartById.responseSparePartsItemCosts[0].acturalCost}{" "}
-                VND
+                Giá mới:{" "}
+                {sparePartById.responseSparePartsItemCosts[0].acturalCost} VND
+              </Text>
+            )}
+            {sparePartById.responseSparePartsItemCosts.length > 1 && (
+              <Text style={styles.cost}>
+                Giá cũ:{" "}
+                {sparePartById.responseSparePartsItemCosts[1].acturalCost} VND
               </Text>
             )}
             <Text style={styles.createdDate}>

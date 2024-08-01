@@ -14,10 +14,16 @@ const initialState = {
 };
 export const login = createAsyncThunk(
   "user/login",
-  async ({ email, password }, { rejectWithValue }) => {
+  async ({ email, password, role }, { rejectWithValue }) => {
     try {
       const response = await userService.login({ email, password });
       const jwtCode = jwtDecode(response?.data?.token);
+      if (
+        role !==
+        jwtCode["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"]
+      ) {
+        throw new Error("Role does not match");
+      }
       await AsyncStorage.setItem("ACCESS_TOKEN", response?.data?.token);
       await AsyncStorage.setItem(
         "ROLE",
