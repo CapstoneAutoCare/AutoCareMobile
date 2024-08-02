@@ -1,10 +1,12 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import {
   ScrollView,
   StyleSheet,
   Text,
   View,
   Pressable,
+  Modal,
+  TouchableOpacity,
 } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import moment from "moment";
@@ -12,14 +14,18 @@ import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { FontAwesome } from "@expo/vector-icons";
 import { getListBookingByClient } from "../../../app/Booking/actions";
 import { useNavigation } from "@react-navigation/native";
+import { Ionicons } from "@expo/vector-icons";
 
 const Booking = () => {
-    const navigation = useNavigation();
-   const dispatch = useDispatch();
-    const { bookingListByClient } = useSelector((state) => state.booking);
-    const fetchGetListBooking = async () => {
-      await dispatch(getListBookingByClient());
-    };
+  const navigation = useNavigation();
+  const dispatch = useDispatch();
+  const { bookingListByClient } = useSelector((state) => state.booking);
+  const [sortStatus, setSortStatus] = useState(null);
+  const [isModalVisible, setModalVisible] = useState(false);
+
+  const fetchGetListBooking = async () => {
+    await dispatch(getListBookingByClient());
+  };
 
   useEffect(() => {
     const unsubscribe = navigation.addListener("focus", () => {
@@ -28,10 +34,31 @@ const Booking = () => {
     fetchGetListBooking();
     return unsubscribe;
   }, [navigation]);
+
+  const handleSortPress = () => {
+    setModalVisible(true);
+  };
+
+  const handleStatusSelect = (status) => {
+    setSortStatus(status);
+    setModalVisible(false);
+  };
+
+  const sortedBookingList = sortStatus
+    ? bookingListByClient.filter((item) => item.status === sortStatus)
+    : bookingListByClient;
+
   return (
     <ScrollView style={{ marginTop: 10 }}>
+      
       <View style={{ padding: 12 }}>
-        <View>
+        <View
+          style={{
+            flexDirection: "row",
+            alignItems: "center",
+            justifyContent: "space-between",
+          }}
+        >
           <Pressable
             onPress={() =>
               navigation.navigate("PostBooking", {
@@ -50,10 +77,27 @@ const Booking = () => {
           >
             <Text style={{ color: "white" }}>+ Lên lịch sửa xe</Text>
           </Pressable>
+          <Pressable
+            onPress={handleSortPress}
+            style={{
+              marginHorizontal: 10,
+              flexDirection: "row",
+              alignItems: "center",
+              borderWidth: 1,
+              borderColor: "#D0D0D0",
+              padding: 10,
+              borderRadius: 20,
+              width: 120,
+              justifyContent: "center",
+            }}
+          >
+            <Text style={{ marginRight: 6 }}>Sắp xếp</Text>
+            <Ionicons name="filter" size={20} color="black" />
+          </Pressable>
         </View>
         <View>
-          {bookingListByClient.length > 0 &&
-            bookingListByClient.map((item, index) => (
+          {sortedBookingList.length > 0 &&
+            sortedBookingList.map((item, index) => (
               <Pressable
                 style={{
                   marginVertical: 12,
@@ -134,7 +178,6 @@ const Booking = () => {
                         fontSize: 14,
                         fontWeight: "500",
                         color: "gray",
-                        width: 200,
                       }}
                     >
                       note : {item?.note}
@@ -145,7 +188,6 @@ const Booking = () => {
                         fontSize: 14,
                         fontWeight: "500",
                         color: "gray",
-                        width: 200,
                       }}
                     >
                       Ngày đặt :{" "}
@@ -169,61 +211,6 @@ const Booking = () => {
                       </Text>
                     </View>
                     <View style={{ marginBottom: 20 }} />
-                  </View>
-
-                  <View style={{ alignItems: "center" }}>
-                    {/* <View
-                      style={{
-                        width: 32,
-                        height: 32,
-                        borderRadius: 16,
-                        backgroundColor: "#F0F8FF",
-                        justifyContent: "center",
-                        alignItems: "center",
-                        marginTop: 10,
-                      }}
-                    >
-                      <MaterialCommunityIcons
-                        name="note-outline"
-                        size={24}
-                        color="black"
-                      />
-                    </View>
-                    <Text
-                      style={{
-                        textAlign: "center",
-                        fontSize: 13,
-                        fontWeight: "500",
-                      }}
-                    >
-                      Thông tin
-                    </Text> */}
-                    <View
-                      style={{
-                        width: 32,
-                        height: 32,
-                        borderRadius: 16,
-                        backgroundColor: "#F0F8FF",
-                        justifyContent: "center",
-                        alignItems: "center",
-                        marginTop: 10,
-                      }}
-                    >
-                      <FontAwesome
-                        name="folder-open-o"
-                        size={24}
-                        color="black"
-                      />
-                    </View>
-                    <Text
-                      style={{
-                        textAlign: "center",
-                        fontSize: 13,
-                        fontWeight: "500",
-                      }}
-                    >
-                      Nhận xét
-                    </Text>
                   </View>
                 </View>
                 <View
@@ -262,10 +249,72 @@ const Booking = () => {
             ))}
         </View>
       </View>
+
+      {/* Modal for sorting */}
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={isModalVisible}
+        onRequestClose={() => {
+          setModalVisible(!isModalVisible);
+        }}
+      >
+        <View style={styles.modalContainer}>
+          <View style={styles.modalContent}>
+            <Text style={styles.modalTitle}>Chọn Trạng Thái</Text>
+            {["ACCEPTED", "WAITING", "CANCELLED"].map((status) => (
+              <TouchableOpacity
+                key={status}
+                style={styles.modalButton}
+                onPress={() => handleStatusSelect(status)}
+              >
+                <Text style={styles.modalButtonText}>{status}</Text>
+              </TouchableOpacity>
+            ))}
+            <TouchableOpacity
+              style={[styles.modalButton, { backgroundColor: "red" }]}
+              onPress={() => setModalVisible(false)}
+            >
+              <Text style={styles.modalButtonText}>Đóng</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
     </ScrollView>
   );
 };
 
 export default Booking;
 
-const styles = StyleSheet.create({});
+const styles = StyleSheet.create({
+  modalContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "rgba(0,0,0,0.5)",
+  },
+  modalContent: {
+    width: 300,
+    backgroundColor: "white",
+    borderRadius: 10,
+    padding: 20,
+    alignItems: "center",
+  },
+  modalTitle: {
+    fontSize: 18,
+    fontWeight: "bold",
+    marginBottom: 20,
+  },
+  modalButton: {
+    padding: 10,
+    borderRadius: 5,
+    backgroundColor: "#0066b2",
+    marginVertical: 5,
+    width: "100%",
+    alignItems: "center",
+  },
+  modalButtonText: {
+    color: "white",
+    fontSize: 16,
+  },
+});
