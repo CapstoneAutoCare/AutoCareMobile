@@ -1,43 +1,55 @@
-import React, { Component, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   SafeAreaView,
   View,
   Text,
   TouchableOpacity,
   TextInput,
-  Image,
   StyleSheet,
 } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useAppDispatch } from "../app/hooks";
 import { login } from "../features/userSlice";
+
 export default LoginCenter = ({ navigation }) => {
   const dispatch = useAppDispatch();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+
   const handleLogin = async () => {
-    try {
-      await dispatch(
-        login({ email: email, password: password, role: "CENTER" })
-      ).then((res) => {
+    const roles = ["CENTER", "TECHNICAN", "CUSTOMERCARE"];
+    let loginSuccess = false;
+
+    for (let role of roles) {
+      try {
+        const res = await dispatch(
+          login({ email: email, password: password, role: role })
+        );
+
         if (res?.meta?.requestStatus === "fulfilled") {
-          alert("Đăng nhập thành công");
+          alert(`Đăng nhập thành công với vai trò ${role}`);
           navigation.navigate("Home");
-        } else {
-          alert("Đăng nhập thất bại");
+          loginSuccess = true;
+          break;
         }
-      });
-    } catch (error) {
-      console.log(error);
+      } catch (error) {
+        console.log(`Đăng nhập thất bại với vai trò ${role}:`, error);
+      }
+    }
+
+    if (!loginSuccess) {
+      alert("Đăng nhập thất bại với tất cả các vai trò");
     }
   };
+
   const getAccessToken = async () => {
     const accessToken = await AsyncStorage.getItem("ACCESS_TOKEN");
     console.log("AccessToken: " + "<< " + accessToken + " >>");
   };
+
   useEffect(() => {
     getAccessToken();
-  }, [getAccessToken]);
+  }, []);
 
   return (
     <SafeAreaView style={{ width: "100%", height: "100%" }}>
@@ -65,6 +77,7 @@ export default LoginCenter = ({ navigation }) => {
             style={styles.textInput}
             placeholder="Nhập mật khẩu của bạn"
             value={password}
+            secureTextEntry={true}
             onChangeText={(text) => setPassword(text)}
           ></TextInput>
         </View>
@@ -87,15 +100,11 @@ export default LoginCenter = ({ navigation }) => {
             Đăng nhập khách hàng ?
           </Text>
         </TouchableOpacity>
-        {/* <TouchableOpacity onPress={() => navigation.navigate("Register")}>
-          <Text style={{ fontSize: 15, color: "red", textAlign: "center" }}>
-            Đăng ký
-          </Text>
-        </TouchableOpacity> */}
       </View>
     </SafeAreaView>
   );
 };
+
 const styles = StyleSheet.create({
   textInput: {
     marginBottom: 15,

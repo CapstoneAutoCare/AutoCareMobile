@@ -8,7 +8,8 @@ import Register from "../../Login/register";
 import BottomTabNavigator from "../BottomTabNavigator/BottomTabNavigator";
 import ManagerNavigator from "../BottomTabNavigator/TabNavigator/ManagerNavigator";
 import CenterTabNavigator from "../CenterTabNavigator/CenterTabNavigator";
-
+import CustomerCareNavigator from "../CustomerCareNavigator/CustomerCareNavigator";
+import TechnicianNavigator from "../TechicianNavigator/TechnicianNavigator"
 const Stack = createNativeStackNavigator();
 const Drawer = createDrawerNavigator();
 const HomeNavigator = ({ authenticated, role }) => {
@@ -38,7 +39,20 @@ const HomeNavigator = ({ authenticated, role }) => {
           component={CenterTabNavigator}
           options={{ headerShown: false }}
         />
-      ) : (
+      ) : role === "CUSTOMERCARE" ? (
+        <Stack.Screen
+          name="Home"
+          component={CustomerCareNavigator}
+          options={{ headerShown: false }}
+        />
+      ) : role === "TECHNICAN" ? (
+        <Stack.Screen
+          name="Home"
+          component={TechnicianNavigator}
+          options={{ headerShown: false }}
+        />
+      ) 
+      : (
         <Stack.Screen
           name="Home"
           component={BottomTabNavigator}

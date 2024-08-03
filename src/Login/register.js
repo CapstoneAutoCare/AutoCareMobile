@@ -382,13 +382,20 @@ export default Register = ({ navigation }) => {
               color={COLORS.grey}
               style={{ marginRight: 10 }}
             />
-            <TextInput
-              style={{ flex: 1, fontSize: 16 }}
-              placeholder="Ngày sinh"
+           <TouchableOpacity onPress={showDatepicker}>
+            <Text style={{ flex: 1, fontSize: 16, color: COLORS.grey }}>
+              {dob ? dob.toLocaleDateString() : "Chọn ngày sinh"}
+            </Text>
+          </TouchableOpacity>
+          {showDatePicker && (
+            <DateTimePicker
               value={dob}
-              onChangeText={(text) => setDob(text)}
-              required={true}
+              mode="date"
+              display="default"
+              onChange={handleDateChange}
+              maximumDate={new Date()}
             />
+          )}
             {/* <Pressable onPress={showDatepicker} style={{ flex: 1, alignItems: 'flex-end' }}>
                             <FontAwesome name="calendar" size={24} color={COLORS.grey} style={{ marginRight: 10 }} />
                         </Pressable>

@@ -37,6 +37,9 @@ const CreateBookingHaveItem = ({
   const [bookingDate, setBookingDate] = useState(new Date());
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [showTimePicker, setShowTimePicker] = useState(false);
+  const [filteredSpareParts, setFilteredSpareParts] = useState([]);
+const [filteredServices, setFilteredServices] = useState([]);
+
   const { customerCareListByCenterId } = useSelector(
     (state) => state.customerCare
   );
@@ -219,7 +222,20 @@ const CreateBookingHaveItem = ({
     );
     setBookingDate(updatedDate);
   };
-
+  useEffect(() => {
+    const selectedVehicle = vehicleListByClient.find(v => v.vehiclesId === vehicle);
+    if (selectedVehicle) {
+      setFilteredSpareParts(availableSpareParts.filter(part => 
+        part?.vehicleModelName === selectedVehicle?.vehicleModelName));
+      setFilteredServices(availableServices.filter(service => 
+        service?.vehicleModelName === selectedVehicle?.vehicleModelName));
+    } else {
+      setFilteredSpareParts([]);
+      setFilteredServices([]);
+    }
+    console.log(selectedVehicle?.vehicleModelName)
+  }, [vehicle, availableSpareParts, availableServices]);
+  
   return (
     <ScrollView style={{ marginTop: 20 }}>
       <View style={styles.container}>
@@ -243,7 +259,7 @@ const CreateBookingHaveItem = ({
               {vehicleListByClient.map((vehicle) => (
                 <Picker.Item
                   key={vehicle.vehiclesId}
-                  label={vehicle.vehiclesBrandName}
+                  label={vehicle.vehiclesBrandName + " " + vehicle.licensePlate} 
                   value={vehicle.vehiclesId}
                 />
               ))}
@@ -315,14 +331,15 @@ const CreateBookingHaveItem = ({
                       style={styles.picker}
                     >
                       <Picker.Item label="Chọn phụ tùng" value="" />
-                      {availableSpareParts.map((part) => (
+                      {filteredSpareParts.map((part) => (
                         <Picker.Item
                           key={part.sparePartsItemCostId}
                           label={
+                            part.maintananceScheduleName + 
                             part.sparePartsItemName +
                             " - " +
                             part.acturalCost +
-                            "VND"
+                            "VND " + part?.vehicleModelName
                           }
                           value={part.sparePartsItemCostId}
                         />
@@ -435,7 +452,7 @@ const CreateBookingHaveItem = ({
                       style={styles.picker}
                     >
                       <Picker.Item label="Chọn dịch vụ" value="" />
-                      {availableServices.map((service) => (
+                      {filteredServices.map((service) => (
                         <Picker.Item
                           key={service.maintenanceServiceCostId}
                           label={

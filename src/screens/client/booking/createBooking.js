@@ -120,7 +120,7 @@ const CreateBooking = ({
               {vehicleListByClient.map((vehicle) => (
                 <Picker.Item
                   key={vehicle.vehiclesId}
-                  label={vehicle.vehiclesBrandName}
+                  label={vehicle.vehiclesBrandName + " " + vehicle.licensePlate} 
                   value={vehicle.vehiclesId}
                 />
               ))}
