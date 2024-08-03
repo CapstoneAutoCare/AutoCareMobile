@@ -69,7 +69,7 @@ const Vehicle = () => {
                         fontWeight: "500",
                       }}
                     >
-                      thông tin xe
+                      THÔNG TIN XE
                     </Text>
                     <Text
                       style={{
@@ -91,7 +91,7 @@ const Vehicle = () => {
                         fontWeight: "500",
                       }}
                     >
-                      Trạng thái
+                      TRẠNG THÁI
                     </Text>
                     <Text
                       style={{
@@ -124,7 +124,7 @@ const Vehicle = () => {
                         width: 200,
                       }}
                     >
-                      thông tin : {item?.description}
+                      Thông tin : {item?.description}
                     </Text>
                     <Text
                       style={{
@@ -151,7 +151,7 @@ const Vehicle = () => {
                     </Text>
                     <View style={{ marginTop: 10 }}>
                       <Text style={{ fontSize: 13, fontWeight: "600" }}>
-                        biển số xe
+                        Biển số xe
                       </Text>
                       <Text style={{ fontSize: 15, marginTop: 4 }}>
                         {item?.licensePlate}
@@ -159,7 +159,7 @@ const Vehicle = () => {
                     </View>
                     <View style={{ marginTop: 10 }}>
                       <Text style={{ fontSize: 13, fontWeight: "600" }}>
-                        số km đã đi được
+                        Số km đã đi được
                       </Text>
                       <Text style={{ fontSize: 15, marginTop: 4 }}>
                         {item?.odo}

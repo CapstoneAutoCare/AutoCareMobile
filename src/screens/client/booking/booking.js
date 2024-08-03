@@ -50,7 +50,7 @@ const Booking = () => {
 
   return (
     <ScrollView style={{ marginTop: 10 }}>
-      
+
       <View style={{ padding: 12 }}>
         <View
           style={{
@@ -125,7 +125,7 @@ const Booking = () => {
                         fontWeight: "500",
                       }}
                     >
-                      thông tin xe
+                      THÔNG TIN XE
                     </Text>
                     <Text
                       style={{
@@ -148,7 +148,7 @@ const Booking = () => {
                         fontWeight: "500",
                       }}
                     >
-                      Trạng thái
+                      TRẠNG THÁI
                     </Text>
                     <Text
                       style={{
@@ -180,7 +180,7 @@ const Booking = () => {
                         color: "gray",
                       }}
                     >
-                      note : {item?.note}
+                      Note : {item?.note}
                     </Text>
                     <Text
                       style={{

@@ -18,15 +18,15 @@ const VehiclePost = () => {
   const [color, setColor] = useState("");
   const [description, setDescription] = useState("");
   const { vehicleModel } = useSelector((state) => state.vehicle);
-    const fetchGetListVehicleModel = async () => {
-      await dispatch(getListVehicleModel());
+  const fetchGetListVehicleModel = async () => {
+    await dispatch(getListVehicleModel());
+  };
+  useEffect(() => {
+    const fetch = async () => {
+      await fetchGetListVehicleModel();
     };
-    useEffect(() => {
-      const fetch = async () => {
-        await fetchGetListVehicleModel();
-      };
-      fetch();
-    }, []);
+    fetch();
+  }, []);
   const handleSignup = async () => {
     try {
       if (!vehicleModelId || !licensePlate || !odo || !color || !description) {
@@ -81,7 +81,7 @@ const VehiclePost = () => {
       }
     }
   };
-  
+
   const handleNavigateBack = () => {
     navigation.goBack();
   };
@@ -123,7 +123,7 @@ const VehiclePost = () => {
         <View style={styles.inputContainer}>
           <TextInput
             style={styles.textInput}
-            placeholder="biển số xe"
+            placeholder="Biển số xe"
             value={licensePlate}
             onChangeText={(text) => setLicensePlate(text)}
             required={true}
@@ -132,7 +132,7 @@ const VehiclePost = () => {
         <View style={styles.inputContainer}>
           <TextInput
             style={styles.textInput}
-            placeholder="số km đi được"
+            placeholder="Số km đi được"
             value={odo}
             onChangeText={(text) => setOdo(text)}
             required={true}
@@ -141,7 +141,7 @@ const VehiclePost = () => {
         <View style={styles.inputContainer}>
           <TextInput
             style={styles.textInput}
-            placeholder="thông tin xe"
+            placeholder="THÔNG TIN XE"
             value={description}
             onChangeText={(text) => setDescription(text)}
             required={true}

@@ -129,7 +129,7 @@ const MaintenanceCenters = () => {
                         fontWeight: "500",
                       }}
                     >
-                      thông tin trung tâm
+                      THÔNG TIN TRUNG TÂM
                     </Text>
                     <Text
                       style={{
@@ -151,7 +151,7 @@ const MaintenanceCenters = () => {
                         fontWeight: "500",
                       }}
                     >
-                      Đánh giá
+                      ĐÁNH GIÁ
                     </Text>
                     <View style={{ flexDirection: "row" }}>
                       <Text
@@ -186,7 +186,7 @@ const MaintenanceCenters = () => {
                         color: "gray",
                       }}
                     >
-                      email : {item?.email}
+                      Email : {item?.email}
                     </Text>
                     <Text
                       style={{
@@ -196,7 +196,7 @@ const MaintenanceCenters = () => {
                         color: "gray",
                       }}
                     >
-                      số điện thoại : {item?.phone}
+                      Số điện thoại : {item?.phone}
                     </Text>
                     <Text
                       style={{
@@ -206,11 +206,11 @@ const MaintenanceCenters = () => {
                         color: "gray",
                       }}
                     >
-                      địa chỉ : {item?.address}
+                      Địa chỉ : {item?.address}
                     </Text>
                     <View style={{ marginTop: 10 }}>
                       <Text style={{ fontSize: 13, fontWeight: "600" }}>
-                        thông tin
+                        Thông tin
                       </Text>
                       <Text style={{ fontSize: 15, marginTop: 4 }}>
                         {item?.maintenanceCenterDescription}
