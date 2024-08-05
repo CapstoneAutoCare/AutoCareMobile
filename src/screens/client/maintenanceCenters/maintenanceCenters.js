@@ -80,8 +80,12 @@ const MaintenanceCenters = () => {
   const handleSearch = (query) => {
     setSearchQuery(query);
     if (query) {
-      const filteredStores = centerList.filter((store) =>
-        store.maintenanceCenterName.toLowerCase().includes(query.toLowerCase())
+      const filteredStores = centerList.filter(
+        (store) =>
+          store.maintenanceCenterName
+            .toLowerCase()
+            .includes(query.toLowerCase()) ||
+          store.address.toLowerCase().includes(query.toLowerCase())
       );
       setSortedStores(filteredStores);
     } else {
