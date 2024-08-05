@@ -7,6 +7,7 @@ import {
   Pressable,
   Modal,
   TouchableOpacity,
+  TextInput,
 } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -28,6 +29,7 @@ const MaintenanceCenters = () => {
   const [sortedStores, setSortedStores] = useState([]);
   const [isModalVisible, setModalVisible] = useState(false);
   const [sortOrder, setSortOrder] = useState("default");
+  const [searchQuery, setSearchQuery] = useState("");
 
   const fetchGetListBooking = async () => {
     await dispatch(getProfile());
@@ -45,6 +47,10 @@ const MaintenanceCenters = () => {
   useEffect(() => {
     sortStores();
   }, [centerList, sortOrder]);
+
+  useEffect(() => {
+    handleSearch(searchQuery);
+  }, [searchQuery]);
 
   const sortStores = () => {
     let sorted = [...centerList];
@@ -71,6 +77,18 @@ const MaintenanceCenters = () => {
     setModalVisible(false);
   };
 
+  const handleSearch = (query) => {
+    setSearchQuery(query);
+    if (query) {
+      const filteredStores = centerList.filter((store) =>
+        store.maintenanceCenterName.toLowerCase().includes(query.toLowerCase())
+      );
+      setSortedStores(filteredStores);
+    } else {
+      sortStores();
+    }
+  };
+
   return (
     <ScrollView style={{ marginTop: 10 }}>
       <View style={{ padding: 12 }}>
@@ -81,6 +99,12 @@ const MaintenanceCenters = () => {
             justifyContent: "space-between",
           }}
         >
+          <TextInput
+            style={styles.searchInput}
+            placeholder="Tìm kiếm"
+            value={searchQuery}
+            onChangeText={handleSearch}
+          />
           <Pressable
             onPress={handleSortPress}
             style={{
@@ -343,5 +367,13 @@ const styles = StyleSheet.create({
   modalButtonText: {
     color: "white",
     fontSize: 16,
+  },
+  searchInput: {
+    borderWidth: 1,
+    borderColor: "#D0D0D0",
+    padding: 5,
+    borderRadius: 10,
+    width: 200,
+    // marginHorizontal: 10,
   },
 });

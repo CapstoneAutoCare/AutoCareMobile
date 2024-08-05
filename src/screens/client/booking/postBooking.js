@@ -84,7 +84,7 @@ export default PostBooking;
 
 const styles = StyleSheet.create({
   container: {
-    marginTop: 50,
+    marginTop: 10,
     flex: 1,
     justifyContent: "center",
   },

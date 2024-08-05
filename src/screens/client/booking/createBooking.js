@@ -84,7 +84,7 @@ const CreateBooking = ({
     setShowDatePicker(false);
     setBookingDate(currentDate);
     if (event.type === "set") {
-      setShowTimePicker(true); // Show time picker after date is selected
+      setShowTimePicker(true);
     }
   };
 

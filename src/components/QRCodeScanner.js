@@ -35,7 +35,7 @@ const QRCodeScanner = () => {
 
   return (
     <View style={styles.container}>
-      {scanned ? (
+      {!scanned ? (
         <View style={styles.scannedContainer}>
           <Text style={styles.scannedData}>Scanned Data: {scannedData}</Text>
         </View>
@@ -49,7 +49,7 @@ const QRCodeScanner = () => {
       )}
 
       <View style={styles.controls}>
-        {scanned ? (
+        {!scanned ? (
           <Button
             title={"Tap to Scan Again"}
             onPress={() => setScanned(false)}
