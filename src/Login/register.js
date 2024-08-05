@@ -1,18 +1,19 @@
 import React, { Component, useState } from "react";
 import {
-    SafeAreaView,
-    View,
-    Text,
-    TouchableOpacity,
-    ImageBackground,
-    StatusBar,
-    Dimensions,
-    TextInput,
-    Image,
-    StyleSheet,
-    Modal, Button,
-    Pressable
-} from 'react-native';
+  SafeAreaView,
+  View,
+  Text,
+  TouchableOpacity,
+  ImageBackground,
+  StatusBar,
+  Dimensions,
+  TextInput,
+  Image,
+  StyleSheet,
+  Modal,
+  Button,
+  Pressable,
+} from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import COLORS from "../constants/colors";
 import PhoneInput from "react-native-phone-input";
@@ -21,21 +22,46 @@ import * as ImagePicker from "expo-image-picker";
 import Constants from "expo-constants";
 import axios from "axios";
 import { RadioButton } from "react-native-paper";
-import { storeImageToFireBase, uploadImage } from "../configs/storeImageToFirebase";
+import {
+  storeImageToFireBase,
+  uploadImage,
+} from "../configs/storeImageToFirebase";
+import DateTimePicker from "react-native-modal-datetime-picker";
 export default Register = ({ navigation }) => {
-      const [firstName, setFirstName] = useState("");
-      const [lastName, setLastName] = useState("");
-      const [passwordHash, setPasswordHash] = useState("");
-      const [password2, setPassword2] = useState("");
-      const [phone, setPhone] = useState("");
-      const [showPassword1, setShowPassword1] = useState(false);
-      const [showPassword2, setShowPassword2] = useState(false);
-      const [email, setEmail] = useState("");
-      const [dob, setDob] = useState("");
-      const [address, setAddress] = useState("");
-      const [gender, setGender] = useState("");
-      const [avatar, setAvatar] = useState(null);
-      const [isAvatarSelected, setIsAvatarSelected] = useState(false);
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [passwordHash, setPasswordHash] = useState("");
+  const [password2, setPassword2] = useState("");
+  const [phone, setPhone] = useState("");
+  const [showPassword1, setShowPassword1] = useState(false);
+  const [showPassword2, setShowPassword2] = useState(false);
+  const [email, setEmail] = useState("");
+  const [dob, setDob] = useState("");
+  const [address, setAddress] = useState("");
+  const [gender, setGender] = useState("");
+  const [avatar, setAvatar] = useState(null);
+  const [bookingDate, setBookingDate] = useState(new Date());
+  const [showDatePicker, setShowDatePicker] = useState(false);
+  const [showTimePicker, setShowTimePicker] = useState(false);
+
+  const [isAvatarSelected, setIsAvatarSelected] = useState(false);
+  const onDateChange = (event, selectedDate) => {
+    const currentDate = selectedDate || bookingDate;
+    setShowDatePicker(false);
+    setBookingDate(currentDate);
+    if (event.type === "set") {
+      setShowTimePicker(true);
+    }
+  };
+
+  const onTimeChange = (event, selectedTime) => {
+    const currentTime = selectedTime || bookingDate;
+    setShowTimePicker(false);
+    const updatedDate = new Date(
+      bookingDate.setHours(currentTime.getHours(), currentTime.getMinutes())
+    );
+    setBookingDate(updatedDate);
+  };
   const pickImage = async () => {
     if (Constants.platform.ios) {
       const { status } =
@@ -66,18 +92,25 @@ export default Register = ({ navigation }) => {
         return;
       }
 
-      if (!firstName || !lastName || !phone || !passwordHash || !email || !dob) {
+      if (
+        !firstName ||
+        !lastName ||
+        !phone ||
+        !passwordHash ||
+        !email ||
+        !bookingDate
+      ) {
         alert("Vui lòng điền đầy đủ thông tin");
         return;
       }
-            let avatarUrl =
-              "https://i.pinimg.com/736x/0d/64/98/0d64989794b1a4c9d89bff571d3d5842.jpg";
-            if (avatar) {
-              const uploadedAvatarUrl = await uploadImage(avatar);
-              if (uploadedAvatarUrl) {
-                avatarUrl = uploadedAvatarUrl;
-              }
-            }
+      let avatarUrl =
+        "https://i.pinimg.com/736x/0d/64/98/0d64989794b1a4c9d89bff571d3d5842.jpg";
+      if (avatar) {
+        const uploadedAvatarUrl = await uploadImage(avatar);
+        if (uploadedAvatarUrl) {
+          avatarUrl = uploadedAvatarUrl;
+        }
+      }
 
       const response = await axios.post(
         "http://autocare.runasp.net/api/Clients/Post",
@@ -90,7 +123,7 @@ export default Register = ({ navigation }) => {
           firstName: firstName,
           lastName: lastName,
           address: address,
-          birthday: dob,
+          birthday: bookingDate,
         },
         {
           headers: { "Content-Type": "application/json" },
@@ -125,318 +158,294 @@ export default Register = ({ navigation }) => {
     }
   };
 
-    return (
+  return (
+    <View
+      style={{
+        flex: 1,
+        justifyContent: "center",
+        alignItems: "center",
+      }}
+    >
       <View
         style={{
-          flex: 1,
-          justifyContent: "center",
-          alignItems: "center",
+          position: "absolute",
+          top: 40,
+          left: 20,
+          padding: 7,
+          backgroundColor: "rgba(0,0,0,0.3)",
+          borderRadius: 10,
+        }}
+      >
+        <TouchableOpacity onPress={() => navigation.goBack()}>
+          <Ionicons name="arrow-back" size={30} color="white" />
+        </TouchableOpacity>
+      </View>
+      <View style={{ alignItems: "center" }}>
+        <TouchableOpacity onPress={pickImage}>
+          <View
+            style={{
+              width: 90,
+              height: 90,
+              borderRadius: 60,
+              backgroundColor: COLORS.white,
+              justifyContent: "center",
+              alignItems: "center",
+              overflow: "hidden",
+            }}
+          >
+            {avatar ? (
+              <Image
+                source={{ uri: avatar }}
+                style={{ width: 90, height: 90, borderRadius: 60 }}
+              />
+            ) : (
+              <Ionicons name="camera" size={40} color={COLORS.secondary} />
+            )}
+          </View>
+          <Text
+            style={{
+              color: COLORS.black,
+              fontSize: 20,
+              left: 16,
+            }}
+          >
+            Avatar
+          </Text>
+        </TouchableOpacity>
+        {isAvatarSelected && (
+          <Text style={{ color: COLORS.black, fontSize: 16 }}>
+            Avatar selected successfully!
+          </Text>
+        )}
+      </View>
+      <View
+        style={{
+          paddingHorizontal: 42,
+          width: "100%",
         }}
       >
         <View
           style={{
-            position: "absolute",
-            top: 40,
-            left: 20,
-            padding: 7,
-            backgroundColor: "rgba(0,0,0,0.3)",
+            flexDirection: "row",
+            alignItems: "center",
+            backgroundColor: COLORS.white,
+            paddingVertical: 10,
             borderRadius: 10,
+            marginBottom: 12,
+            marginTop: 10,
+            paddingHorizontal: 10,
           }}
         >
-          <TouchableOpacity onPress={() => navigation.goBack()}>
-            <Ionicons name="arrow-back" size={30} color="white" />
-          </TouchableOpacity>
+          <Ionicons
+            name="person"
+            size={24}
+            color={COLORS.grey}
+            style={{ marginRight: 10 }}
+          />
+          <TextInput
+            style={{
+              flex: 1,
+              fontSize: 16,
+            }}
+            placeholder="Họ"
+            value={firstName}
+            onChangeText={(text) => setFirstName(text)}
+            required={true}
+          />
+          <TextInput
+            style={{
+              flex: 1,
+              fontSize: 16,
+            }}
+            placeholder="Tên"
+            value={lastName}
+            onChangeText={(text) => setLastName(text)}
+            required={true}
+          />
         </View>
-        <View style={{ alignItems: "center" }}>
-          <TouchableOpacity onPress={pickImage}>
-            <View
-              style={{
-                width: 90,
-                height: 90,
-                borderRadius: 60,
-                backgroundColor: COLORS.white,
-                justifyContent: "center",
-                alignItems: "center",
-                overflow: "hidden",
-              }}
-            >
-              {avatar ? (
-                <Image
-                  source={{ uri: avatar }}
-                  style={{ width: 90, height: 90, borderRadius: 60 }}
-                />
-              ) : (
-                <Ionicons name="camera" size={40} color={COLORS.secondary} />
-              )}
-            </View>
-            <Text
-              style={{
-                color: COLORS.black,
-                fontSize: 20,
-                left: 16,
-              }}
-            >
-              Avatar
-            </Text>
-          </TouchableOpacity>
-          {isAvatarSelected && (
-            <Text style={{ color: COLORS.black, fontSize: 16 }}>
-              Avatar selected successfully!
-            </Text>
-          )}
+
+        <View
+          style={{
+            flexDirection: "row",
+            alignItems: "center",
+            backgroundColor: COLORS.white,
+            paddingVertical: 10,
+            borderRadius: 10,
+            marginBottom: 12,
+            paddingHorizontal: 10,
+          }}
+        >
+          <Ionicons
+            name="lock-closed"
+            size={24}
+            color={COLORS.grey}
+            style={{ marginRight: 10 }}
+          />
+          <TextInput
+            style={{
+              flex: 1,
+              fontSize: 16,
+            }}
+            placeholder="Mật khẩu"
+            secureTextEntry={!showPassword1}
+            value={passwordHash}
+            onChangeText={(text) => setPasswordHash(text)}
+            required={true}
+          />
+          <Pressable onPress={() => setShowPassword1(!showPassword1)}>
+            <Ionicons
+              name={showPassword1 ? "eye-off" : "eye"}
+              size={24}
+              color={COLORS.grey}
+            />
+          </Pressable>
         </View>
         <View
           style={{
-            paddingHorizontal: 42,
-            width: "100%",
+            flexDirection: "row",
+            alignItems: "center",
+            backgroundColor: COLORS.white,
+            paddingVertical: 10,
+            borderRadius: 10,
+            marginBottom: 12,
+            paddingHorizontal: 10,
           }}
         >
-          <View
+          <Ionicons
+            name="lock-closed"
+            size={24}
+            color={COLORS.grey}
+            style={{ marginRight: 10 }}
+          />
+          <TextInput
             style={{
-              flexDirection: "row",
-              alignItems: "center",
-              backgroundColor: COLORS.white,
-              paddingVertical: 10,
-              borderRadius: 10,
-              marginBottom: 12,
-              marginTop: 10,
-              paddingHorizontal: 10,
+              flex: 1,
+              fontSize: 16,
             }}
-          >
+            placeholder="Nhập lại mật khẩu"
+            secureTextEntry={!showPassword2}
+            value={password2}
+            onChangeText={(text) => setPassword2(text)}
+          />
+          <Pressable onPress={() => setShowPassword2(!showPassword2)}>
             <Ionicons
-              name="person"
+              name={showPassword2 ? "eye-off" : "eye"}
               size={24}
               color={COLORS.grey}
-              style={{ marginRight: 10 }}
             />
-            <TextInput
-              style={{
-                flex: 1,
-                fontSize: 16,
-              }}
-              placeholder="Họ"
-              value={firstName}
-              onChangeText={(text) => setFirstName(text)}
-              required={true}
-            />
-            <TextInput
-              style={{
-                flex: 1,
-                fontSize: 16,
-              }}
-              placeholder="Tên"
-              value={lastName}
-              onChangeText={(text) => setLastName(text)}
-              required={true}
-            />
-          </View>
+          </Pressable>
+        </View>
 
-          <View
+        <View
+          style={{
+            flexDirection: "row",
+            alignItems: "center",
+            backgroundColor: COLORS.white,
+            paddingVertical: 10,
+            borderRadius: 10,
+            marginBottom: 12,
+            paddingHorizontal: 10,
+          }}
+        >
+          <Ionicons
+            name="call"
+            size={24}
+            color={COLORS.grey}
+            style={{ marginRight: 10 }}
+          />
+          <PhoneInput
             style={{
-              flexDirection: "row",
-              alignItems: "center",
-              backgroundColor: COLORS.white,
-              paddingVertical: 10,
-              borderRadius: 10,
-              marginBottom: 12,
-              paddingHorizontal: 10,
+              flex: 1,
+              fontSize: 16,
             }}
-          >
-            <Ionicons
-              name="lock-closed"
-              size={24}
-              color={COLORS.grey}
-              style={{ marginRight: 10 }}
-            />
-            <TextInput
-              style={{
-                flex: 1,
-                fontSize: 16,
-              }}
-              placeholder="Mật khẩu"
-              secureTextEntry={!showPassword1}
-              value={passwordHash}
-              onChangeText={(text) => setPasswordHash(text)}
-              required={true}
-            />
-            <Pressable onPress={() => setShowPassword1(!showPassword1)}>
-              <Ionicons
-                name={showPassword1 ? "eye-off" : "eye"}
-                size={24}
-                color={COLORS.grey}
-              />
-            </Pressable>
-          </View>
-          <View
-            style={{
-              flexDirection: "row",
-              alignItems: "center",
-              backgroundColor: COLORS.white,
-              paddingVertical: 10,
-              borderRadius: 10,
-              marginBottom: 12,
-              paddingHorizontal: 10,
+            textStyle={{ fontSize: 16 }}
+            initialCountry="vn"
+            value={phone}
+            onChangePhoneNumber={(number) => {
+              console.log("Phone Number Changed:", number);
+              if (number.startsWith("+84")) {
+                number = "0" + number.slice(3);
+              }
+              setPhone(number);
             }}
+            required={true}
+          />
+        </View>
+        <View
+          style={{
+            flexDirection: "row",
+            alignItems: "center",
+            backgroundColor: COLORS.white,
+            paddingVertical: 10,
+            borderRadius: 10,
+            marginBottom: 12,
+            paddingHorizontal: 10,
+          }}
+        >
+          <Ionicons
+            name="mail"
+            size={24}
+            color={COLORS.grey}
+            style={{ marginRight: 10 }}
+          />
+          <TextInput
+            style={{ flex: 1, fontSize: 16 }}
+            placeholder="Email"
+            value={email}
+            onChangeText={(text) => setEmail(text)}
+            required={true}
+          />
+        </View>
+        <View style={styles.inputContainer}>
+          <Pressable
+            onPress={() => setShowDatePicker(true)}
+            style={styles.datePickerButton}
           >
-            <Ionicons
-              name="lock-closed"
-              size={24}
-              color={COLORS.grey}
-              style={{ marginRight: 10 }}
-            />
-            <TextInput
-              style={{
-                flex: 1,
-                fontSize: 16,
-              }}
-              placeholder="Nhập lại mật khẩu"
-              secureTextEntry={!showPassword2}
-              value={password2}
-              onChangeText={(text) => setPassword2(text)}
-            />
-            <Pressable onPress={() => setShowPassword2(!showPassword2)}>
-              <Ionicons
-                name={showPassword2 ? "eye-off" : "eye"}
-                size={24}
-                color={COLORS.grey}
-              />
-            </Pressable>
-          </View>
-
-          {/* Ô nhập số điện thoại với biểu tượng */}
-          <View
-            style={{
-              flexDirection: "row",
-              alignItems: "center",
-              backgroundColor: COLORS.white,
-              paddingVertical: 10,
-              borderRadius: 10,
-              marginBottom: 12,
-              paddingHorizontal: 10,
-            }}
-          >
-            <Ionicons
-              name="call"
-              size={24}
-              color={COLORS.grey}
-              style={{ marginRight: 10 }}
-            />
-            <PhoneInput
-              style={{
-                flex: 1,
-                fontSize: 16,
-              }}
-              textStyle={{ fontSize: 16 }}
-              initialCountry="vn"
-              value={phone}
-              onChangePhoneNumber={(number) => {
-                console.log("Phone Number Changed:", number);
-                if (number.startsWith("+84")) {
-                  number = "0" + number.slice(3);
-                }
-                setPhone(number);
-              }}
-              required={true}
-            />
-          </View>
-          <View
-            style={{
-              flexDirection: "row",
-              alignItems: "center",
-              backgroundColor: COLORS.white,
-              paddingVertical: 10,
-              borderRadius: 10,
-              marginBottom: 12,
-              paddingHorizontal: 10,
-            }}
-          >
-            <Ionicons
-              name="mail"
-              size={24}
-              color={COLORS.grey}
-              style={{ marginRight: 10 }}
-            />
-            <TextInput
-              style={{ flex: 1, fontSize: 16 }}
-              placeholder="Email"
-              value={email}
-              onChangeText={(text) => setEmail(text)}
-              required={true}
-            />
-          </View>
-
-          <View
-            style={{
-              flexDirection: "row",
-              alignItems: "center",
-              backgroundColor: COLORS.white,
-              paddingVertical: 10,
-              borderRadius: 10,
-              marginBottom: 12,
-              paddingHorizontal: 10,
-            }}
-          >
-            <FontAwesome
-              name="birthday-cake"
-              size={24}
-              color={COLORS.grey}
-              style={{ marginRight: 10 }}
-            />
-           <TouchableOpacity onPress={showDatepicker}>
-            <Text style={{ flex: 1, fontSize: 16, color: COLORS.grey }}>
-              {dob ? dob.toLocaleDateString() : "Chọn ngày sinh"}
+            <Text style={styles.datePickerText}>
+              {bookingDate
+                ? bookingDate.toLocaleDateString()
+                : "Chọn ngày sinh"}
             </Text>
-          </TouchableOpacity>
-          {showDatePicker && (
-            <DateTimePicker
-              value={dob}
-              mode="date"
-              display="default"
-              onChange={handleDateChange}
-              maximumDate={new Date()}
-            />
-          )}
-            {/* <Pressable onPress={showDatepicker} style={{ flex: 1, alignItems: 'flex-end' }}>
-                            <FontAwesome name="calendar" size={24} color={COLORS.grey} style={{ marginRight: 10 }} />
-                        </Pressable>
-                        {showDatePicker && (
-                            <DateTimePicker
-                                testID="dateTimePicker"
-value={selectedDate}
-                                mode="date"
-                                is24Hour={true}
-                                display="default"
-                                onChange={handleDateChange}
-                            />
-                        )} */}
-          </View>
-          <View
-            style={{
-              flexDirection: "row",
-              alignItems: "center",
-              backgroundColor: COLORS.white,
-              paddingVertical: 10,
-              borderRadius: 10,
-              marginBottom: 12,
-              paddingHorizontal: 10,
+          </Pressable>
+          <DateTimePicker
+            isVisible={showDatePicker}
+            mode="date"
+            onConfirm={(date) => {
+              setBookingDate(date);
+              setShowDatePicker(false);
             }}
-          >
-            <FontAwesome
-              name="arrow-up"
-              size={24}
-              color={COLORS.grey}
-              style={{ marginRight: 10 }}
-            />
-            <TextInput
-              style={{ flex: 1, fontSize: 16 }}
-              placeholder="địa chỉ"
-              value={address}
-              onChangeText={(text) => setAddress(text)}
-              required={true}
-            />
-          </View>
+            onCancel={() => setShowDatePicker(false)}
+            value={bookingDate}
+          />
+        </View>
 
-          {/* <RadioButton.Group onValueChange={newValue => setGender(newValue)} value={gender}>
+        <View
+          style={{
+            flexDirection: "row",
+            alignItems: "center",
+            backgroundColor: COLORS.white,
+            paddingVertical: 10,
+            borderRadius: 10,
+            marginBottom: 12,
+            paddingHorizontal: 10,
+          }}
+        >
+          <FontAwesome
+            name="arrow-up"
+            size={24}
+            color={COLORS.grey}
+            style={{ marginRight: 10 }}
+          />
+          <TextInput
+            style={{ flex: 1, fontSize: 16 }}
+            placeholder="địa chỉ"
+            value={address}
+            onChangeText={(text) => setAddress(text)}
+            required={true}
+          />
+        </View>
+
+        {/* <RadioButton.Group onValueChange={newValue => setGender(newValue)} value={gender}>
             <View style={{ flexDirection: "row", alignItems: "center" }}>
               <RadioButton.Android
                 value="Nam"
@@ -457,31 +466,49 @@ value={selectedDate}
             </View>
           </RadioButton.Group> */}
 
-          <View
-            style={{
-              flexDirection: "row",
-              alignItems: "center",
-              backgroundColor: COLORS.white,
-              paddingVertical: 10,
-              borderRadius: 10,
-              marginBottom: 12,
-              paddingHorizontal: 10,
-            }}
+        <View
+          style={{
+            flexDirection: "row",
+            alignItems: "center",
+            backgroundColor: COLORS.white,
+            paddingVertical: 10,
+            borderRadius: 10,
+            marginBottom: 12,
+            paddingHorizontal: 10,
+          }}
+        >
+          <Text style={{ fontSize: 16 }}>Giới tính:</Text>
+          <RadioButton.Group
+            onValueChange={(newValue) => setGender(newValue)}
+            value={gender}
           >
-            <Text style={{ fontSize: 16 }}>Giới tính:</Text>
-            <RadioButton.Group
-              onValueChange={(newValue) => setGender(newValue)}
-              value={gender}
+            <View
+              style={{
+                flexDirection: "row",
+                alignItems: "center",
+                marginLeft: 10,
+              }}
             >
+              <RadioButton.Android
+                value="Nam"
+                color={COLORS.primary}
+                uncheckedColor={COLORS.grey}
+                style={{ transform: [{ scaleX: 1.5 }, { scaleY: 1.5 }] }}
+              />
+              <Text
+                style={{ fontSize: 16, color: COLORS.black, marginLeft: 5 }}
+              >
+                Nam
+              </Text>
               <View
                 style={{
                   flexDirection: "row",
                   alignItems: "center",
-                  marginLeft: 10,
+                  marginLeft: 20,
                 }}
               >
                 <RadioButton.Android
-                  value="Nam"
+                  value="Nữ"
                   color={COLORS.primary}
                   uncheckedColor={COLORS.grey}
                   style={{ transform: [{ scaleX: 1.5 }, { scaleY: 1.5 }] }}
@@ -489,137 +516,157 @@ value={selectedDate}
                 <Text
                   style={{ fontSize: 16, color: COLORS.black, marginLeft: 5 }}
                 >
-                  Nam
+                  Nữ
                 </Text>
-                <View
-                  style={{
-                    flexDirection: "row",
-                    alignItems: "center",
-                    marginLeft: 20,
-                  }}
-                >
-                  <RadioButton.Android
-                    value="Nữ"
-                    color={COLORS.primary}
-                    uncheckedColor={COLORS.grey}
-                    style={{ transform: [{ scaleX: 1.5 }, { scaleY: 1.5 }] }}
-                  />
-                  <Text
-                    style={{ fontSize: 16, color: COLORS.black, marginLeft: 5 }}
-                  >
-                    Nữ
-                  </Text>
-                </View>
               </View>
-            </RadioButton.Group>
-          </View>
+            </View>
+          </RadioButton.Group>
+        </View>
 
-          {/* Nút Đăng ký */}
-          <Pressable
-            style={{
-              backgroundColor: "red",
-              marginTop: 20,
-              paddingVertical: 15,
-              borderRadius: 10,
-              alignItems: "center",
-            }}
-            onPress={handleSignup}
-          >
-            <Text
-              style={{
-                color: COLORS.white,
-                fontWeight: "bold",
-                fontSize: 20,
-              }}
-            >
-              Đăng ký
-            </Text>
-          </Pressable>
-
+        {/* Nút Đăng ký */}
+        <Pressable
+          style={{
+            backgroundColor: "red",
+            marginTop: 20,
+            paddingVertical: 15,
+            borderRadius: 10,
+            alignItems: "center",
+          }}
+          onPress={handleSignup}
+        >
           <Text
             style={{
-              color: COLORS.black,
+              color: COLORS.white,
               fontWeight: "bold",
-              paddingVertical: 5,
-              alignItems: "center",
-              marginTop: 5,
-              marginLeft: 10,
-              left: 50,
-              flexDirection: "row",
+              fontSize: 20,
             }}
           >
-            Bạn đã có tài khoản?
-            <Text
-              onPress={() => {
-                navigation.navigate("Login");
-              }}
-              style={{
-                color:"red",
-                fontWeight: "bold",
-                marginLeft: 5,
-              }}
-            >
-              Đăng nhập tại đây
-            </Text>
+            Đăng ký
           </Text>
-        </View>
+        </Pressable>
+
+        <Text
+          style={{
+            color: COLORS.black,
+            fontWeight: "bold",
+            paddingVertical: 5,
+            alignItems: "center",
+            marginTop: 5,
+            marginLeft: 10,
+            left: 50,
+            flexDirection: "row",
+          }}
+        >
+          Bạn đã có tài khoản?
+          <Text
+            onPress={() => {
+              navigation.navigate("Login");
+            }}
+            style={{
+              color: "red",
+              fontWeight: "bold",
+              marginLeft: 5,
+            }}
+          >
+            Đăng nhập tại đây
+          </Text>
+        </Text>
       </View>
-    );
-}
+    </View>
+  );
+};
 const styles = StyleSheet.create({
-    textInput: {
-        marginBottom: 15,
-        backgroundColor: 'grey',
-        borderRadius: 10,
-        padding: 10,
-        width: '100%'
-    },
-    textCode: {
-        marginBottom: 15,
-        backgroundColor: 'grey',
-        borderRadius: 10,
-        padding: 10,
-        marginRight: 5
-    },
-    text: {
-        marginBottom: 10,
-        fontSize: 20,
-    },
-    button: {
-        margin: 20,
-        backgroundColor: 'red',
-        height: 50,
-        borderRadius: 10,
-        border: 'none',
-        paddingTop: 10
-    }, container: {
-        flex: 1,
-        justifyContent: "center",
-        alignItems: "center",
-    },
-    centeredView: {
-        flex: 1,
-        justifyContent: "center",
-        alignItems: "center",
-        backgroundColor: "rgba(0,0,0,0.5)",
-    },
-    modalView: {
-        margin: 20,
-        backgroundColor: "white",
-        borderRadius: 20,
-        padding: 35,
-        alignItems: "center",
-        shadowColor: "#000",
-        shadowOffset: {
-            width: 0,
-            height: 2,
-        },
-        shadowOpacity: 0.25,
-        shadowRadius: 4,
-        elevation: 5,
-    },
-    modalText: {
-        marginBottom: 15,
-        textAlign: "center",
-    },
+  textInput: {
+    marginBottom: 15,
+    backgroundColor: "grey",
+    borderRadius: 10,
+    padding: 10,
+    width: "100%",
+  },
+  textCode: {
+    marginBottom: 15,
+    backgroundColor: "grey",
+    borderRadius: 10,
+    padding: 10,
+    marginRight: 5,
+  },
+  text: {
+    marginBottom: 10,
+    fontSize: 20,
+  },
+  button: {
+    margin: 20,
+    backgroundColor: "red",
+    height: 50,
+    borderRadius: 10,
+  },
+  container: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  scrollContainer: {
+    flexGrow: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  container: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  form: {
+    paddingHorizontal: 42,
+    width: "100%",
+  },
+  inputContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: COLORS.white,
+    paddingVertical: 10,
+    borderRadius: 10,
+    marginBottom: 12,
+    marginTop: 10,
+    paddingHorizontal: 10,
+  },
+  inputContainerCost: {
+    flexDirection: "flex",
+    backgroundColor: COLORS.white,
+    paddingVertical: 10,
+    borderRadius: 10,
+    marginBottom: 12,
+    marginTop: 10,
+    paddingHorizontal: 10,
+  },
+  textInput: {
+    flex: 1,
+    fontSize: 16,
+  },
+  picker: {
+    flex: 1,
+  },
+  datePickerButton: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+    paddingVertical: 10,
+    backgroundColor: COLORS.white,
+    borderRadius: 10,
+  },
+  datePickerText: {
+    fontSize: 16,
+    color: COLORS.black,
+  },
+  button: {
+    backgroundColor: "red",
+    marginTop: 20,
+    paddingVertical: 15,
+    borderRadius: 10,
+    alignItems: "center",
+  },
+  buttonText: {
+    color: COLORS.white,
+    fontWeight: "bold",
+    fontSize: 20,
+  },
 });
