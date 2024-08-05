@@ -47,7 +47,7 @@ const SettingScreen = () => {
               </Text>
               <Text style={styles.profileItem}>
                 <Text style={styles.boldText}>Giới tính:</Text>{" "}
-                {profile.Gender === "1" ? "Nam" : "Nữ"}
+                {profile.Gender}
               </Text>
               <Text style={styles.profileItem}>
                 <Text style={styles.boldText}>Số điện thoại:</Text>{" "}

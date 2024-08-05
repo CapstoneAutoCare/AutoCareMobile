@@ -1,5 +1,12 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, TextInput, Pressable, StyleSheet } from "react-native";
+import {
+  View,
+  Text,
+  TextInput,
+  Pressable,
+  StyleSheet,
+  ScrollView,
+} from "react-native";
 import COLORS from "./../../../constants/colors";
 import { AntDesign } from "@expo/vector-icons";
 import { Picker } from "@react-native-picker/picker";
@@ -18,6 +25,7 @@ const VehiclePost = () => {
   const [color, setColor] = useState("");
   const [description, setDescription] = useState("");
   const { vehicleModel } = useSelector((state) => state.vehicle);
+
   const fetchGetListVehicleModel = async () => {
     await dispatch(getListVehicleModel());
   };
@@ -26,7 +34,7 @@ const VehiclePost = () => {
       await fetchGetListVehicleModel();
     };
     fetch();
-  }, []);
+  }, [load]);
   const handleSignup = async () => {
     try {
       if (!vehicleModelId || !licensePlate || !odo || !color || !description) {
@@ -38,11 +46,11 @@ const VehiclePost = () => {
       const response = await axios.post(
         "http://autocare.runasp.net/api/Vehicles/Post",
         {
-          vehicleModelId: vehicleModelId,
-          color: color,
-          licensePlate: licensePlate,
-          odo: odo,
-          description: description,
+          vehicleModelId,
+          color,
+          licensePlate,
+          odo,
+          description,
         },
         {
           headers: {
@@ -53,40 +61,26 @@ const VehiclePost = () => {
         }
       );
       if (response.status === 200) {
-        setLoad(false);
         alert("Tạo xe thành công!");
         navigation.navigate("VEHICLE");
       } else {
-        setLoad(false);
         alert("Tạo xe không thành công. Vui lòng thử lại.");
+        setLoad((p) => !p);
       }
+      setLoad((p) => !p);
     } catch (error) {
       console.error("Error during:", error);
-      if (error.response) {
-        console.error("Server responded with:", error.response.data);
-        console.error("Status code:", error.response.status);
-        alert(
-          "Server responded with an error. Please check the console for details."
-        );
-      } else if (error.request) {
-        console.error("No response received:", error.request);
-        alert(
-          "No response received from the server. Please check your network connection."
-        );
-      } else {
-        console.error("Error setting up the request:", error.message);
-        alert(
-          "An error occurred during the request setup. Please check the console for details."
-        );
-      }
+      alert(error.response.data.Exception);
+      setLoad((p) => !p);
+    } finally {
+      setLoad(false);
     }
   };
-
   const handleNavigateBack = () => {
     navigation.goBack();
   };
   return (
-    <View style={styles.container}>
+    <ScrollView style={styles.container} keyboardShouldPersistTaps="handled">
       <View style={styles.header}>
         <Pressable onPress={handleNavigateBack} style={styles.backButton}>
           <AntDesign name="arrowleft" size={24} color="black" />
@@ -104,7 +98,7 @@ const VehiclePost = () => {
               <Picker.Item
                 key={vehicle.vehicleModelId}
                 label={
-                  vehicle.vehicleModelName + "-" + vehicle.vehiclesBrandName
+                  vehicle.vehiclesBrandName + " - " + vehicle.vehicleModelName
                 }
                 value={vehicle.vehicleModelId}
               />
@@ -114,7 +108,7 @@ const VehiclePost = () => {
         <View style={styles.inputContainer}>
           <TextInput
             style={styles.textInput}
-            placeholder="màu xe"
+            placeholder="Màu xe"
             value={color}
             onChangeText={(text) => setColor(text)}
             required={true}
@@ -157,7 +151,7 @@ const VehiclePost = () => {
           </Pressable>
         )}
       </View>
-    </View>
+    </ScrollView>
   );
 };
 

@@ -1,3 +1,4 @@
+
 const ROUTES = {
   HOME: "Home",
   HOME_NAVIGATOR: "HomeNavigator",
@@ -6,5 +7,6 @@ const ROUTES = {
   BOOKING_NAVIGATOR: "BookingNavigator",
   CAR: "Car",
   SETTING_NAVIGATOR: "SettingNavigator",
+  MaintenanceInformation: "MaintenanceInformations",
 };
 export default ROUTES;
