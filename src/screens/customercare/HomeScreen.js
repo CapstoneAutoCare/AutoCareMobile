@@ -48,7 +48,7 @@ const HomeScreen = () => {
     <View style={styles.container}>
       <TouchableOpacity onPress={() => handleNavigation('REQUESTLIST')}>
         <Card style={styles.card}>
-          <ImageBackground source={{ uri: 'https://firebasestorage.googleapis.com/v0/b/imageuploadv3.appspot.com/o/Logo%20Footer%2Fdep2.png?alt=media&token=08b080e1-c883-4c89-ba4f-76f8f0a57b00' }} style={styles.image}>
+          <ImageBackground source={{ uri: 'https://img.freepik.com/premium-vector/car-auto-garage-concept-premium-logo-design_645012-278.jpg' }} style={styles.image}>
             <View style={styles.overlay}>
               <Text style={styles.text}>Xem lịch đặt</Text>
             </View>
@@ -58,7 +58,7 @@ const HomeScreen = () => {
 
       <TouchableOpacity onPress={() => handleNavigation('VEHICLE')}>
         <Card style={styles.card}>
-          <ImageBackground source={{ uri: 'https://firebasestorage.googleapis.com/v0/b/imageuploadv3.appspot.com/o/Logo%20Footer%2Fdep2.png?alt=media&token=08b080e1-c883-4c89-ba4f-76f8f0a57b00' }} style={styles.image}>
+          <ImageBackground source={{ uri: 'https://img.freepik.com/premium-vector/car-auto-garage-concept-premium-logo-design_645012-278.jpg' }} style={styles.image}>
             <View style={styles.overlay}>
               <Text style={styles.text}>Xem phản hồi</Text>
             </View>
@@ -68,7 +68,7 @@ const HomeScreen = () => {
 
       <TouchableOpacity onPress={() => handleNavigation('CREATEBOOKINGFORWALK-INGUEST')}>
         <Card style={styles.card}>
-          <ImageBackground source={{ uri: 'https://firebasestorage.googleapis.com/v0/b/imageuploadv3.appspot.com/o/Logo%20Footer%2Fdep2.png?alt=media&token=08b080e1-c883-4c89-ba4f-76f8f0a57b00' }} style={styles.image}>
+          <ImageBackground source={{ uri: 'https://img.freepik.com/premium-vector/car-auto-garage-concept-premium-logo-design_645012-278.jpg' }} style={styles.image}>
             <View style={styles.overlay}>
               <Text style={styles.text}>Tạo đơn</Text>
             </View>

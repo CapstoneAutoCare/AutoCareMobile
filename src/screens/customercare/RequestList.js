@@ -18,7 +18,7 @@ const RequestList = () => {
   const [sortOrder, setSortOrder] = useState(null);
 
   useEffect(() => {
-    dispatch(fetchRequests());
+    dispatch(fetchRequests(profile.CentreId));
   }, [dispatch]);
 
   const getProfileInfo = async () => {
@@ -34,7 +34,7 @@ const RequestList = () => {
   }, [navigation]);
 
   const handleRefresh = () => {
-    dispatch(fetchRequests());
+    dispatch(fetchRequests(profile.CentreId));
     getProfileInfo();
   };
 
@@ -43,8 +43,7 @@ const RequestList = () => {
   };
 
   const filteredRequests = (requests || []).filter(
-    (request) => request.maintenanceCenterId === profile.CentreId &&
-    (filterStatus ? request.status === filterStatus : true)
+    (request) =>(filterStatus ? request.status === filterStatus : true)
   );
 
   const sortedRequests = filteredRequests.sort((a, b) => {
