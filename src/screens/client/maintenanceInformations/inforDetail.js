@@ -94,6 +94,31 @@ const InforDetail = ({ route }) => {
     }
   };
 
+  const getStatusColor = (status) => {
+    switch (status) {
+      case "CHECKIN":
+        return "blue";
+      case "CREATEDBYClIENT":
+        return "orange";
+      case "PAYMENT":
+        return "purple";
+      case "PAID":
+        return "green";
+      case "YETPAID":
+        return "red";
+      default:
+        return "black";
+    }
+  };
+
+  const statusLabels = {
+    CHECKIN: "Đã Check-in",
+    CREATEDBYClIENT: "Tạo bởi khách hàng",
+    PAYMENT: "Thanh toán",
+    PAID: "Đã thanh toán",
+    YETPAID: "Chưa thanh toán",
+  };
+
   return (
     <ScrollView style={styles.container}>
       <View style={styles.header}>
@@ -111,6 +136,11 @@ const InforDetail = ({ route }) => {
               {info?.responseVehicles?.vehicleModelName} -{" "}
               {info?.responseVehicles?.color}
             </Text>
+            <Text
+              style={[styles.status, { color: getStatusColor(info.status) }]}
+            >
+              Trạng thái: {statusLabels[info.status]}
+            </Text>
             <Text style={styles.status}>
               Biển số xe : {info?.responseVehicles?.licensePlate}
             </Text>
@@ -120,7 +150,7 @@ const InforDetail = ({ route }) => {
             <Text style={styles.status}>
               Thông tin xe : {info?.responseVehicles?.description}
             </Text>
-            <Text style={styles.status}>Trạng thái: {info.status}</Text>
+
             <Text style={styles.centerName}>
               Ngày bảo trì :{" "}
               {moment(info?.createdDate).format("DD/MM/YYYY HH:mm")}
