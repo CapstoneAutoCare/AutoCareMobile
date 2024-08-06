@@ -10,16 +10,10 @@ import {
   TextInput,
 } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
-import {
-  FontAwesome,
-  AntDesign,
-  MaterialCommunityIcons,
-} from "@expo/vector-icons";
-import { useNavigation } from "@react-navigation/native";
-import { getListCenter, getListInformations } from "../../../app/Center/actions";
-import { getProfile } from "../../../features/userSlice";
-import levenshtein from "fast-levenshtein";
 import { Ionicons } from "@expo/vector-icons";
+import { useNavigation } from "@react-navigation/native";
+import { getListInformations } from "../../../app/Center/actions";
+import { getProfile } from "../../../features/userSlice";
 import moment from "moment";
 
 const MaintenanceInformations = () => {
@@ -27,10 +21,18 @@ const MaintenanceInformations = () => {
   const dispatch = useDispatch();
   const { profile } = useSelector((state) => state.user);
   const { informationsList } = useSelector((state) => state.center);
-  const [sortedStores, setSortedStores] = useState([]);
+  const [filteredStores, setFilteredStores] = useState([]);
   const [isModalVisible, setModalVisible] = useState(false);
-  const [sortOrder, setSortOrder] = useState("default");
+  const [filterStatus, setFilterStatus] = useState("all");
   const [searchQuery, setSearchQuery] = useState("");
+
+  const statusLabels = {
+    CHECKIN: "Đã Check-in",
+    CREATEDBYClIENT: "Tạo bởi khách hàng",
+    PAYMENT: "Thanh toán",
+    PAID: "Đã thanh toán",
+    YETPAID: "Chưa thanh toán",
+  };
 
   const fetchGetListBooking = async () => {
     await dispatch(getProfile());
@@ -46,44 +48,35 @@ const MaintenanceInformations = () => {
   }, [navigation]);
 
   useEffect(() => {
-    sortStores();
-  }, [informationsList, sortOrder]);
+    filterStores();
+  }, [informationsList, filterStatus, searchQuery]);
 
-  useEffect(() => {
-    handleSearch(searchQuery);
-  }, [searchQuery]);
-
-  const sortStores = () => {
-    let sorted = [...informationsList];
-    if (sortOrder === "ratingHighToLow") {
-      sorted.sort((a, b) => b.totalPrice - a.totalPrice);
-    } else if (sortOrder === "ratingLowToHigh") {
-      sorted.sort((a, b) => a.totalPrice - b.totalPrice);
+  const filterStores = () => {
+    let filtered = [...informationsList];
+    if (filterStatus !== "all") {
+      filtered = filtered.filter((item) => item.status === filterStatus);
     }
-    setSortedStores(sorted);
+    if (searchQuery) {
+      filtered = filtered.filter((store) =>
+        store.informationMaintenanceName
+          .toLowerCase()
+          .includes(searchQuery.toLowerCase())
+      );
+    }
+    setFilteredStores(filtered);
   };
 
   const handleSortPress = () => {
     setModalVisible(true);
   };
 
-  const handleSortSelect = (order) => {
-    setSortOrder(order);
+  const handleSortSelect = (status) => {
+    setFilterStatus(status);
     setModalVisible(false);
   };
 
   const handleSearch = (query) => {
     setSearchQuery(query);
-    if (query) {
-      const filteredStores = informationsList.filter((store) =>
-        store.informationMaintenanceName
-          .toLowerCase()
-          .includes(query.toLowerCase())
-      );
-      setSortedStores(filteredStores);
-    } else {
-      sortStores();
-    }
   };
 
   return (
@@ -116,13 +109,13 @@ const MaintenanceInformations = () => {
               justifyContent: "center",
             }}
           >
-            <Text style={{ marginRight: 6 }}>Sắp xếp</Text>
+            <Text style={{ marginRight: 6 }}>Lọc</Text>
             <Ionicons name="filter" size={20} color="black" />
           </Pressable>
         </View>
         <View>
-          {sortedStores?.length > 0 &&
-            sortedStores.map((item, index) => (
+          {filteredStores?.length > 0 &&
+            filteredStores.map((item, index) => (
               <Pressable
                 style={{
                   marginVertical: 12,
@@ -229,7 +222,7 @@ const MaintenanceInformations = () => {
                         color: "gray",
                       }}
                     >
-                      Trạng thái : {item?.status}
+                      Trạng thái : {statusLabels[item?.status]}
                     </Text>
                     <Text
                       style={{
@@ -260,24 +253,6 @@ const MaintenanceInformations = () => {
                     justifyContent: "space-between",
                   }}
                 >
-                  {/* <Pressable
-                    // onPress={() =>
-                    //   navigation.navigate("PostBooking", {
-                    //     maintenanceCenterId: item?.maintenanceCenterId,
-                    //   })
-                    // }
-                    style={{
-                      backgroundColor: "#52c41a",
-                      padding: 10,
-                      borderRadius: 10,
-                      justifyContent: "center",
-                      alignItems: "center",
-                      marginHorizontal: 10,
-                      marginTop: 10,
-                    }}
-                  >
-                    <Text style={{ color: "white" }}>+ Lên lịch sửa xe</Text>
-                  </Pressable> */}
                   <Pressable
                     onPress={() =>
                       navigation.navigate("InforDetail", {
@@ -302,7 +277,7 @@ const MaintenanceInformations = () => {
         </View>
       </View>
 
-      {/* Modal for sorting */}
+      {/* Modal for filtering */}
       <Modal
         animationType="slide"
         transparent={true}
@@ -313,24 +288,42 @@ const MaintenanceInformations = () => {
       >
         <View style={styles.modalContainer}>
           <View style={styles.modalContent}>
-            <Text style={styles.modalTitle}>Sắp xếp theo</Text>
+            <Text style={styles.modalTitle}>Lọc theo trạng thái</Text>
             <TouchableOpacity
               style={styles.modalButton}
-              onPress={() => handleSortSelect("ratingHighToLow")}
+              onPress={() => handleSortSelect("CHECKIN")}
             >
-              <Text style={styles.modalButtonText}>giá cao đến thấp</Text>
+              <Text style={styles.modalButtonText}>Đã Check-in</Text>
             </TouchableOpacity>
             <TouchableOpacity
               style={styles.modalButton}
-              onPress={() => handleSortSelect("ratingLowToHigh")}
+              onPress={() => handleSortSelect("CREATEDBYClIENT")}
             >
-              <Text style={styles.modalButtonText}>giá thấp đến cao</Text>
+              <Text style={styles.modalButtonText}>Tạo bởi khách hàng</Text>
             </TouchableOpacity>
             <TouchableOpacity
               style={styles.modalButton}
-              onPress={() => handleSortSelect("default")}
+              onPress={() => handleSortSelect("PAYMENT")}
             >
-              <Text style={styles.modalButtonText}>Mặc định</Text>
+              <Text style={styles.modalButtonText}>Thanh toán</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.modalButton}
+              onPress={() => handleSortSelect("PAID")}
+            >
+              <Text style={styles.modalButtonText}>Đã thanh toán</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.modalButton}
+              onPress={() => handleSortSelect("YETPAID")}
+            >
+              <Text style={styles.modalButtonText}>Chưa thanh toán</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.modalButton}
+              onPress={() => handleSortSelect("all")}
+            >
+              <Text style={styles.modalButtonText}>Tất cả</Text>
             </TouchableOpacity>
             <TouchableOpacity
               style={[styles.modalButton, { backgroundColor: "red" }]}
@@ -384,6 +377,5 @@ const styles = StyleSheet.create({
     padding: 5,
     borderRadius: 10,
     width: 200,
-    // marginHorizontal: 10,
   },
 });

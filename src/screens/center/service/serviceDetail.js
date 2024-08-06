@@ -59,6 +59,12 @@ const ServiceDetail = ({ route }) => {
             <Text style={styles.centerName}>
               Đơn vị bảo trì: {serviceById.maintenanceCenterName}
             </Text>
+            <Text style={styles.centerName}>
+              Dòng xe:{" "}
+              {serviceById.responseMaintenanceServiceCosts[0].vehiclesBrandName}{" "}
+              -{" "}
+              {serviceById.responseMaintenanceServiceCosts[0].vehicleModelName}
+            </Text>
             {serviceById.responseMaintenanceServiceCosts.map((cost, index) => (
               <Text key={index} style={styles.cost}>
                 {index === 0 ? "Giá mới: " : "Giá cũ: "} {cost.acturalCost} VND

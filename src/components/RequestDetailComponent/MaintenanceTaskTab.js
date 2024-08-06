@@ -6,7 +6,8 @@ import Modal from 'react-native-modal';
 import StaffListComponent from '../BookingComponent/StaffListComponent';
 import { fetchStaffByCenter } from '../../app/CusCare/requestDetailSlice';
 import { useDispatch, useSelector } from 'react-redux';
-
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import axios from 'axios';
 const MaintenanceTaskTab = ({ maintenanceTasks, request, assignTask }) => {
     const [technicianDetails, setTechnicianDetails] = useState({});
     const mInfoId = request.responseMaintenanceInformation.informationMaintenanceId;
@@ -35,25 +36,34 @@ const MaintenanceTaskTab = ({ maintenanceTasks, request, assignTask }) => {
     const toggleAssignModal = () => {
         setAssignModalVisible(!isAssignModalVisible);
     };
-
+    const repairing = async () => {
+        try {
+          const accessToken = await AsyncStorage.getItem('ACCESS_TOKEN');
+      
+          await axios.patch(`https://autocareversion2.tryasp.net/api/MaintenanceInformations/CHANGESTATUS?id=${request.responseMaintenanceInformation?.informationMaintenanceId}&status=REPAIRING`,
+           {
+              headers: {
+                'Content-Type': 'text/plain',
+                Authorization: `Bearer ${accessToken}`,
+              },
+            }
+          );   
+        } catch (error) {
+          console.error('Error during assigning:', error);
+          alert('Có lỗi xảy ra. Vui lòng thử lại.');
+        }
+      };
     const handleAssignTask = async () => {
         if (!selectedStaff) {
             alert('Please select a staff member');
             return;
         }
-
-        for (const task of maintenanceTasks) {
-            if (task.status === 'CANCELLED' && task.technicianId === selectedStaff.technicianId) {
-               alert('Không được giao lại cho nhân viên đã từ chối công việc');
-                return;
-           }
-        }
-
         console.log(` MaintenanceTaskTab: ${mInfoId}, ${selectedStaff.technicianId}`);
         assignTask( mInfoId, selectedStaff.technicianId );
+        repairing();
         toggleAssignModal();
     };
-
+    
     useEffect(() => {
         const fetchTechnicianDetails = async () => {
             const technicianInfo = {};

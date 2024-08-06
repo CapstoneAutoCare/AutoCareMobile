@@ -27,25 +27,26 @@ const RequestInfoTab = ({ request, updateStatus, error, profile, assignTask}) =>
   const [availableSpareParts, setAvailableSpareParts] = useState([]);
   const [availableServices, setAvailableServices] = useState([]);
   const [isInvoiceModalVisible, setInvoiceModalVisible] = useState(false);
-  useEffect(() => {
-    if (!request?.responseMaintenanceInformation) {
-      alert(
-        "Thông báo",
-        "Không có thông tin dịch vụ, có muốn tạo không?",
-        [
-          {
-            text: "Không",
-            style: "cancel",
-          },
-          {
-            text: "Đồng ý",
-            onPress: () => navigation.navigate("CREATE_BOOKING_INFO", { request, profile, centre }),
-          },
-        ],
-        { cancelable: false }
-      );
-    }
-  }, [request]);
+  const [invoiceData, setInvoiceData] = useState(null);
+
+  //useEffect(() => {
+    //if (request?.responseMaintenanceInformation.responseMaintenanceServiceInfos.length === 0 && request?.responseMaintenanceInformation.responseMaintenanceSparePartInfos.length === 0) {
+   //   alert(
+  //      "Không có thông tin dịch vụ, có muốn tạo không?",
+   //     [
+   //       {
+   //         text: "Không",
+   //         style: "cancel",
+   //       },
+  //        {
+   //         text: "Đồng ý",
+   //         onPress: () => navigation.navigate("CREATE_BOOKING_INFO", { request, profile, centre }),
+   //       },
+   //     ],
+   //     { cancelable: false }
+   //   );
+    //}
+  //}, [request]);
   const mInfoId = request.responseMaintenanceInformation?.informationMaintenanceId;
   
   const fetchStaffList = async () => {
@@ -81,13 +82,15 @@ const RequestInfoTab = ({ request, updateStatus, error, profile, assignTask}) =>
             },
           }
         );
-        setAvailableSpareParts(response.data);
+        const filteredSpareParts = response.data.filter(
+          (item) => item.vehicleModelName === request?.responseVehicles.vehicleModelName
+        );
+        setAvailableSpareParts(filteredSpareParts);
       } catch (error) {
         console.error('Error fetching spare parts:', error);
       }
     };
-    
-
+  
     const fetchServices = async () => {
       try {
         const accessToken = await AsyncStorage.getItem('ACCESS_TOKEN');
@@ -100,17 +103,22 @@ const RequestInfoTab = ({ request, updateStatus, error, profile, assignTask}) =>
             },
           }
         );
-        setAvailableServices(response.data);
+        const filteredServices = response.data.filter(
+          (item) => item.vehicleModelName === request?.responseVehicles.vehicleModelName
+        );
+        setAvailableServices(filteredServices);
       } catch (error) {
         console.error('Error fetching services:', error);
       }
     };
-
+  
     fetchSpareParts();
     fetchServices();
-  }, [request.maintenanceCenterId]);
+  }, [request.maintenanceCenterId, request?.responseVehicles.vehicleModelName]);
   
- 
+  
+   
+  
   const toggleModal = (type) => {
     setModalType(type);
     setModalVisible(!isModalVisible);
@@ -121,30 +129,50 @@ const RequestInfoTab = ({ request, updateStatus, error, profile, assignTask}) =>
   };
 
   const handleAddService = () => {
-    setServices([...services, { maintenanceServiceCostId: '', maintenanceServiceInfoName: '', quantity: 1, actualCost: 0, note: '' }]);
+    setServices([
+      ...services,
+      {
+        maintenanceServiceCostId: "",
+        maintenanceServiceInfoName: "",
+        quantity: 0,
+        actualCost: 0,
+        note: "",
+      },
+    ]);
   };
 
   const handleRemoveService = (index) => {
-    const newServices = services.filter((_, i) => i !== index);
+    const newServices = services.filter((_, idx) => idx !== index);
     setServices(newServices);
   };
 
-  const handleServiceChange = (index, field, value) => {
-    const newServices = services.map((service, i) => (i === index ? { ...service, [field]: value } : service));
+  const handleServiceChange = (index, key, value) => {
+    const newServices = [...services];
+    newServices[index][key] = value;
     setServices(newServices);
   };
 
   const handleAddSparePart = () => {
-    setSpareParts([...spareParts, { sparePartsItemCostId: '', maintenanceSparePartInfoName: '', quantity: 1, actualCost: 0, note: '' }]);
+    setSpareParts([
+      ...spareParts,
+      {
+        sparePartsItemCostId: "",
+        maintenanceSparePartInfoName: "",
+        quantity: 0,
+        actualCost: 0,
+        note: "",
+      },
+    ]);
   };
 
   const handleRemoveSparePart = (index) => {
-    const newSpareParts = spareParts.filter((_, i) => i !== index);
+    const newSpareParts = spareParts.filter((_, idx) => idx !== index);
     setSpareParts(newSpareParts);
   };
 
-  const handleSparePartChange = (index, field, value) => {
-    const newSpareParts = spareParts.map((sparePart, i) => (i === index ? { ...sparePart, [field]: value } : sparePart));
+  const handleSparePartChange = (index, key, value) => {
+    const newSpareParts = [...spareParts];
+    newSpareParts[index][key] = value;
     setSpareParts(newSpareParts);
   };
 
@@ -154,8 +182,8 @@ const RequestInfoTab = ({ request, updateStatus, error, profile, assignTask}) =>
       console.log('Saving with request:', request); // Log
 
       const url = modalType === 'SPARE_PART'
-        ? 'https://autocareversion2.tryasp.net/api/MaintenanceSparePartInfoes/Post'
-        : 'https://autocareversion2.tryasp.net/api/MaintenanceServiceInfoes/Post';
+      ? 'https://autocareversion2.tryasp.net/api/MaintenanceSparePartInfoes/Post'
+      : 'https://autocareversion2.tryasp.net/api/MaintenanceServiceInfoes/Post';
       
       const items = modalType === 'SPARE_PART' ? spareParts : services;
 
@@ -214,34 +242,42 @@ const RequestInfoTab = ({ request, updateStatus, error, profile, assignTask}) =>
       alert('Có lỗi xảy ra. Vui lòng thử lại.');
     }
   };
-const handlePayment = async () => {
-  try {
-    const accessToken = await AsyncStorage.getItem('ACCESS_TOKEN');
-
-    await axios.patch(
-      `https://autocareversion2.tryasp.net/api/MaintenanceInformations/CHANGESTATUS?id=${request.responseMaintenanceInformation?.informationMaintenanceId}&status=PAYMENT`,
-      
-      {
-        headers: {
-          'Content-Type': 'text/plain',
-          Authorization: `Bearer ${accessToken}`,
-        },
-      }
-    );
-
-    alert('Thanh toán thành công!');
-    toggleInvoiceModal();
-  } catch (error) {
-    console.error('Error during payment:', error);
-    alert('Có lỗi xảy ra khi thanh toán. Vui lòng thử lại.');
-  }
-};
+  const handlePayment = async () => {
+    try {
+      const accessToken = await AsyncStorage.getItem('ACCESS_TOKEN');
+      const informationMaintenanceId = request.responseMaintenanceInformation?.informationMaintenanceId;
+      const description = "Payment for maintenance"; 
+      await axios.post(
+        'https://autocareversion2.tryasp.net/api/Receipts/Post',
+        { informationMaintenanceId, description },
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${accessToken}`,
+          },
+        }
+      );
+      const fetchInvoiceData = async () => {
+        try {
+          const response = await axios.get(`https://autocareversion2.tryasp.net/api/Receipts/GetByInforId?id=${request.responseMaintenanceInformation.informationMaintenanceId}`);
+          setInvoiceData(response.data);
+        } catch (error) {
+          console.error('Error fetching invoice data:', error);
+        }
+      };
+      toggleInvoiceModal(),
+      fetchInvoiceData();
+      console.log(invoiceData);
+    } catch (error) {
+      console.error('Error during payment:', error);
+      alert('Có lỗi xảy ra khi thanh toán. Vui lòng thử lại.');
+    }
+  };
 const handleCheckin = async () => {
   try {
     const accessToken = await AsyncStorage.getItem('ACCESS_TOKEN');
 
-    await axios.patch(
-      `https://autocareversion2.tryasp.net/api/MaintenanceInformations/CHANGESTATUS?id=${request.responseMaintenanceInformation?.informationMaintenanceId}&status=CHECKIN`,
+    await axios.patch(`https://autocareversion2.tryasp.net/api/MaintenanceInformations/CHANGESTATUS?id=${request.responseMaintenanceInformation?.informationMaintenanceId}&status=CHECKIN`,
      {
         headers: {
           'Content-Type': 'text/plain',
@@ -316,14 +352,15 @@ useEffect(() => {
       {lastStatus === 'WAITINGBYCAR' && (
         <Button title="Check In" onPress={handleCheckin} />
       )}
-      {lastStatus === 'CHECKIN' && (
-        <Button title="Giao việc" onPress={toggleAssignModal} />
-      )}
       {lastStatus === 'REPAIRING' && (
         <>
           <Button title="Thêm Phụ Tùng" onPress={() => toggleModal('SPARE_PART')} />
           <Button title="Thêm Dịch Vụ" onPress={() => toggleModal('SERVICE')} />
-          <Button title="In Hóa Đơn" onPress={toggleInvoiceModal} />
+        </>
+      )}
+      {lastStatus === 'PAYMENT' && (
+        <>
+          <Button title="In Hóa Đơn" onPress={() => { handlePayment() }} />
         </>
       )}
     </View>
@@ -360,9 +397,8 @@ useEffect(() => {
       <Modal isVisible={isInvoiceModalVisible} style={styles.fullScreenModal}>
   <ScrollView contentContainerStyle={styles.scrollViewContent}>
     <View style={styles.modalContent}>
-      <InvoiceComponent request={request} profile={profile} />
-      <Button title="Thanh toán" onPress={handlePayment} /> 
-      <Button title="Đóng" onPress={toggleInvoiceModal} />
+      <InvoiceComponent request={request} profile={profile} invoiceData={invoiceData} />
+      <Button title="Xác Nhận" onPress={toggleInvoiceModal} /> 
     </View>
   </ScrollView>
 </Modal>

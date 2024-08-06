@@ -61,7 +61,11 @@ const ProductDetail = ({ route }) => {
             <Text style={styles.centerName}>
               Đơn vị bảo trì: {sparePartById.maintenanceCenterName}
             </Text>
-
+            <Text style={styles.centerName}>
+              Dòng xe:{" "}
+              {sparePartById.responseSparePartsItemCosts[0].vehiclesBrandName} -{" "}
+              {sparePartById.responseSparePartsItemCosts[0].vehicleModelName}
+            </Text>
             {sparePartById.responseSparePartsItemCosts.map((cost, index) => (
               <Text key={index} style={styles.cost}>
                 {index === 0 ? "Giá mới: " : "Giá cũ: "} {cost.acturalCost} VND

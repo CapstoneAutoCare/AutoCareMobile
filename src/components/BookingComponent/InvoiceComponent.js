@@ -1,8 +1,10 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, Button, ScrollView } from 'react-native';
 import Moment from 'moment';
 
-const InvoiceComponent = ({ request }) => {
+const InvoiceComponent = ({ request, invoiceData }) => {
+
+  
 
   const renderServiceInfos = () => {
     return request.responseMaintenanceInformation.responseMaintenanceServiceInfos.map(info => (
@@ -29,39 +31,40 @@ const InvoiceComponent = ({ request }) => {
   return (
     <ScrollView style={styles.container}>
       <View style={styles.header}>
-        <Text style={styles.headerText}>Invoice</Text>
-        <Text>Booking ID: {request.bookingId}</Text>
-        <Text>Date: {Moment().format('DD/MM/YYYY')}</Text>
+        <Text style={styles.headerText}>Hóa Đơn</Text>
+        <Text>Ngày: {Moment().format('DD/MM/YYYY')}</Text>
       </View>
 
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>Client Information</Text>
-        <Text>Name: {request.responseClient.firstName} {request.responseClient.lastName}</Text>
+        <Text>Tên: {request.responseClient.firstName} {request.responseClient.lastName}</Text>
         <Text>Email: {request.responseClient.email}</Text>
-        <Text>Phone: {request.responseClient.phone}</Text>
-        <Text>Address: {request.responseClient.address}</Text>
+        <Text>Số điện thoại: {request.responseClient.phone}</Text>
+        <Text>Địa Chỉ: {request.responseClient.address}</Text>
       </View>
 
       <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Vehicle Information</Text>
-        <Text>Model: {request.responseVehicles.vehicleModelName}</Text>
-        <Text>Brand: {request.responseVehicles.vehiclesBrandName}</Text>
-        <Text>License Plate: {request.responseVehicles.licensePlate}</Text>
+        <Text style={styles.sectionTitle}>Thông tin xe</Text>
+        <Text>Mẫu Xe: {request.responseVehicles.vehicleModelName}</Text>
+        <Text>Nhãn Hiệu: {request.responseVehicles.vehiclesBrandName}</Text>
+        <Text>Biển Số: {request.responseVehicles.licensePlate}</Text>
       </View>
 
       <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Maintenance Information</Text>
+        <Text style={styles.sectionTitle}>Thông Tin Bảo Dưỡng</Text>
         <View style={styles.table}>
           <View style={styles.tableRow}>
-            <Text style={styles.tableHeader}>Service/Part</Text>
-            <Text style={styles.tableHeader}>Quantity</Text>
-            <Text style={styles.tableHeader}>Cost</Text>
-            <Text style={styles.tableHeader}>Total</Text>
+            <Text style={styles.tableHeader}>Dịch Vụ/Linh Kiện</Text>
+            <Text style={styles.tableHeader}>Số Lượng</Text>
+            <Text style={styles.tableHeader}>Đơn Giá</Text>
+            <Text style={styles.tableHeader}>Tổng</Text>
           </View>
           {renderServiceInfos()}
           {renderSparePartInfos()}
         </View>
-        <Text style={styles.totalPrice}>Total Price: {request.responseMaintenanceInformation.totalPrice}</Text>
+        <Text style={styles.totalPrice}>Thành Tiền: {invoiceData?.subTotal} VND</Text>
+        <Text style={styles.totalPrice}>VAT: {invoiceData?.vat}%</Text>
+        <Text style={styles.totalPrice}>Tổng Cộng:  {invoiceData?.totalAmount}VND</Text>
       </View>
     </ScrollView>
   );
