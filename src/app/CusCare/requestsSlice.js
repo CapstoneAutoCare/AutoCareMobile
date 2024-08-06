@@ -1,12 +1,21 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import Axios from 'axios';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
-export const fetchRequests = createAsyncThunk('requests/fetchRequests', async () => {
-  const response = await Axios.get('https://autocareversion2.tryasp.net/api/Bookings/GetAll');
+export const fetchRequests = createAsyncThunk('requests/fetchRequests', async (centreId) => {
+  const accessToken = await AsyncStorage.getItem('ACCESS_TOKEN');
+  const response = await Axios.get(
+    `https://autocareversion2.tryasp.net/api/Bookings/GetListByCenterId?id=${centreId}`,{
+      headers: {
+        'Content-Type': 'text/plain',
+        Authorization: `Bearer ${accessToken}`,
+      },
+    }
+  );
   const requestsWithNames = await Promise.all(response.data.map(async (request) => {
-    const clientName = await fetchClientName(request.clientId);
-    const vehicleNumber = await fetchVehicleNumber(request.vehicleId);
-    const maintenanceCenterName = await fetchMaintenanceCenterName(request.maintenanceCenterId);
+    const clientName = request.responseClient.firstName + " " + request.responseClient.lastName;
+    const vehicleNumber = request.responseVehicles.licensePlate;
+    const maintenanceCenterName = request.responseCenter.maintenanceCenterName;
     return {
       ...request,
       clientName,

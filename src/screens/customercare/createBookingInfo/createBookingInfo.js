@@ -9,7 +9,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 const CreateBookingInfo = () => {
     const navigation = useNavigation();
     const route = useRoute();
-    const { profile, request } = route.params; // Lấy profile và request từ route params
+    const { profile, request } = route.params; 
 
     const [note, setNote] = useState("");
     const [spareParts, setSpareParts] = useState([]);
@@ -21,39 +21,45 @@ const CreateBookingInfo = () => {
     useEffect(() => {
         const fetchSpareParts = async () => {
             try {
-                const accessToken = await AsyncStorage.getItem("ACCESS_TOKEN");
-                const response = await axios.get(
-                    `https://autocareversion2.tryasp.net/api/SparePartsItemCosts/GetListByClient?centerId=${profile.CentreId}`,
-                    {
-                        headers: {
-                            "Content-Type": "application/json",
-                            Authorization: `Bearer ${accessToken}`,
-                        },
-                    }
-                );
-                setAvailableSpareParts(response.data);
+              const accessToken = await AsyncStorage.getItem('ACCESS_TOKEN');
+              const response = await axios.get(
+                `https://autocareversion2.tryasp.net/api/SparePartsItemCosts/GetListByClient?centerId=${profile.CentreId}`,
+                {
+                  headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${accessToken}`,
+                  },
+                }
+              );
+              const filteredSpareParts = response.data.filter(
+                (item) => item.vehicleModelName === request?.responseVehicles.vehicleModelName
+              );
+              setAvailableSpareParts(filteredSpareParts);
             } catch (error) {
-                console.error("Error fetching spare parts:", error);
+              console.error('Error fetching spare parts:', error);
             }
-        };
-
-        const fetchServices = async () => {
+          };
+        
+          const fetchServices = async () => {
             try {
-                const accessToken = await AsyncStorage.getItem("ACCESS_TOKEN");
-                const response = await axios.get(
-                    `https://autocareversion2.tryasp.net/api/MaintenanceServiceCosts/GetListByClient?centerId=${profile.CentreId}`,
-                    {
-                        headers: {
-                            "Content-Type": "application/json",
-                            Authorization: `Bearer ${accessToken}`,
-                        },
-                    }
-                );
-                setAvailableServices(response.data);
+              const accessToken = await AsyncStorage.getItem('ACCESS_TOKEN');
+              const response = await axios.get(
+                `https://autocareversion2.tryasp.net/api/MaintenanceServiceCosts/GetListByClient?centerId=${profile.CentreId}`,
+                {
+                  headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${accessToken}`,
+                  },
+                }
+              );
+              const filteredServices = response.data.filter(
+                (item) => item.vehicleModelName === request?.responseVehicles.vehicleModelName
+              );
+              setAvailableServices(filteredServices);
             } catch (error) {
-                console.error("Error fetching services:", error);
+              console.error('Error fetching services:', error);
             }
-        };
+          };
 
         if (profile && profile.CentreId) {
             fetchSpareParts();

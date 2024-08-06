@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text, TextInput, Pressable, StyleSheet } from 'react-native';
-import { Picker } from '@react-native-picker/picker';
+import CustomSearchableDropdown from '../../features/CustomSearchableDropdown';
 
 const ServiceComponent = ({
   services,
@@ -10,78 +10,87 @@ const ServiceComponent = ({
   handleServiceChange
 }) => (
   <View>
-    <Text>Dịch Vụ</Text>
-    {services.map((service, index) => (
-      <View key={index}>
-        <View style={styles.inputContainerCost}>
-          <Picker
-            selectedValue={service.maintenanceServiceCostId}
-            onValueChange={(value) =>
-              handleServiceChange(index, "maintenanceServiceCostId", value)
-            }
-            style={styles.picker}
-          >
-            <Picker.Item label="Chọn dịch vụ" value="" />
-            {availableServices.map((service) => (
-              <Picker.Item
-                key={service.maintenanceServiceCostId}
-                label={service.maintenanceServiceName}
-                value={service.maintenanceServiceCostId}
-              />
-            ))}
-          </Picker>
-        </View>
-        <View style={styles.inputContainerCost}>
-          <TextInput
-            style={styles.textInput}
-            placeholder="Tên dịch vụ"
-            value={service.maintenanceServiceInfoName}
-            onChangeText={(text) =>
-              handleServiceChange(index, "maintenanceServiceInfoName", text)
-            }
-          />
-        </View>
-        <View style={styles.inputContainerCost}>
-          <TextInput
-            style={styles.textInput}
-            placeholder="Số lượng"
-            keyboardType="numeric"
-            value={service.quantity.toString()}
-            onChangeText={(text) =>
-              handleServiceChange(index, "quantity", parseInt(text))
-            }
-          />
-        </View>
-        <View style={styles.inputContainerCost}>
-          <TextInput
-            style={styles.textInput}
-            placeholder="Chi phí thực tế"
-            keyboardType="numeric"
-            value={service.actualCost.toString()}
-            onChangeText={(text) =>
-              handleServiceChange(index, "actualCost", parseInt(text))
-            }
-          />
-        </View>
-        <View style={styles.inputContainerCost}>
-          <TextInput
-            style={styles.textInput}
-            placeholder="Ghi chú"
-            value={service.note}
-            onChangeText={(text) => handleServiceChange(index, "note", text)}
-          />
-        </View>
-        <Pressable
-          style={[styles.button, styles.removeButton]}
-          onPress={() => handleRemoveService(index)}
-        >
-          <Text style={styles.buttonText}>Xóa</Text>
-        </Pressable>
-      </View>
-    ))}
-    <Pressable style={styles.button} onPress={handleAddService}>
-      <Text style={styles.buttonText}>Thêm Dịch Vụ</Text>
-    </Pressable>
+    <Text>Dịch vụ</Text>
+              {services.map((service, index) => (
+                <View key={index}>
+                  <View style={styles.inputContainerCost}>
+                    <CustomSearchableDropdown
+                      items={availableServices.map((service) => ({
+                        id: service.maintenanceServiceCostId,
+                        name: `${service.maintenanceServiceName} - ${service.acturalCost} VND`,
+                        cost: service.acturalCost,
+                      }))}
+                      onItemSelect={(item) => {
+                        handleServiceChange(
+                          index,
+                          "maintenanceServiceCostId",
+                          item.id
+                        );
+                        handleServiceChange(
+                          index,
+                          "maintenanceServiceInfoName",
+                          item.name
+                        );
+                        handleServiceChange(index, "quantity", 1);
+                        handleServiceChange(index, "actualCost", item.cost);
+                      }}
+                      placeholder="Chọn dịch vụ"
+                    />
+                  </View>
+                  <View style={styles.inputContainerCost}>
+                    <TextInput
+                      style={styles.textInput}
+                      placeholder="Tên dịch vụ"
+                      value={service.maintenanceServiceInfoName}
+                      onChangeText={(text) =>
+                        handleServiceChange(
+                          index,
+                          "maintenanceServiceInfoName",
+                          text
+                        )
+                      }
+                    />
+                  </View>
+                  <View style={styles.inputContainerCost}>
+                    <TextInput
+                      style={styles.textInput}
+                      placeholder="Số lượng"
+                      value={String(service.quantity)}
+                      keyboardType="numeric"
+                      editable={false}
+                    />
+                  </View>
+                  <View style={styles.inputContainerCost}>
+                    <TextInput
+                      style={styles.textInput}
+                      placeholder="Chi phí"
+                      value={String(service.actualCost)}
+                      keyboardType="numeric"
+                      editable={false}
+                    />
+                  </View>
+                  <View style={styles.inputContainerCost}>
+                    <TextInput
+                      style={styles.textInput}
+                      placeholder="Ghi chú"
+                      value={service.note}
+                      onChangeText={(text) =>
+                        handleServiceChange(index, "note", text)
+                      }
+                    />
+                  </View>
+
+                  <Pressable
+                    style={styles.button}
+                    onPress={() => handleRemoveService(index)}
+                  >
+                    <Text style={styles.buttonText}>Xóa</Text>
+                  </Pressable>
+                </View>
+              ))}
+              <Pressable style={styles.button} onPress={handleAddService}>
+                <Text style={styles.buttonText}>Thêm dịch vụ</Text>
+              </Pressable>
   </View>
 );
 
