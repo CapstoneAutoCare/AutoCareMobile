@@ -16,6 +16,7 @@ import VehicleNavigator from "./TabNavigator/VehicleNavigator";
 import MaintenanceCenters from "../../screens/client/maintenanceCenters/maintenanceCenters";
 import CentersNavigator from "./TabNavigator/CentersNavigator";
 import ProfileNavigator from "./TabNavigator/ProfileNavigator";
+import MaintenanceInformations from "./TabNavigator/MaintenanceInformations";
 
 const Stack = createBottomTabNavigator();
 const BottomTabNavigator = ({ authenticated }) => {
@@ -59,6 +60,17 @@ const BottomTabNavigator = ({ authenticated }) => {
           },
         }}
       />
+      {/* <Stack.Screen
+        name={"MaintenanceInformations"}
+        children={() => <MaintenanceInformations authenticated={authenticated} />}
+        options={{
+          // headerShown: false,
+          title: "Thông Tin Bảo Trì Sửa Chữa",
+          tabBarIcon: ({ size, color }) => {
+            return <Entypo name="calendar" size={28} color={color} />;
+          },
+        }}
+      /> */}
       <Stack.Screen
         name="VEHICLE_NAVIGATOR"
         children={() => <VehicleNavigator authenticated={authenticated} />}

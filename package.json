@@ -29,6 +29,7 @@
     "expo-status-bar": "~1.12.1",
     "fast-levenshtein": "^3.0.0",
     "firebase": "^10.12.2",
+    "i": "^0.3.7",
     "jwt-decode": "^4.0.0",
     "levenshtein": "^1.0.5",
     "moment": "^2.30.1",
