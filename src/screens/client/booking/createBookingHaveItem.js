@@ -308,6 +308,8 @@ const CreateBookingHaveItem = ({
                         id: part.sparePartsItemCostId,
                         name: `${part.maintananceScheduleName} ${part.sparePartsItemName} - ${part.acturalCost} VND`,
                         cost: part.acturalCost,
+                        sparePartsItemName: part.sparePartsItemName,
+
                       }))}
                       onItemSelect={(item) => {
                         handleSparePartChange(
@@ -397,8 +399,9 @@ const CreateBookingHaveItem = ({
                     <CustomSearchableDropdown
                       items={filteredServices.map((service) => ({
                         id: service.maintenanceServiceCostId,
-                        name: `${part.maintananceScheduleName} ${service.maintenanceServiceName} - ${service.acturalCost} VND`,
+                        name: `${service.maintananceScheduleName} ${service.maintenanceServiceName} - ${service.acturalCost} VND`,
                         cost: service.acturalCost,
+                        maintenanceServiceName:service.maintenanceServiceName,
                       }))}
                       onItemSelect={(item) => {
                         handleServiceChange(
