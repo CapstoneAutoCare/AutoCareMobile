@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   TextInput,
   StyleSheet,
+  ScrollView,
 } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useAppDispatch } from "../app/hooks";
@@ -53,54 +54,56 @@ export default LoginCenter = ({ navigation }) => {
 
   return (
     <SafeAreaView style={{ width: "100%", height: "100%" }}>
-      <Text
-        style={{
-          fontSize: 30,
-          marginTop: "40%",
-          textAlign: "center",
-          color: "red",
-        }}
-      >
-        AUTO CARE CENTER
-      </Text>
-      <View style={{ width: "100%" }}>
-        <View style={{ padding: 20 }}>
-          <Text style={styles.text}>Email</Text>
-          <TextInput
-            style={styles.textInput}
-            placeholder="Nhập email của bạn"
-            value={email}
-            onChangeText={(text) => setEmail(text)}
-          ></TextInput>
-          <Text style={styles.text}>Mật khẩu</Text>
-          <TextInput
-            style={styles.textInput}
-            placeholder="Nhập mật khẩu của bạn"
-            value={password}
-            secureTextEntry={true}
-            onChangeText={(text) => setPassword(text)}
-          ></TextInput>
+      <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
+        <Text
+          style={{
+            fontSize: 30,
+            marginTop: "40%",
+            textAlign: "center",
+            color: "red",
+          }}
+        >
+          AUTO CARE CENTER
+        </Text>
+        <View style={{ width: "100%" }}>
+          <View style={{ padding: 20 }}>
+            <Text style={styles.text}>Email</Text>
+            <TextInput
+              style={styles.textInput}
+              placeholder="Nhập email của bạn"
+              value={email}
+              onChangeText={(text) => setEmail(text)}
+            ></TextInput>
+            <Text style={styles.text}>Mật khẩu</Text>
+            <TextInput
+              style={styles.textInput}
+              placeholder="Nhập mật khẩu của bạn"
+              value={password}
+              secureTextEntry={true}
+              onChangeText={(text) => setPassword(text)}
+            ></TextInput>
+          </View>
         </View>
-      </View>
-      <View style={{ width: "100%" }}>
-        <TouchableOpacity style={styles.button} onPress={handleLogin}>
-          <Text style={{ fontSize: 20, color: "white", textAlign: "center" }}>
-            Đăng nhập
-          </Text>
-        </TouchableOpacity>
-        <TouchableOpacity onPress={() => navigation.navigate("Login")}>
-          <Text
-            style={{
-              fontSize: 15,
-              color: "red",
-              textAlign: "center",
-              marginBottom: 10,
-            }}
-          >
-            Đăng nhập khách hàng ?
-          </Text>
-        </TouchableOpacity>
-      </View>
+        <View style={{ width: "100%" }}>
+          <TouchableOpacity style={styles.button} onPress={handleLogin}>
+            <Text style={{ fontSize: 20, color: "white", textAlign: "center" }}>
+              Đăng nhập
+            </Text>
+          </TouchableOpacity>
+          <TouchableOpacity onPress={() => navigation.navigate("Login")}>
+            <Text
+              style={{
+                fontSize: 15,
+                color: "red",
+                textAlign: "center",
+                marginBottom: 10,
+              }}
+            >
+              Đăng nhập khách hàng ?
+            </Text>
+          </TouchableOpacity>
+        </View>
+      </ScrollView>
     </SafeAreaView>
   );
 };
@@ -121,7 +124,6 @@ const styles = StyleSheet.create({
     backgroundColor: "red",
     height: 50,
     borderRadius: 10,
-    border: "none",
     paddingTop: 10,
   },
 });

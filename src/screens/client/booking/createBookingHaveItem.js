@@ -38,8 +38,8 @@ const CreateBookingHaveItem = ({
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [showTimePicker, setShowTimePicker] = useState(false);
   const [filteredSpareParts, setFilteredSpareParts] = useState([]);
-const [filteredServices, setFilteredServices] = useState([]);
-
+  const [filteredServices, setFilteredServices] = useState([]);
+  const [reLoad, setReLoad] = useState(false);
   const { customerCareListByCenterId } = useSelector(
     (state) => state.customerCare
   );
@@ -61,6 +61,7 @@ const [filteredServices, setFilteredServices] = useState([]);
         }
       );
       setAvailableSpareParts(response.data);
+
     } catch (error) {
       console.error("Error fetching spare parts:", error);
     }
@@ -143,7 +144,6 @@ const [filteredServices, setFilteredServices] = useState([]);
     newServices[index][key] = value;
     setServices(newServices);
   };
-
   const handleSignup = async () => {
     try {
       if (!note || !maintenanceCenter) {
@@ -154,7 +154,7 @@ const [filteredServices, setFilteredServices] = useState([]);
       const vietnamTime = new Date(now.getTime() + 7 * 60 * 60 * 1000);
       const accessToken = await AsyncStorage.getItem("ACCESS_TOKEN");
       const response = await axios.post(
-        "http://autocare.runasp.net/api/Bookings/PostHaveItems",
+        "https://autocareversion2.tryasp.net/api/Bookings/PostHaveItems",
         {
           vehicleId: vehicle,
           maintenanceCenterId: maintenanceCenter,
@@ -184,25 +184,11 @@ const [filteredServices, setFilteredServices] = useState([]);
       } else {
         alert("Tạo lịch không thành công. Vui lòng thử lại.");
       }
+      setReLoad(!reLoad);
     } catch (error) {
       console.error("Error during:", error);
-      if (error.response) {
-        console.error("Server responded with:", error.response.data);
-        console.error("Status code:", error.response.status);
-        alert(
-          "Server responded with an error. Please check the console for details."
-        );
-      } else if (error.request) {
-        console.error("No response received:", error.request);
-        alert(
-          "No response received from the server. Please check your network connection."
-        );
-      } else {
-        console.error("Error setting up the request:", error.message);
-        alert(
-          "An error occurred during the request setup. Please check the console for details."
-        );
-      }
+      alert(error.response.data.Exception);
+      setReLoad(!reLoad);
     }
   };
   const onDateChange = (event, selectedDate) => {
@@ -222,20 +208,30 @@ const [filteredServices, setFilteredServices] = useState([]);
     );
     setBookingDate(updatedDate);
   };
+
   useEffect(() => {
-    const selectedVehicle = vehicleListByClient.find(v => v.vehiclesId === vehicle);
+    const selectedVehicle = vehicleListByClient.find(
+      (v) => v.vehiclesId === vehicle
+    );
     if (selectedVehicle) {
-      setFilteredSpareParts(availableSpareParts.filter(part => 
-        part?.vehicleModelName === selectedVehicle?.vehicleModelName));
-      setFilteredServices(availableServices.filter(service => 
-        service?.vehicleModelName === selectedVehicle?.vehicleModelName));
+      setFilteredSpareParts(
+        availableSpareParts.filter(
+          (part) => part?.vehicleModelName === selectedVehicle?.vehicleModelName
+        )
+      );
+      setFilteredServices(
+        availableServices.filter(
+          (service) =>
+            service?.vehicleModelName === selectedVehicle?.vehicleModelName
+        )
+      );
     } else {
       setFilteredSpareParts([]);
       setFilteredServices([]);
     }
-    console.log(selectedVehicle?.vehicleModelName)
+    console.log(selectedVehicle?.vehicleModelName);
   }, [vehicle, availableSpareParts, availableServices]);
-  
+
   return (
     <ScrollView style={{ marginTop: 20 }}>
       <View style={styles.container}>
@@ -259,7 +255,13 @@ const [filteredServices, setFilteredServices] = useState([]);
               {vehicleListByClient.map((vehicle) => (
                 <Picker.Item
                   key={vehicle.vehiclesId}
-                  label={vehicle.vehiclesBrandName + " " + vehicle.licensePlate}
+                  label={
+                    vehicle.vehiclesBrandName +
+                    " " +
+                    vehicle.vehicleModelName +
+                    " " +
+                    vehicle.licensePlate
+                  }
                   value={vehicle.vehiclesId}
                 />
               ))}
@@ -303,122 +305,122 @@ const [filteredServices, setFilteredServices] = useState([]);
               </View>
               <Text>Phụ Tùng</Text>
               {spareParts.map((sparePart, index) => (
-                  <View key={index}>
-                    <View style={styles.inputContainerCost}>
-                      <Picker
-                        selectedValue={sparePart.sparePartsItemCostId}
-                        onValueChange={(value) => {
-                          const list = availableSpareParts.find(
-                            (item) => item.sparePartsItemCostId === value
-                          );
-                          handleSparePartChange(
-                            index,
-                            "sparePartsItemCostId",
-                            value
-                          );
-                          handleSparePartChange(
-                            index,
-                            "maintenanceSparePartInfoName",
-                            list?.sparePartsItemName || ""
-                          );
-                          handleSparePartChange(index, "quantity", 1);
-                          handleSparePartChange(
-                            index,
-                            "actualCost",
-                            list?.acturalCost || 0
-                          );
-                        }}
-                        style={styles.picker}
-                      >
-                        <Picker.Item label="Chọn phụ tùng" value="" />
-                        {filteredSpareParts.map((part) => (
-                          <Picker.Item
-                            key={part.sparePartsItemCostId}
-                            label={
-                              part.maintananceScheduleName +
-                              part.sparePartsItemName +
-                              " - " +
-                              part.acturalCost +
-                              "VND " +
-                              part?.vehicleModelName
-                            }
-                            value={part.sparePartsItemCostId}
-                          />
-                        ))}
-                      </Picker>
-                    </View>
-                    <View style={styles.inputContainerCost}>
-                      <TextInput
-                        style={styles.textInput}
-                        placeholder="Tên phụ tùng"
-                        value={sparePart.maintenanceSparePartInfoName}
-                        onChangeText={(text) => {
-                          handleSparePartChange(
-                            index,
-                            "maintenanceSparePartInfoName",
-                            text
-                          );
-                        }}
-                      />
-                    </View>
-                    <View style={styles.inputContainerCost}>
-                      <TextInput
-                        style={styles.textInput}
-                        placeholder="Số lượng"
-                        value={String(sparePart.quantity)}
-                        keyboardType="numeric"
-                        onChangeText={(text) => {
-                          handleSparePartChange(
-                            index,
-                            "quantity",
-                            parseInt(text) || 0
-                          );
-                          // handleSparePartChange(
-                          //   index,
-                          //   "actualCost",
-                          //   sparePart.actualCost * parseInt(text) || 0
-                          // );
-                        }}
-                      />
-                    </View>
-                    <View style={styles.inputContainerCost}>
-                      <TextInput
-                        style={styles.textInput}
-                        placeholder="Chi phí"
-                        value={String(
-                          sparePart.actualCost * sparePart.quantity ||
-                            sparePart.actualCost
-                        )}
-                        keyboardType="numeric"
-                        editable={false}
-                        // onChangeText={(text) =>
-                        //   handleSparePartChange(
-                        //     index,
-                        //     "actualCost",
-                        //     parseInt(text)
-                        //   )
-                        // }
-                      />
-                    </View>
-                    <View style={styles.inputContainerCost}>
-                      <TextInput
-                        style={styles.textInput}
-                        placeholder="Ghi chú"
-                        value={sparePart.note}
-                        onChangeText={(text) =>
-                          handleSparePartChange(index, "note", text)
-                        }
-                      />
-                    </View>
-
-                    <Pressable
-                      style={styles.button}
-                      onPress={() => handleRemoveSparePart(index)}
+                <View key={index}>
+                  <View style={styles.inputContainerCost}>
+                    <Picker
+                      selectedValue={sparePart.sparePartsItemCostId}
+                      onValueChange={(value) => {
+                        const list = availableSpareParts.find(
+                          (item) => item.sparePartsItemCostId === value
+                        );
+                        handleSparePartChange(
+                          index,
+                          "sparePartsItemCostId",
+                          value
+                        );
+                        handleSparePartChange(
+                          index,
+                          "maintenanceSparePartInfoName",
+                          list?.sparePartsItemName || ""
+                        );
+                        handleSparePartChange(index, "quantity", 1);
+                        handleSparePartChange(
+                          index,
+                          "actualCost",
+                          list?.acturalCost || 0
+                        );
+                      }}
+                      style={styles.picker}
                     >
-                      <Text style={styles.buttonText}>Xóa</Text>
-                    </Pressable>
+                      <Picker.Item label="Chọn phụ tùng" value="" />
+                      {filteredSpareParts.map((part) => (
+                        <Picker.Item
+                          key={part.sparePartsItemCostId}
+                          label={
+                            part.maintananceScheduleName +
+                            " " +
+                            part.sparePartsItemName +
+                            " " +
+                            part.acturalCost +
+                            "VND "
+                          }
+                          value={part.sparePartsItemCostId}
+                        />
+                      ))}
+                    </Picker>
                   </View>
-                ))}
+                  <View style={styles.inputContainerCost}>
+                    <TextInput
+                      style={styles.textInput}
+                      placeholder="Tên phụ tùng"
+                      value={sparePart.maintenanceSparePartInfoName}
+                      onChangeText={(text) => {
+                        handleSparePartChange(
+                          index,
+                          "maintenanceSparePartInfoName",
+                          text
+                        );
+                      }}
+                    />
+                  </View>
+                  <View style={styles.inputContainerCost}>
+                    <TextInput
+                      style={styles.textInput}
+                      placeholder="Số lượng"
+                      value={String(sparePart.quantity)}
+                      keyboardType="numeric"
+                      onChangeText={(text) => {
+                        handleSparePartChange(
+                          index,
+                          "quantity",
+                          parseInt(text) || 0
+                        );
+                        // handleSparePartChange(
+                        //   index,
+                        //   "actualCost",
+                        //   sparePart.actualCost * parseInt(text) || 0
+                        // );
+                      }}
+                    />
+                  </View>
+                  <View style={styles.inputContainerCost}>
+                    <TextInput
+                      style={styles.textInput}
+                      placeholder="Chi phí"
+                      value={String(
+                        sparePart.actualCost * sparePart.quantity ||
+                          sparePart.actualCost
+                      )}
+                      keyboardType="numeric"
+                      editable={false}
+                      // onChangeText={(text) =>
+                      //   handleSparePartChange(
+                      //     index,
+                      //     "actualCost",
+                      //     parseInt(text)
+                      //   )
+                      // }
+                    />
+                  </View>
+                  <View style={styles.inputContainerCost}>
+                    <TextInput
+                      style={styles.textInput}
+                      placeholder="Ghi chú"
+                      value={sparePart.note}
+                      onChangeText={(text) =>
+                        handleSparePartChange(index, "note", text)
+                      }
+                    />
+                  </View>
+
+                  <Pressable
+                    style={styles.button}
+                    onPress={() => handleRemoveSparePart(index)}
+                  >
+                    <Text style={styles.buttonText}>Xóa</Text>
+                  </Pressable>
+                </View>
+              ))}
               <Pressable style={styles.button} onPress={handleAddSparePart}>
                 <Text style={styles.buttonText}>Thêm phụ tùng</Text>
               </Pressable>
@@ -457,8 +459,10 @@ const [filteredServices, setFilteredServices] = useState([]);
                         <Picker.Item
                           key={service.maintenanceServiceCostId}
                           label={
+                            service.maintananceScheduleName +
+                            " " +
                             service.maintenanceServiceName +
-                            " - " +
+                            " " +
                             service.acturalCost +
                             "VND"
                           }
@@ -614,6 +618,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: COLORS.black,
   },
+
   button: {
     backgroundColor: "red",
     marginTop: 20,
@@ -625,6 +630,14 @@ const styles = StyleSheet.create({
     color: COLORS.white,
     fontWeight: "bold",
     fontSize: 20,
+  },
+  searchInput: {
+    // style cho ô tìm kiếm
+    borderColor: "gray",
+    borderWidth: 1,
+    borderRadius: 4,
+    padding: 8,
+    marginBottom: 10,
   },
 });
 

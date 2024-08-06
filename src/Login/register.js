@@ -1,18 +1,20 @@
 import React, { Component, useState } from "react";
 import {
-    SafeAreaView,
-    View,
-    Text,
-    TouchableOpacity,
-    ImageBackground,
-    StatusBar,
-    Dimensions,
-    TextInput,
-    Image,
-    StyleSheet,
-    Modal, Button,
-    Pressable
-} from 'react-native';
+  SafeAreaView,
+  View,
+  Text,
+  TouchableOpacity,
+  ImageBackground,
+  StatusBar,
+  Dimensions,
+  TextInput,
+  Image,
+  StyleSheet,
+  Modal,
+  Button,
+  Pressable,
+  ScrollView,
+} from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import COLORS from "../constants/colors";
 import PhoneInput from "react-native-phone-input";
@@ -21,21 +23,46 @@ import * as ImagePicker from "expo-image-picker";
 import Constants from "expo-constants";
 import axios from "axios";
 import { RadioButton } from "react-native-paper";
-import { storeImageToFireBase, uploadImage } from "../configs/storeImageToFirebase";
+import {
+  storeImageToFireBase,
+  uploadImage,
+} from "../configs/storeImageToFirebase";
+import DateTimePicker from "react-native-modal-datetime-picker";
 export default Register = ({ navigation }) => {
-      const [firstName, setFirstName] = useState("");
-      const [lastName, setLastName] = useState("");
-      const [passwordHash, setPasswordHash] = useState("");
-      const [password2, setPassword2] = useState("");
-      const [phone, setPhone] = useState("");
-      const [showPassword1, setShowPassword1] = useState(false);
-      const [showPassword2, setShowPassword2] = useState(false);
-      const [email, setEmail] = useState("");
-      const [dob, setDob] = useState("");
-      const [address, setAddress] = useState("");
-      const [gender, setGender] = useState("");
-      const [avatar, setAvatar] = useState(null);
-      const [isAvatarSelected, setIsAvatarSelected] = useState(false);
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [passwordHash, setPasswordHash] = useState("");
+  const [password2, setPassword2] = useState("");
+  const [phone, setPhone] = useState("");
+  const [showPassword1, setShowPassword1] = useState(false);
+  const [showPassword2, setShowPassword2] = useState(false);
+  const [email, setEmail] = useState("");
+  const [dob, setDob] = useState("");
+  const [address, setAddress] = useState("");
+  const [gender, setGender] = useState("");
+  const [avatar, setAvatar] = useState(null);
+  const [bookingDate, setBookingDate] = useState(new Date());
+  const [showDatePicker, setShowDatePicker] = useState(false);
+  const [showTimePicker, setShowTimePicker] = useState(false);
+
+  const [isAvatarSelected, setIsAvatarSelected] = useState(false);
+  const onDateChange = (event, selectedDate) => {
+    const currentDate = selectedDate || bookingDate;
+    setShowDatePicker(false);
+    setBookingDate(currentDate);
+    if (event.type === "set") {
+      setShowTimePicker(true);
+    }
+  };
+
+  const onTimeChange = (event, selectedTime) => {
+    const currentTime = selectedTime || bookingDate;
+    setShowTimePicker(false);
+    const updatedDate = new Date(
+      bookingDate.setHours(currentTime.getHours(), currentTime.getMinutes())
+    );
+    setBookingDate(updatedDate);
+  };
   const pickImage = async () => {
     if (Constants.platform.ios) {
       const { status } =
@@ -66,18 +93,25 @@ export default Register = ({ navigation }) => {
         return;
       }
 
-      if (!firstName || !lastName || !phone || !passwordHash || !email || !dob) {
+      if (
+        !firstName ||
+        !lastName ||
+        !phone ||
+        !passwordHash ||
+        !email ||
+        !bookingDate
+      ) {
         alert("Vui lòng điền đầy đủ thông tin");
         return;
       }
-            let avatarUrl =
-              "https://i.pinimg.com/736x/0d/64/98/0d64989794b1a4c9d89bff571d3d5842.jpg";
-            if (avatar) {
-              const uploadedAvatarUrl = await uploadImage(avatar);
-              if (uploadedAvatarUrl) {
-                avatarUrl = uploadedAvatarUrl;
-              }
-            }
+      let avatarUrl =
+        "https://i.pinimg.com/736x/0d/64/98/0d64989794b1a4c9d89bff571d3d5842.jpg";
+      if (avatar) {
+        const uploadedAvatarUrl = await uploadImage(avatar);
+        if (uploadedAvatarUrl) {
+          avatarUrl = uploadedAvatarUrl;
+        }
+      }
 
       const response = await axios.post(
         "https://autocareversion2.tryasp.net/api/Clients/Post",
@@ -90,7 +124,7 @@ export default Register = ({ navigation }) => {
           firstName: firstName,
           lastName: lastName,
           address: address,
-          birthday: dob,
+          birthday: bookingDate,
         },
         {
           headers: { "Content-Type": "application/json" },
@@ -125,7 +159,8 @@ export default Register = ({ navigation }) => {
     }
   };
 
-    return (
+  return (
+    <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
       <View
         style={{
           flex: 1,
@@ -303,7 +338,6 @@ export default Register = ({ navigation }) => {
             </Pressable>
           </View>
 
-          {/* Ô nhập số điện thoại với biểu tượng */}
           <View
             style={{
               flexDirection: "row",
@@ -364,52 +398,29 @@ export default Register = ({ navigation }) => {
               required={true}
             />
           </View>
-
-          <View
-            style={{
-              flexDirection: "row",
-              alignItems: "center",
-              backgroundColor: COLORS.white,
-              paddingVertical: 10,
-              borderRadius: 10,
-              marginBottom: 12,
-              paddingHorizontal: 10,
-            }}
-          >
-            <FontAwesome
-              name="birthday-cake"
-              size={24}
-              color={COLORS.grey}
-              style={{ marginRight: 10 }}
-            />
-           <TouchableOpacity onPress={showDatepicker}>
-            <Text style={{ flex: 1, fontSize: 16, color: COLORS.grey }}>
-              {dob ? dob.toLocaleDateString() : "Chọn ngày sinh"}
-            </Text>
-          </TouchableOpacity>
-          {showDatePicker && (
+          <View style={styles.inputContainer}>
+            <Pressable
+              onPress={() => setShowDatePicker(true)}
+              style={styles.datePickerButton}
+            >
+              <Text style={styles.datePickerText}>
+                {bookingDate
+                  ? bookingDate.toLocaleDateString()
+                  : "Chọn ngày sinh"}
+              </Text>
+            </Pressable>
             <DateTimePicker
-              value={dob}
+              isVisible={showDatePicker}
               mode="date"
-              display="default"
-              onChange={handleDateChange}
-              maximumDate={new Date()}
+              onConfirm={(date) => {
+                setBookingDate(date);
+                setShowDatePicker(false);
+              }}
+              onCancel={() => setShowDatePicker(false)}
+              value={bookingDate}
             />
-          )}
-            {/* <Pressable onPress={showDatepicker} style={{ flex: 1, alignItems: 'flex-end' }}>
-                            <FontAwesome name="calendar" size={24} color={COLORS.grey} style={{ marginRight: 10 }} />
-                        </Pressable>
-                        {showDatePicker && (
-                            <DateTimePicker
-                                testID="dateTimePicker"
-value={selectedDate}
-                                mode="date"
-                                is24Hour={true}
-                                display="default"
-                                onChange={handleDateChange}
-                            />
-                        )} */}
           </View>
+
           <View
             style={{
               flexDirection: "row",
@@ -554,7 +565,7 @@ value={selectedDate}
                 navigation.navigate("Login");
               }}
               style={{
-                color:"red",
+                color: "red",
                 fontWeight: "bold",
                 marginLeft: 5,
               }}
@@ -564,62 +575,101 @@ value={selectedDate}
           </Text>
         </View>
       </View>
-    );
-}
+    </ScrollView>
+  );
+};
 const styles = StyleSheet.create({
-    textInput: {
-        marginBottom: 15,
-        backgroundColor: 'grey',
-        borderRadius: 10,
-        padding: 10,
-        width: '100%'
-    },
-    textCode: {
-        marginBottom: 15,
-        backgroundColor: 'grey',
-        borderRadius: 10,
-        padding: 10,
-        marginRight: 5
-    },
-    text: {
-        marginBottom: 10,
-        fontSize: 20,
-    },
-    button: {
-        margin: 20,
-        backgroundColor: 'red',
-        height: 50,
-        borderRadius: 10,
-        border: 'none',
-        paddingTop: 10
-    }, container: {
-        flex: 1,
-        justifyContent: "center",
-        alignItems: "center",
-    },
-    centeredView: {
-        flex: 1,
-        justifyContent: "center",
-        alignItems: "center",
-        backgroundColor: "rgba(0,0,0,0.5)",
-    },
-    modalView: {
-        margin: 20,
-        backgroundColor: "white",
-        borderRadius: 20,
-        padding: 35,
-        alignItems: "center",
-        shadowColor: "#000",
-        shadowOffset: {
-            width: 0,
-            height: 2,
-        },
-        shadowOpacity: 0.25,
-        shadowRadius: 4,
-        elevation: 5,
-    },
-    modalText: {
-        marginBottom: 15,
-        textAlign: "center",
-    },
+  textInput: {
+    marginBottom: 15,
+    backgroundColor: "grey",
+    borderRadius: 10,
+    padding: 10,
+    width: "100%",
+  },
+  textCode: {
+    marginBottom: 15,
+    backgroundColor: "grey",
+    borderRadius: 10,
+    padding: 10,
+    marginRight: 5,
+  },
+  text: {
+    marginBottom: 10,
+    fontSize: 20,
+  },
+  button: {
+    margin: 20,
+    backgroundColor: "red",
+    height: 50,
+    borderRadius: 10,
+  },
+  container: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  scrollContainer: {
+    flexGrow: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  container: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  form: {
+    paddingHorizontal: 42,
+    width: "100%",
+  },
+  inputContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: COLORS.white,
+    paddingVertical: 10,
+    borderRadius: 10,
+    marginBottom: 12,
+    marginTop: 10,
+    paddingHorizontal: 10,
+  },
+  inputContainerCost: {
+    flexDirection: "flex",
+    backgroundColor: COLORS.white,
+    paddingVertical: 10,
+    borderRadius: 10,
+    marginBottom: 12,
+    marginTop: 10,
+    paddingHorizontal: 10,
+  },
+  textInput: {
+    flex: 1,
+    fontSize: 16,
+  },
+  picker: {
+    flex: 1,
+  },
+  datePickerButton: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+    paddingVertical: 10,
+    backgroundColor: COLORS.white,
+    borderRadius: 10,
+  },
+  datePickerText: {
+    fontSize: 16,
+    color: COLORS.black,
+  },
+  button: {
+    backgroundColor: "red",
+    marginTop: 20,
+    paddingVertical: 15,
+    borderRadius: 10,
+    alignItems: "center",
+  },
+  buttonText: {
+    color: COLORS.white,
+    fontWeight: "bold",
+    fontSize: 20,
+  },
 });
