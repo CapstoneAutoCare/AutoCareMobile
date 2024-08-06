@@ -2542,9 +2542,8 @@ at-least-node@^1.0.0:
   resolved "https://registry.npmjs.org/at-least-node/-/at-least-node-1.0.0.tgz"
   integrity sha512-+q/t7Ekv1EDY2l6Gda6LLiX14rU9TV20Wa3ofeQmwPFZbOMo9DXrLbOjFaaclkXKWidIaopwAObQDqwWtGUjqg==
 
-"autocarecar@file:":
+"autocarecar@file:.":
   version "1.0.0"
-  resolved "file:"
   dependencies:
     "@expo/vector-icons" "^14.0.2"
     "@react-native-async-storage/async-storage" "^1.23.1"
@@ -2557,7 +2556,7 @@ at-least-node@^1.0.0:
     "@react-navigation/native" "^6.1.17"
     "@react-navigation/native-stack" "^6.9.26"
     "@reduxjs/toolkit" "^2.2.1"
-    autocarecar "file:"
+    autocarecar "file:../../../AppData/Local/Yarn/Cache/v6/npm-autocarecar-1.0.0-292f306a-c996-42ad-840e-32299247b989-1722955111010/node_modules/autocarecar"
     axios "^1.6.7"
     expo "~51.0.9"
     expo-barcode-scanner "^13.0.1"
@@ -2567,6 +2566,7 @@ at-least-node@^1.0.0:
     expo-status-bar "~1.12.1"
     fast-levenshtein "^3.0.0"
     firebase "^10.12.2"
+    i "^0.3.7"
     jwt-decode "^4.0.0"
     levenshtein "^1.0.5"
     moment "^2.30.1"
@@ -4010,11 +4010,7 @@ fs.realpath@^1.0.0:
 
 fsevents@^2.3.2:
   version "2.3.3"
-<<<<<<< HEAD
-  resolved "https://registry.yarnpkg.com/fsevents/-/fsevents-2.3.3.tgz#cac6407785d03675a2a5e1a5305c697b347d90d6"
-=======
   resolved "https://registry.npmjs.org/fsevents/-/fsevents-2.3.3.tgz"
->>>>>>> 081a6bf611498236a39e4dad1000dbb29b669267
   integrity sha512-5xoDfX+fL7faATnagmWPpbFtwh/R77WmMMqqHGS65C3vvB0YHrgF+B1YmZ3441tMj5n63k0212XNoJwzlhffQw==
 
 function-bind@^1.1.2:
@@ -4934,8 +4930,7 @@ lighthouse-logger@^1.0.0:
 
 lightningcss-darwin-arm64@1.19.0:
   version "1.19.0"
-<<<<<<< HEAD
-  resolved "https://registry.yarnpkg.com/lightningcss-darwin-arm64/-/lightningcss-darwin-arm64-1.19.0.tgz#56ab071e932f845dbb7667f44f5b78441175a343"
+  resolved "https://registry.npmjs.org/lightningcss-darwin-arm64/-/lightningcss-darwin-arm64-1.19.0.tgz"
   integrity sha512-wIJmFtYX0rXHsXHSr4+sC5clwblEMji7HHQ4Ub1/CznVRxtCFha6JIt5JZaNf8vQrfdZnBxLLC6R8pC818jXqg==
 
 lightningcss-darwin-x64@1.19.0:
@@ -4973,11 +4968,6 @@ lightningcss-win32-x64-msvc@1.19.0:
   resolved "https://registry.yarnpkg.com/lightningcss-win32-x64-msvc/-/lightningcss-win32-x64-msvc-1.19.0.tgz#0854dbd153035eca1396e2227c708ad43655a61c"
   integrity sha512-C+VuUTeSUOAaBZZOPT7Etn/agx/MatzJzGRkeV+zEABmPuntv1zihncsi+AyGmjkkzq3wVedEy7h0/4S84mUtg==
 
-=======
-  resolved "https://registry.npmjs.org/lightningcss-darwin-arm64/-/lightningcss-darwin-arm64-1.19.0.tgz"
-  integrity sha512-wIJmFtYX0rXHsXHSr4+sC5clwblEMji7HHQ4Ub1/CznVRxtCFha6JIt5JZaNf8vQrfdZnBxLLC6R8pC818jXqg==
-
->>>>>>> 081a6bf611498236a39e4dad1000dbb29b669267
 lightningcss@~1.19.0:
   version "1.19.0"
   resolved "https://registry.npmjs.org/lightningcss/-/lightningcss-1.19.0.tgz"
