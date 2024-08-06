@@ -5,6 +5,10 @@ export const centerService = {
     const url = `/MaintenanceCenters/GetAll`;
     return axiosClient.get(url);
   },
+  getListInformations: () => {
+    const url = `/MaintenanceInformations/GetListByClient`;
+    return axiosClient.get(url);
+  },
   getListService: () => {
     const url = `/MaintenanceServices/GetListByCenter`;
     return axiosClient.get(url);
@@ -39,6 +43,10 @@ export const centerService = {
   },
   getListServiceById: (id) => {
     const url = `/MaintenanceServices/GetById?id=${id}`;
+    return axiosClient.get(url);
+  },
+  getReceiptById: (id) => {
+    const url = `/Receipts/GetByInforId?id=${id}`;
     return axiosClient.get(url);
   },
   getListStaff: () => {

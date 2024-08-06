@@ -16,16 +16,17 @@ import {
   MaterialCommunityIcons,
 } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
-import { getListCenter } from "../../../app/Center/actions";
+import { getListCenter, getListInformations } from "../../../app/Center/actions";
 import { getProfile } from "../../../features/userSlice";
 import levenshtein from "fast-levenshtein";
 import { Ionicons } from "@expo/vector-icons";
+import moment from "moment";
 
-const MaintenanceCenters = () => {
+const MaintenanceInformations = () => {
   const navigation = useNavigation();
   const dispatch = useDispatch();
   const { profile } = useSelector((state) => state.user);
-  const { centerList } = useSelector((state) => state.center);
+  const { informationsList } = useSelector((state) => state.center);
   const [sortedStores, setSortedStores] = useState([]);
   const [isModalVisible, setModalVisible] = useState(false);
   const [sortOrder, setSortOrder] = useState("default");
@@ -33,7 +34,7 @@ const MaintenanceCenters = () => {
 
   const fetchGetListBooking = async () => {
     await dispatch(getProfile());
-    await dispatch(getListCenter());
+    await dispatch(getListInformations());
   };
 
   useEffect(() => {
@@ -46,24 +47,18 @@ const MaintenanceCenters = () => {
 
   useEffect(() => {
     sortStores();
-  }, [centerList, sortOrder]);
+  }, [informationsList, sortOrder]);
 
   useEffect(() => {
     handleSearch(searchQuery);
   }, [searchQuery]);
 
   const sortStores = () => {
-    let sorted = [...centerList];
+    let sorted = [...informationsList];
     if (sortOrder === "ratingHighToLow") {
-      sorted.sort((a, b) => b.rating - a.rating);
+      sorted.sort((a, b) => b.totalPrice - a.totalPrice);
     } else if (sortOrder === "ratingLowToHigh") {
-      sorted.sort((a, b) => a.rating - b.rating);
-    } else {
-      sorted = centerList.map((store) => {
-        const similarity = levenshtein.get(profile?.Address, store.address);
-        return { ...store, similarity };
-      });
-      sorted.sort((a, b) => a.similarity - b.similarity);
+      sorted.sort((a, b) => a.totalPrice - b.totalPrice);
     }
     setSortedStores(sorted);
   };
@@ -76,16 +71,14 @@ const MaintenanceCenters = () => {
     setSortOrder(order);
     setModalVisible(false);
   };
-  
+
   const handleSearch = (query) => {
     setSearchQuery(query);
     if (query) {
-      const filteredStores = centerList.filter(
-        (store) =>
-          store.maintenanceCenterName
-            .toLowerCase()
-            .includes(query.toLowerCase()) ||
-          store.address.toLowerCase().includes(query.toLowerCase())
+      const filteredStores = informationsList.filter((store) =>
+        store.informationMaintenanceName
+          .toLowerCase()
+          .includes(query.toLowerCase())
       );
       setSortedStores(filteredStores);
     } else {
@@ -157,7 +150,7 @@ const MaintenanceCenters = () => {
                         fontWeight: "500",
                       }}
                     >
-                      THÔNG TIN TRUNG TÂM
+                      THÔNG TIN BẢO TRÌ
                     </Text>
                     <Text
                       style={{
@@ -165,9 +158,10 @@ const MaintenanceCenters = () => {
                         fontSize: 15,
                         fontWeight: "500",
                         marginTop: 3,
+                        width: 200,
                       }}
                     >
-                      {item?.maintenanceCenterName}
+                      {item?.informationMaintenanceName}
                     </Text>
                   </View>
 
@@ -179,7 +173,7 @@ const MaintenanceCenters = () => {
                         fontWeight: "500",
                       }}
                     >
-                      ĐÁNH GIÁ
+                      TỔNG GIÁ
                     </Text>
                     <View style={{ flexDirection: "row" }}>
                       <Text
@@ -190,9 +184,8 @@ const MaintenanceCenters = () => {
                           marginTop: 4,
                         }}
                       >
-                        {item?.rating}
+                        {item?.totalPrice} VND
                       </Text>
-                      <AntDesign name="staro" size={24} color="white" />
                     </View>
                   </View>
                 </View>
@@ -214,7 +207,9 @@ const MaintenanceCenters = () => {
                         color: "gray",
                       }}
                     >
-                      Email : {item?.email}
+                      Xe : {item?.responseVehicles?.vehiclesBrandName} -{" "}
+                      {item?.responseVehicles?.vehicleModelName} -{" "}
+                      {item?.responseVehicles?.color}
                     </Text>
                     <Text
                       style={{
@@ -224,7 +219,7 @@ const MaintenanceCenters = () => {
                         color: "gray",
                       }}
                     >
-                      Số điện thoại : {item?.phone}
+                      Biển số xe : {item?.responseVehicles?.licensePlate}
                     </Text>
                     <Text
                       style={{
@@ -234,14 +229,25 @@ const MaintenanceCenters = () => {
                         color: "gray",
                       }}
                     >
-                      Địa chỉ : {item?.address}
+                      Trạng thái : {item?.status}
+                    </Text>
+                    <Text
+                      style={{
+                        marginTop: 10,
+                        fontSize: 14,
+                        fontWeight: "500",
+                        color: "gray",
+                      }}
+                    >
+                      Ngày hoàn thành :{" "}
+                      {moment(item?.finishedDate).format("DD/MM/YYYY HH:mm")}
                     </Text>
                     <View style={{ marginTop: 10 }}>
                       <Text style={{ fontSize: 13, fontWeight: "600" }}>
                         Thông tin
                       </Text>
                       <Text style={{ fontSize: 15, marginTop: 4 }}>
-                        {item?.maintenanceCenterDescription}
+                        {item?.note}
                       </Text>
                     </View>
                     <View style={{ marginBottom: 20 }} />
@@ -254,12 +260,12 @@ const MaintenanceCenters = () => {
                     justifyContent: "space-between",
                   }}
                 >
-                  <Pressable
-                    onPress={() =>
-                      navigation.navigate("PostBooking", {
-                        maintenanceCenterId: item?.maintenanceCenterId,
-                      })
-                    }
+                  {/* <Pressable
+                    // onPress={() =>
+                    //   navigation.navigate("PostBooking", {
+                    //     maintenanceCenterId: item?.maintenanceCenterId,
+                    //   })
+                    // }
                     style={{
                       backgroundColor: "#52c41a",
                       padding: 10,
@@ -271,11 +277,11 @@ const MaintenanceCenters = () => {
                     }}
                   >
                     <Text style={{ color: "white" }}>+ Lên lịch sửa xe</Text>
-                  </Pressable>
+                  </Pressable> */}
                   <Pressable
                     onPress={() =>
-                      navigation.navigate("CenterDetail", {
-                        maintenanceCenterId: item?.maintenanceCenterId,
+                      navigation.navigate("InforDetail", {
+                        info: item,
                       })
                     }
                     style={{
@@ -312,13 +318,13 @@ const MaintenanceCenters = () => {
               style={styles.modalButton}
               onPress={() => handleSortSelect("ratingHighToLow")}
             >
-              <Text style={styles.modalButtonText}>Rating cao đến thấp</Text>
+              <Text style={styles.modalButtonText}>giá cao đến thấp</Text>
             </TouchableOpacity>
             <TouchableOpacity
               style={styles.modalButton}
               onPress={() => handleSortSelect("ratingLowToHigh")}
             >
-              <Text style={styles.modalButtonText}>Rating thấp đến cao</Text>
+              <Text style={styles.modalButtonText}>giá thấp đến cao</Text>
             </TouchableOpacity>
             <TouchableOpacity
               style={styles.modalButton}
@@ -339,7 +345,7 @@ const MaintenanceCenters = () => {
   );
 };
 
-export default MaintenanceCenters;
+export default MaintenanceInformations;
 
 const styles = StyleSheet.create({
   modalContainer: {

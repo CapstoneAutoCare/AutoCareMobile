@@ -114,7 +114,7 @@ export default Register = ({ navigation }) => {
       }
 
       const response = await axios.post(
-        "http://autocare.runasp.net/api/Clients/Post",
+        "https://autocareversion2.tryasp.net/api/Clients/Post",
         {
           email: email,
           password: passwordHash,

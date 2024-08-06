@@ -13,6 +13,18 @@ export const getListCenter = createAsyncThunk(
     }
   }
 );
+export const getListInformations = createAsyncThunk(
+  "MaintenanceInformations/GetAll",
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await centerService.getListInformations();
+      return response.data;
+    } catch (error) {
+      console.log(error);
+      return rejectWithValue(error);
+    }
+  }
+);
 export const getListCenterByClient = createAsyncThunk(
   "center/getListCenterByClient",
   async (_, { rejectWithValue }) => {
@@ -66,6 +78,18 @@ export const getListServiceById = createAsyncThunk(
   async (id, { rejectWithValue }) => {
     try {
       const response = await centerService.getListServiceById(id);
+      return response.data;
+    } catch (error) {
+      console.log(error);
+      return rejectWithValue(error);
+    }
+  }
+);
+export const getReceiptById = createAsyncThunk(
+  "center/getReceiptById",
+  async (id, { rejectWithValue }) => {
+    try {
+      const response = await centerService.getReceiptById(id);
       return response.data;
     } catch (error) {
       console.log(error);

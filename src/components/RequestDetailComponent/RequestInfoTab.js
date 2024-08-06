@@ -73,7 +73,7 @@ const RequestInfoTab = ({ request, updateStatus, error, profile, assignTask}) =>
       try {
         const accessToken = await AsyncStorage.getItem('ACCESS_TOKEN');
         const response = await axios.get(
-          `http://autocare.runasp.net/api/SparePartsItemCosts/GetListByClient?centerId=${request.maintenanceCenterId}`,
+          `https://autocareversion2.tryasp.net/api/SparePartsItemCosts/GetListByClient?centerId=${request.maintenanceCenterId}`,
           {
             headers: {
               'Content-Type': 'application/json',
@@ -92,7 +92,7 @@ const RequestInfoTab = ({ request, updateStatus, error, profile, assignTask}) =>
       try {
         const accessToken = await AsyncStorage.getItem('ACCESS_TOKEN');
         const response = await axios.get(
-          `http://autocare.runasp.net/api/MaintenanceServiceCosts/GetListByClient?centerId=${request.maintenanceCenterId}`,
+          `https://autocareversion2.tryasp.net/api/MaintenanceServiceCosts/GetListByClient?centerId=${request.maintenanceCenterId}`,
           {
             headers: {
               'Content-Type': 'application/json',
@@ -154,8 +154,8 @@ const RequestInfoTab = ({ request, updateStatus, error, profile, assignTask}) =>
       console.log('Saving with request:', request); // Log
 
       const url = modalType === 'SPARE_PART'
-        ? 'http://autocare.runasp.net/api/MaintenanceSparePartInfoes/Post'
-        : 'http://autocare.runasp.net/api/MaintenanceServiceInfoes/Post';
+        ? 'https://autocareversion2.tryasp.net/api/MaintenanceSparePartInfoes/Post'
+        : 'https://autocareversion2.tryasp.net/api/MaintenanceServiceInfoes/Post';
       
       const items = modalType === 'SPARE_PART' ? spareParts : services;
 
@@ -219,7 +219,7 @@ const handlePayment = async () => {
     const accessToken = await AsyncStorage.getItem('ACCESS_TOKEN');
 
     await axios.patch(
-      `http://autocare.runasp.net/api/MaintenanceInformations/CHANGESTATUS?id=${request.responseMaintenanceInformation?.informationMaintenanceId}&status=PAYMENT`,
+      `https://autocareversion2.tryasp.net/api/MaintenanceInformations/CHANGESTATUS?id=${request.responseMaintenanceInformation?.informationMaintenanceId}&status=PAYMENT`,
       
       {
         headers: {
@@ -241,7 +241,7 @@ const handleCheckin = async () => {
     const accessToken = await AsyncStorage.getItem('ACCESS_TOKEN');
 
     await axios.patch(
-      `http://autocare.runasp.net/api/MaintenanceInformations/CHANGESTATUS?id=${request.responseMaintenanceInformation?.informationMaintenanceId}&status=CHECKIN`,
+      `https://autocareversion2.tryasp.net/api/MaintenanceInformations/CHANGESTATUS?id=${request.responseMaintenanceInformation?.informationMaintenanceId}&status=CHECKIN`,
      {
         headers: {
           'Content-Type': 'text/plain',

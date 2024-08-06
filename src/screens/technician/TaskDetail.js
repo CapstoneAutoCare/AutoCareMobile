@@ -9,10 +9,10 @@ const TaskDetail = ({ route, navigation }) => {
     try {
       // Update the task status to REPAIRING
       console.log(`ACCEPTING : ${task.maintenanceTaskId}`)
-      await axios.patch(`http://autocare.runasp.net/api/MaintenanceTasks/Patch?id=${task.maintenanceTaskId}&status=ACCEPTED`);
+      await axios.patch(`https://autocareversion2.tryasp.net/api/MaintenanceTasks/Patch?id=${task.maintenanceTaskId}&status=ACCEPTED`);
       // Create a new MaintenanceHistoryStatus
       console.log(`CREATING ${task.informationMaintenanceId}`)
-      await axios.patch(`http://autocare.runasp.net/api/MaintenanceInformations/CHANGESTATUS?id=${task.informationMaintenanceId}&status=REPAIRING`);
+      await axios.patch(`https://autocareversion2.tryasp.net/api/MaintenanceInformations/CHANGESTATUS?id=${task.informationMaintenanceId}&status=REPAIRING`);
       Alert.alert('Task Accepted', 'The task status has been updated to REPAIRING.');
       navigation.goBack();
     } catch (error) {
@@ -24,7 +24,7 @@ const TaskDetail = ({ route, navigation }) => {
     try {
       // Update the task status to CANCELLED
       
-      await axios.patch(`http://autocare.runasp.net/api/MaintenanceTasks/Patch?id=${task.maintenanceTaskId}&status=CANCELLED`);
+      await axios.patch(`https://autocareversion2.tryasp.net/api/MaintenanceTasks/Patch?id=${task.maintenanceTaskId}&status=CANCELLED`);
       Alert.alert('Task Rejected', 'The task status has been updated to CANCELLED.');
       navigation.goBack();
     } catch (error) {
@@ -35,7 +35,7 @@ const TaskDetail = ({ route, navigation }) => {
     try {
       // Update the task status to DONE
       console.log(`COMPLETING: ${task.maintenanceTaskId}`);
-      await axios.patch(`http://autocare.runasp.net/api/MaintenanceTasks/Patch?id=${task.maintenanceTaskId}&status=DONE`);
+      await axios.patch(`https://autocareversion2.tryasp.net/api/MaintenanceTasks/Patch?id=${task.maintenanceTaskId}&status=DONE`);
       // Update the maintenance information status if needed
       Alert.alert('Task Completed', 'The task status has been updated to DONE.');
       navigation.goBack();

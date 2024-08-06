@@ -43,7 +43,7 @@ const SparePartPost = () => {
       setLoad(true);
       const accessToken = await AsyncStorage.getItem("ACCESS_TOKEN");
       const response = await axios.post(
-        "http://autocare.runasp.net/api/SparePartItem/Post",
+        "https://autocareversion2.tryasp.net/api/SparePartItem/Post",
         {
           sparePartsItemName: sparePartsItemName,
           sparePartsId: sparePart || null,
@@ -61,13 +61,6 @@ const SparePartPost = () => {
         response.data &&
         response.data.sparePartsItemId
       ) {
-        // await dispatch(
-        //   postSparePartCost({
-        //     acturalCost: acturalCost,
-        //     note: note,
-        //     sparePartsItemId: response.data.sparePartsItemId,
-        //   })
-        // );
         setLoad(false);
         alert("Tạo phụ tùng thành công!");
         navigation.navigate("PRODUCT");

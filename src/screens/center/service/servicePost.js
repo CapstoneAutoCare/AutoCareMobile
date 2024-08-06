@@ -35,7 +35,7 @@ const ServicePost = () => {
       setLoad(true);
       const accessToken = await AsyncStorage.getItem("ACCESS_TOKEN");
       const response = await axios.post(
-        "http://autocare.runasp.net/api/MaintenanceServices/Post",
+        "https://autocareversion2.tryasp.net/api/MaintenanceServices/Post",
         {
           maintenanceServiceName: maintenanceServiceName,
           serviceCareId:serviceAll || null,

@@ -15,6 +15,7 @@ import { useNavigation } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useDispatch, useSelector } from "react-redux";
 import { getListCustomerCareByCenterId } from "../../../app/CustomerCare/actions";
+import CustomSearchableDropdown from './../../../features/CustomSearchableDropdown';
 
 const CreateBookingHaveItem = ({
   centerList,
@@ -39,7 +40,7 @@ const CreateBookingHaveItem = ({
   const [showTimePicker, setShowTimePicker] = useState(false);
   const [filteredSpareParts, setFilteredSpareParts] = useState([]);
   const [filteredServices, setFilteredServices] = useState([]);
-  const [reLoad, setReLoad] = useState(false);
+
   const { customerCareListByCenterId } = useSelector(
     (state) => state.customerCare
   );
@@ -52,7 +53,7 @@ const CreateBookingHaveItem = ({
     try {
       const accessToken = await AsyncStorage.getItem("ACCESS_TOKEN");
       const response = await axios.get(
-        `http://autocare.runasp.net/api/SparePartsItemCosts/GetListByClient?centerId=${maintenanceCenter}`,
+        `https://autocareversion2.tryasp.net/api/SparePartsItemCosts/GetListByClient?centerId=${maintenanceCenter}`,
         {
           headers: {
             "Content-Type": "application/json",
@@ -61,7 +62,6 @@ const CreateBookingHaveItem = ({
         }
       );
       setAvailableSpareParts(response.data);
-
     } catch (error) {
       console.error("Error fetching spare parts:", error);
     }
@@ -71,7 +71,7 @@ const CreateBookingHaveItem = ({
     try {
       const accessToken = await AsyncStorage.getItem("ACCESS_TOKEN");
       const response = await axios.get(
-        `http://autocare.runasp.net/api/MaintenanceServiceCosts/GetListByClient?centerId=${maintenanceCenter}`,
+        `https://autocareversion2.tryasp.net/api/MaintenanceServiceCosts/GetListByClient?centerId=${maintenanceCenter}`,
         {
           headers: {
             "Content-Type": "application/json",
@@ -144,6 +144,7 @@ const CreateBookingHaveItem = ({
     newServices[index][key] = value;
     setServices(newServices);
   };
+
   const handleSignup = async () => {
     try {
       if (!note || !maintenanceCenter) {
@@ -184,13 +185,28 @@ const CreateBookingHaveItem = ({
       } else {
         alert("Tạo lịch không thành công. Vui lòng thử lại.");
       }
-      setReLoad(!reLoad);
     } catch (error) {
       console.error("Error during:", error);
-      alert(error.response.data.Exception);
-      setReLoad(!reLoad);
+      if (error.response) {
+        console.error("Server responded with:", error.response.data);
+        console.error("Status code:", error.response.status);
+        alert(
+          "Server responded with an error. Please check the console for details."
+        );
+      } else if (error.request) {
+        console.error("No response received:", error.request);
+        alert(
+          "No response received from the server. Please check your network connection."
+        );
+      } else {
+        console.error("Error setting up the request:", error.message);
+        alert(
+          "An error occurred during the request setup. Please check the console for details."
+        );
+      }
     }
   };
+
   const onDateChange = (event, selectedDate) => {
     const currentDate = selectedDate || bookingDate;
     setShowDatePicker(false);
@@ -255,13 +271,7 @@ const CreateBookingHaveItem = ({
               {vehicleListByClient.map((vehicle) => (
                 <Picker.Item
                   key={vehicle.vehiclesId}
-                  label={
-                    vehicle.vehiclesBrandName +
-                    " " +
-                    vehicle.vehicleModelName +
-                    " " +
-                    vehicle.licensePlate
-                  }
+                  label={vehicle.vehiclesBrandName + " " + vehicle.licensePlate}
                   value={vehicle.vehiclesId}
                 />
               ))}
@@ -307,47 +317,28 @@ const CreateBookingHaveItem = ({
               {spareParts.map((sparePart, index) => (
                 <View key={index}>
                   <View style={styles.inputContainerCost}>
-                    <Picker
-                      selectedValue={sparePart.sparePartsItemCostId}
-                      onValueChange={(value) => {
-                        const list = availableSpareParts.find(
-                          (item) => item.sparePartsItemCostId === value
-                        );
+                    <CustomSearchableDropdown
+                      items={filteredSpareParts.map((part) => ({
+                        id: part.sparePartsItemCostId,
+                        name: `${part.maintananceScheduleName} ${part.sparePartsItemName} - ${part.acturalCost} VND`,
+                        cost: part.acturalCost,
+                      }))}
+                      onItemSelect={(item) => {
                         handleSparePartChange(
                           index,
                           "sparePartsItemCostId",
-                          value
+                          item.id
                         );
                         handleSparePartChange(
                           index,
                           "maintenanceSparePartInfoName",
-                          list?.sparePartsItemName || ""
+                          item.name
                         );
                         handleSparePartChange(index, "quantity", 1);
-                        handleSparePartChange(
-                          index,
-                          "actualCost",
-                          list?.acturalCost || 0
-                        );
+                        handleSparePartChange(index, "actualCost", item.cost);
                       }}
-                      style={styles.picker}
-                    >
-                      <Picker.Item label="Chọn phụ tùng" value="" />
-                      {filteredSpareParts.map((part) => (
-                        <Picker.Item
-                          key={part.sparePartsItemCostId}
-                          label={
-                            part.maintananceScheduleName +
-                            " " +
-                            part.sparePartsItemName +
-                            " " +
-                            part.acturalCost +
-                            "VND "
-                          }
-                          value={part.sparePartsItemCostId}
-                        />
-                      ))}
-                    </Picker>
+                      placeholder="Chọn phụ tùng"
+                    />
                   </View>
                   <View style={styles.inputContainerCost}>
                     <TextInput
@@ -375,11 +366,6 @@ const CreateBookingHaveItem = ({
                           "quantity",
                           parseInt(text) || 0
                         );
-                        // handleSparePartChange(
-                        //   index,
-                        //   "actualCost",
-                        //   sparePart.actualCost * parseInt(text) || 0
-                        // );
                       }}
                     />
                   </View>
@@ -393,13 +379,6 @@ const CreateBookingHaveItem = ({
                       )}
                       keyboardType="numeric"
                       editable={false}
-                      // onChangeText={(text) =>
-                      //   handleSparePartChange(
-                      //     index,
-                      //     "actualCost",
-                      //     parseInt(text)
-                      //   )
-                      // }
                     />
                   </View>
                   <View style={styles.inputContainerCost}>
@@ -429,47 +408,28 @@ const CreateBookingHaveItem = ({
               {services.map((service, index) => (
                 <View key={index}>
                   <View style={styles.inputContainerCost}>
-                    <Picker
-                      selectedValue={service.maintenanceServiceCostId}
-                      onValueChange={(value) => {
-                        const list = availableServices.find(
-                          (item) => item.maintenanceServiceCostId === value
-                        );
+                    <CustomSearchableDropdown
+                      items={filteredServices.map((service) => ({
+                        id: service.maintenanceServiceCostId,
+                        name: `${service.maintenanceServiceName} - ${service.acturalCost} VND`,
+                        cost: service.acturalCost,
+                      }))}
+                      onItemSelect={(item) => {
                         handleServiceChange(
                           index,
                           "maintenanceServiceCostId",
-                          value
+                          item.id
                         );
                         handleServiceChange(
                           index,
                           "maintenanceServiceInfoName",
-                          list?.maintenanceServiceName || ""
+                          item.name
                         );
                         handleServiceChange(index, "quantity", 1);
-                        handleServiceChange(
-                          index,
-                          "actualCost",
-                          list?.acturalCost || 0
-                        );
+                        handleServiceChange(index, "actualCost", item.cost);
                       }}
-                      style={styles.picker}
-                    >
-                      <Picker.Item label="Chọn dịch vụ" value="" />
-                      {filteredServices.map((service) => (
-                        <Picker.Item
-                          key={service.maintenanceServiceCostId}
-                          label={
-                            service.maintananceScheduleName +
-                            " " +
-                            service.maintenanceServiceName +
-                            " " +
-                            service.acturalCost +
-                            "VND"
-                          }
-                          value={service.maintenanceServiceCostId}
-                        />
-                      ))}
-                    </Picker>
+                      placeholder="Chọn dịch vụ"
+                    />
                   </View>
                   <View style={styles.inputContainerCost}>
                     <TextInput
@@ -492,9 +452,6 @@ const CreateBookingHaveItem = ({
                       value={String(service.quantity)}
                       keyboardType="numeric"
                       editable={false}
-                      // onChangeText={(text) =>
-                      //   handleServiceChange(index, "quantity", parseInt(text))
-                      // }
                     />
                   </View>
                   <View style={styles.inputContainerCost}>
@@ -504,9 +461,6 @@ const CreateBookingHaveItem = ({
                       value={String(service.actualCost)}
                       keyboardType="numeric"
                       editable={false}
-                      // onChangeText={(text) =>
-                      //   handleServiceChange(index, "actualCost", parseInt(text))
-                      // }
                     />
                   </View>
                   <View style={styles.inputContainerCost}>
@@ -591,7 +545,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
   },
   inputContainerCost: {
-    flexDirection: "flex",
+    flexDirection: "column",
     backgroundColor: COLORS.white,
     paddingVertical: 10,
     borderRadius: 10,
@@ -618,7 +572,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: COLORS.black,
   },
-
   button: {
     backgroundColor: "red",
     marginTop: 20,
@@ -630,14 +583,6 @@ const styles = StyleSheet.create({
     color: COLORS.white,
     fontWeight: "bold",
     fontSize: 20,
-  },
-  searchInput: {
-    // style cho ô tìm kiếm
-    borderColor: "gray",
-    borderWidth: 1,
-    borderRadius: 4,
-    padding: 8,
-    marginBottom: 10,
   },
 });
 
