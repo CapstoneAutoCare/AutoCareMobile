@@ -318,7 +318,7 @@ const CreateBookingHaveItem = ({
                         handleSparePartChange(
                           index,
                           "maintenanceSparePartInfoName",
-                          item.name
+                          item.sparePartsItemName
                         );
                         handleSparePartChange(index, "quantity", 1);
                         handleSparePartChange(index, "actualCost", item.cost);
@@ -397,7 +397,7 @@ const CreateBookingHaveItem = ({
                     <CustomSearchableDropdown
                       items={filteredServices.map((service) => ({
                         id: service.maintenanceServiceCostId,
-                        name: `${service.maintenanceServiceName} - ${service.acturalCost} VND`,
+                        name: `${part.maintananceScheduleName} ${service.maintenanceServiceName} - ${service.acturalCost} VND`,
                         cost: service.acturalCost,
                       }))}
                       onItemSelect={(item) => {
@@ -409,7 +409,7 @@ const CreateBookingHaveItem = ({
                         handleServiceChange(
                           index,
                           "maintenanceServiceInfoName",
-                          item.name
+                          item.maintenanceServiceName
                         );
                         handleServiceChange(index, "quantity", 1);
                         handleServiceChange(index, "actualCost", item.cost);
