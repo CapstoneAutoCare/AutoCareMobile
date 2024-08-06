@@ -185,25 +185,10 @@ const CreateBookingHaveItem = ({
       } else {
         alert("Tạo lịch không thành công. Vui lòng thử lại.");
       }
+      
     } catch (error) {
       console.error("Error during:", error);
-      if (error.response) {
-        console.error("Server responded with:", error.response.data);
-        console.error("Status code:", error.response.status);
-        alert(
-          "Server responded with an error. Please check the console for details."
-        );
-      } else if (error.request) {
-        console.error("No response received:", error.request);
-        alert(
-          "No response received from the server. Please check your network connection."
-        );
-      } else {
-        console.error("Error setting up the request:", error.message);
-        alert(
-          "An error occurred during the request setup. Please check the console for details."
-        );
-      }
+      alert(error.response.data.Exception);
     }
   };
 
@@ -247,6 +232,7 @@ const CreateBookingHaveItem = ({
     }
     console.log(selectedVehicle?.vehicleModelName);
   }, [vehicle, availableSpareParts, availableServices]);
+  const today = new Date();
 
   return (
     <ScrollView style={{ marginTop: 20 }}>
@@ -504,6 +490,8 @@ const CreateBookingHaveItem = ({
                 mode="date"
                 display="default"
                 onChange={onDateChange}
+                minimumDate={today} 
+
               />
             )}
             {showTimePicker && (
