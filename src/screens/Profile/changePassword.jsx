@@ -49,7 +49,7 @@ export default ChangePassword = () => {
        setLoad(true);
        const accessToken = await AsyncStorage.getItem("ACCESS_TOKEN");
       const response = await axios.patch(
-        "http://autocare.runasp.net/api/Accounts/ChangePassword",
+        "https://autocareversion2.tryasp.net/api/Accounts/ChangePassword",
         {
           oldPassword: passwordOld,
           newPassword: passwordHash,

@@ -2,7 +2,7 @@ import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import Axios from 'axios';
 
 export const fetchRequests = createAsyncThunk('requests/fetchRequests', async () => {
-  const response = await Axios.get('http://autocare.runasp.net/api/Bookings/GetAll');
+  const response = await Axios.get('https://autocareversion2.tryasp.net/api/Bookings/GetAll');
   const requestsWithNames = await Promise.all(response.data.map(async (request) => {
     const clientName = await fetchClientName(request.clientId);
     const vehicleNumber = await fetchVehicleNumber(request.vehicleId);
@@ -18,17 +18,17 @@ export const fetchRequests = createAsyncThunk('requests/fetchRequests', async ()
 });
 
 const fetchClientName = async (clientId) => {
-  const response = await Axios.get(`http://autocare.runasp.net/api/Clients/GetById?id=${clientId}`);
+  const response = await Axios.get(`https://autocareversion2.tryasp.net/api/Clients/GetById?id=${clientId}`);
   return `${response.data.firstName} ${response.data.lastName}`;
 };
 
 const fetchVehicleNumber = async (vehicleId) => {
-  const response = await Axios.get(`http://autocare.runasp.net/api/Vehicles/GetById?id=${vehicleId}`);
+  const response = await Axios.get(`https://autocareversion2.tryasp.net/api/Vehicles/GetById?id=${vehicleId}`);
   return response.data.licensePlate;
 };
 
 const fetchMaintenanceCenterName = async (maintenanceCenterId) => {
-  const response = await Axios.get(`http://autocare.runasp.net/api/MaintenanceCenters/GetById?id=${maintenanceCenterId}`);
+  const response = await Axios.get(`https://autocareversion2.tryasp.net/api/MaintenanceCenters/GetById?id=${maintenanceCenterId}`);
   return response.data.maintenanceCenterName;
 };
 

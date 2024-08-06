@@ -32,11 +32,12 @@ const ProductDetail = ({ route }) => {
   const handleNavigateBack = () => {
     navigation.goBack();
   };
-    const handleDeleteSparePart = async () => {
-      await dispatch(deleteSparePartById(sparePartsItemId));
-      alert("xóa phụ tùng thành công!");
-      navigation.goBack();
-    };
+
+  const handleDeleteSparePart = async () => {
+    await dispatch(deleteSparePartById(sparePartsItemId));
+    alert("xóa phụ tùng thành công!");
+    navigation.goBack();
+  };
 
   return (
     <ScrollView style={styles.container}>
@@ -50,7 +51,7 @@ const ProductDetail = ({ route }) => {
         <View style={styles.card}>
           <Image style={styles.image} source={{ uri: sparePartById.image }} />
 
-          <View style={{ alignItems: "left" }}>
+          <View style={{ alignItems: "flex-start" }}>
             <Text style={styles.name}>{sparePartById.sparePartsItemName}</Text>
 
             <Text style={styles.status}>
@@ -61,18 +62,12 @@ const ProductDetail = ({ route }) => {
               Đơn vị bảo trì: {sparePartById.maintenanceCenterName}
             </Text>
 
-            {sparePartById.responseSparePartsItemCosts.length > 0 && (
-              <Text style={styles.cost}>
-                Giá mới:{" "}
-                {sparePartById.responseSparePartsItemCosts[0].acturalCost} VND
+            {sparePartById.responseSparePartsItemCosts.map((cost, index) => (
+              <Text key={index} style={styles.cost}>
+                {index === 0 ? "Giá mới: " : "Giá cũ: "} {cost.acturalCost} VND
               </Text>
-            )}
-            {sparePartById.responseSparePartsItemCosts.length > 1 && (
-              <Text style={styles.cost}>
-                Giá cũ:{" "}
-                {sparePartById.responseSparePartsItemCosts[1].acturalCost} VND
-              </Text>
-            )}
+            ))}
+
             <Text style={styles.createdDate}>
               Ngày tạo:{" "}
               {moment(sparePartById.createdDate).format("DD/MM/YYYY HH:mm")}

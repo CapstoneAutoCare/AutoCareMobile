@@ -72,7 +72,7 @@ export default ServicePut = ({ route }) => {
       setLoad(true);
       const accessToken = await AsyncStorage.getItem("ACCESS_TOKEN");
       const response = await axios.put(
-        `http://autocare.runasp.net/api/MaintenanceServices/Update?id=${maintenanceServiceId}`,
+        `https://autocareversion2.tryasp.net/api/MaintenanceServices/Update?id=${maintenanceServiceId}`,
         {
           maintenanceServiceName,
           status,

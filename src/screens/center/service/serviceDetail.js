@@ -59,20 +59,11 @@ const ServiceDetail = ({ route }) => {
             <Text style={styles.centerName}>
               Đơn vị bảo trì: {serviceById.maintenanceCenterName}
             </Text>
-
-            {serviceById.responseMaintenanceServiceCosts.length > 0 && (
-              <Text style={styles.cost}>
-                Giá mới:{" "}
-                {serviceById.responseMaintenanceServiceCosts[0].acturalCost} VND
+            {serviceById.responseMaintenanceServiceCosts.map((cost, index) => (
+              <Text key={index} style={styles.cost}>
+                {index === 0 ? "Giá mới: " : "Giá cũ: "} {cost.acturalCost} VND
               </Text>
-            )}
-            {serviceById.responseMaintenanceServiceCosts.length > 1 && (
-              <Text style={styles.cost}>
-                Giá cũ:{" "}
-                {serviceById.responseMaintenanceServiceCosts[1].acturalCost} VND
-              </Text>
-            )}
-            {/* Additional fields can be rendered similarly */}
+            ))}
 
             <Text style={styles.createdDate}>
               Ngày tạo:{" "}

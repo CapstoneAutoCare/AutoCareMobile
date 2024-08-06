@@ -90,7 +90,7 @@ export default StaffPut = ({ route }) => {
            }
       const accessToken = await AsyncStorage.getItem("ACCESS_TOKEN");
       const response = await axios.put(
-        `http://autocare.runasp.net/api/Technicians/Update?techId=${profile.technicianId}`,
+        `https://autocareversion2.tryasp.net/api/Technicians/Update?techId=${profile.technicianId}`,
         {
           gender: gender,
           phone: phone,
