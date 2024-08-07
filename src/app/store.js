@@ -9,6 +9,7 @@ import requestsReducer from "../app/CusCare/requestsSlice";
 import requestDetailReducer from "../app/CusCare/requestDetailSlice";
 import homepageReducer from "../app/CusCare/homepageSlice";
 import taskReducer from "../app/Technician/taskSlice";
+import feedbackReducer from "../app/CusCare/feedbackSlice";
 export const store = configureStore({
   middleware: (getDefaultMiddleware) => {
     return getDefaultMiddleware({
@@ -27,5 +28,6 @@ export const store = configureStore({
     requestDetail: requestDetailReducer,
     homepage: homepageReducer,
     tasks: taskReducer,
+    feedbacks: feedbackReducer,
   },
 });

@@ -9,6 +9,7 @@ import Booking from "../../screens/client/booking/postBooking";
 import ROUTES from "../../constants/routes";
 import CreateBookingInfo from "../../screens/customercare/createBookingInfo/createBookingInfo";
 import CreateBookingForWalkinGuest from "../../screens/customercare/createBookingInfo/createBookingForWalkinGuest";
+import FeedbackList from "../../screens/customercare/FeedbackList";
 const Stack = createNativeStackNavigator();
 const HomeScreenNavigator = ({ authenticated }) => {
   return (
@@ -19,13 +20,8 @@ const HomeScreenNavigator = ({ authenticated }) => {
         options={{ headerShown: false }}
       />
       <Stack.Screen
-        name="VEHICLE"
-        component={Vehicle}
-        options={{ headerShown: false }}
-      />
-      <Stack.Screen
-        name="VEHICLE_POST"
-        component={VehiclePost}
+        name="FEEDBACK"
+        component={FeedbackList}
         options={{ headerShown: false }}
       />
        <Stack.Screen

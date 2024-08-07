@@ -5,50 +5,48 @@ import axios from 'axios';
 const TaskDetail = ({ route, navigation }) => {
   const { task } = route.params;
 
-  const handleAccept = async () => {
+  const handleCompleteService = async (serviceId) => {
     try {
-      // Update the task status to REPAIRING
-      console.log(`ACCEPTING : ${task.maintenanceTaskId}`)
-      await axios.patch(`https://autocareversion2.tryasp.net/api/MaintenanceTasks/Patch?id=${task.maintenanceTaskId}&status=ACCEPTED`);
-      // Create a new MaintenanceHistoryStatus
-      console.log(`CREATING ${task.informationMaintenanceId}`)
-      await axios.patch(`https://autocareversion2.tryasp.net/api/MaintenanceInformations/CHANGESTATUS?id=${task.informationMaintenanceId}&status=REPAIRING`);
-      Alert.alert('Task Accepted', 'The task status has been updated to REPAIRING.');
+      // Update the task service status to DONE
+      console.log(`COMPLETING SERVICE: ${serviceId}`);
+      await axios.patch(`https://autocareversion2.tryasp.net/api/MaintenanceTaskServiceInfoes/PatchStatus`, {
+        id: serviceId,
+        status: "DONE"
+      });
+      Alert.alert('Service Completed', 'The service status has been updated to DONE.');
       navigation.goBack();
     } catch (error) {
-      Alert.alert('Error', 'There was an error updating the task.');
+      Alert.alert('Error', 'There was an error completing the service.');
     }
   };
 
-  const handleReject = async () => {
+  const handleCompleteSparepart = async (sparepartId) => {
     try {
-      // Update the task status to CANCELLED
-      
-      await axios.patch(`https://autocareversion2.tryasp.net/api/MaintenanceTasks/Patch?id=${task.maintenanceTaskId}&status=CANCELLED`);
-      Alert.alert('Task Rejected', 'The task status has been updated to CANCELLED.');
+      // Update the spare part status to DONE
+      console.log(`COMPLETING SPARE PART: ${sparepartId}`);
+      await axios.patch(`https://autocareversion2.tryasp.net/api/MaintenanceTaskSparePartInfoes/PatchStatus`, {
+        id: sparepartId,
+        status: "DONE"
+      });
+      Alert.alert('Spare Part Completed', 'The spare part status has been updated to DONE.');
       navigation.goBack();
     } catch (error) {
-      Alert.alert('Error', 'There was an error updating the task.');
+      Alert.alert('Error', 'There was an error completing the spare part.');
     }
   };
-  const handleComplete = async () => {
-    try {
-      // Update the task status to DONE
-      console.log(`COMPLETING: ${task.maintenanceTaskId}`);
-      await axios.patch(`https://autocareversion2.tryasp.net/api/MaintenanceTasks/Patch?id=${task.maintenanceTaskId}&status=DONE`);
-      // Update the maintenance information status if needed
-      Alert.alert('Task Completed', 'The task status has been updated to DONE.');
-      navigation.goBack();
-    } catch (error) {
-      Alert.alert('Error', 'There was an error completing the task.');
-    }
-  };
+
   const renderService = ({ item }) => (
     <View style={styles.itemContainer}>
       <Image source={{ uri: item.image }} style={styles.image} />
       <View style={styles.textContainer}>
         <Text style={styles.name}>{item.name}</Text>
         <Text style={styles.status}>Status: {item.status}</Text>
+        {item.status !== 'DONE' && (
+          <Button
+            title="Complete Service"
+            onPress={() => handleCompleteService(item?.responseMainTaskServices?.maintenanceTaskServiceInfoId)}
+          />
+        )}
       </View>
     </View>
   );
@@ -59,6 +57,12 @@ const TaskDetail = ({ route, navigation }) => {
       <View style={styles.textContainer}>
         <Text style={styles.name}>{item.name}</Text>
         <Text style={styles.status}>Status: {item.status}</Text>
+        {item.status !== 'DONE' && (
+          <Button
+            title="Complete Spare Part"
+            onPress={() => handleCompleteSparepart(item?.responseMainTaskSpareParts?.maintenanceTaskSparePartInfoId)}
+          />
+        )}
       </View>
     </View>
   );
@@ -68,18 +72,6 @@ const TaskDetail = ({ route, navigation }) => {
       <Text style={styles.title}>{task.maintenanceTaskName}</Text>
       <Text style={styles.detail}>Created Date: {new Date(task.createdDate).toLocaleString()}</Text>
       <Text style={styles.detail}>Status: {task.status}</Text>
-
-      {task.status === 'ACTIVE' && (
-        <View style={styles.buttonContainer}>
-          <Button title="Accept" onPress={handleAccept} />
-          <Button title="Reject" onPress={handleReject} />
-        </View>
-      )}
-        {task.status === 'ACCEPTED' && (
-        <View style={styles.buttonContainer}>
-          <Button title="Complete" onPress={handleComplete} />
-        </View>
-      )}
       <Text style={styles.sectionTitle}>Services</Text>
       <FlatList
         data={task.responseMainTaskServices}
@@ -131,6 +123,7 @@ const styles = StyleSheet.create({
   },
   textContainer: {
     marginLeft: 16,
+    flex: 1,
   },
   name: {
     fontSize: 18,
@@ -139,11 +132,6 @@ const styles = StyleSheet.create({
   status: {
     fontSize: 14,
     color: '#888',
-  },
-  buttonContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    marginVertical: 16,
   },
 });
 

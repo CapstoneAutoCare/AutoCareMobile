@@ -56,7 +56,7 @@ const HomeScreen = () => {
         </Card>
       </TouchableOpacity>
 
-      <TouchableOpacity onPress={() => handleNavigation('VEHICLE')}>
+      <TouchableOpacity onPress={() => handleNavigation('FEEDBACK')}>
         <Card style={styles.card}>
           <ImageBackground source={{ uri: 'https://img.freepik.com/premium-vector/car-auto-garage-concept-premium-logo-design_645012-278.jpg' }} style={styles.image}>
             <View style={styles.overlay}>
