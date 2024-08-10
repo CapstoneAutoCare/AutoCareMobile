@@ -212,6 +212,18 @@ export const deleteServiceById = createAsyncThunk(
     }
   }
 );
+export const cancel = createAsyncThunk(
+  "center/cancel",
+  async (id, { rejectWithValue }) => {
+    try {
+      const response = await centerService.cancel(id);
+      return response.data;
+    } catch (error) {
+      console.log(error);
+      return rejectWithValue(error);
+    }
+  }
+);
 export const deleteSparePartById = createAsyncThunk(
   "center/deleteSparePartById",
   async (id, { rejectWithValue }) => {

@@ -77,6 +77,10 @@ export const centerService = {
     const url = `/MaintenanceServices/Remove?id=${id}`;
     return axiosClient.delete(url);
   },
+  cancel: (id) => {
+    const url = `/Bookings/UpdateStatus?bookingId=${id}&status=CANCELLED`;
+    return axiosClient.patch(url);
+  },
   deleteSparePartById: (id) => {
     const url = `/SparePartItem/Remove?id=${id}`;
     return axiosClient.delete(url);

@@ -102,6 +102,13 @@ export default LoginCenter = ({ navigation }) => {
               Đăng nhập khách hàng ?
             </Text>
           </TouchableOpacity>
+          <TouchableOpacity
+            onPress={() => navigation.navigate("RegisterCenter")}
+          >
+            <Text style={{ fontSize: 15, color: "red", textAlign: "center" }}>
+              Đăng ký trung tâm
+            </Text>
+          </TouchableOpacity>
         </View>
       </ScrollView>
     </SafeAreaView>

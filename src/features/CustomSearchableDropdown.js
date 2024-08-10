@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -19,7 +19,9 @@ const CustomSearchableDropdown = ({
   const [modalVisible, setModalVisible] = useState(false);
   const [searchText, setSearchText] = useState("");
   const [filteredItems, setFilteredItems] = useState(items);
-
+ useEffect(() => {
+   setFilteredItems(items);
+ },[items])
   const handleSearch = (text) => {
     setSearchText(text);
     setFilteredItems(
@@ -77,11 +79,11 @@ const CustomSearchableDropdown = ({
 
 const styles = StyleSheet.create({
   dropdownButton: {
-    backgroundColor: "#f0f0f0",
+    // backgroundColor: "#f0f0f0",
     padding: 12,
     borderRadius: 5,
     borderWidth: 1,
-    borderColor: "#ccc",
+    borderColor: "#fff",
   },
   dropdownButtonText: {
     fontSize: 16,
@@ -90,6 +92,7 @@ const styles = StyleSheet.create({
   modalContainer: {
     flex: 1,
     padding: 20,
+    marginTop: 50,
     backgroundColor: "#fff",
   },
   searchInput: {

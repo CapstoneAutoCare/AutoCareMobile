@@ -15,7 +15,7 @@ import { useNavigation } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useDispatch, useSelector } from "react-redux";
 import { getListCustomerCareByCenterId } from "../../../app/CustomerCare/actions";
-import CustomSearchableDropdown from './../../../features/CustomSearchableDropdown';
+import CustomSearchableDropdown from "./../../../features/CustomSearchableDropdown";
 
 const CreateBookingHaveItem = ({
   centerList,
@@ -31,6 +31,7 @@ const CreateBookingHaveItem = ({
     maintenanceCenterId || ""
   );
   const [note, setNote] = useState("");
+  const [odo, setOdo] = useState(0);
   const [spareParts, setSpareParts] = useState([]);
   const [services, setServices] = useState([]);
   const [availableSpareParts, setAvailableSpareParts] = useState([]);
@@ -185,7 +186,6 @@ const CreateBookingHaveItem = ({
       } else {
         alert("Tạo lịch không thành công. Vui lòng thử lại.");
       }
-      
     } catch (error) {
       console.error("Error during:", error);
       alert(error.response.data.Exception);
@@ -205,7 +205,7 @@ const CreateBookingHaveItem = ({
     const currentTime = selectedTime || bookingDate;
     setShowTimePicker(false);
     const updatedDate = new Date(
-      bookingDate.setHours(currentTime.getHours(), currentTime.getMinutes())
+      bookingDate.setHours(currentTime.getHours() + 7, currentTime.getMinutes())
     );
     setBookingDate(updatedDate);
   };
@@ -230,8 +230,18 @@ const CreateBookingHaveItem = ({
       setFilteredSpareParts([]);
       setFilteredServices([]);
     }
-    console.log(selectedVehicle?.vehicleModelName);
   }, [vehicle, availableSpareParts, availableServices]);
+  useEffect(() => {
+    if (odo > 0) {
+      setFilteredServices(
+        availableServices.filter(
+          (service) => service?.maintananceScheduleName === odo
+        )
+      );
+    } else {
+      setFilteredServices([]);
+    }
+  }, [odo, availableServices]);
   const today = new Date();
 
   return (
@@ -260,6 +270,18 @@ const CreateBookingHaveItem = ({
                   label={vehicle.vehiclesBrandName + " " + vehicle.licensePlate}
                   value={vehicle.vehiclesId}
                 />
+              ))}
+            </Picker>
+          </View>
+          <View style={styles.inputContainer}>
+            <Picker
+              selectedValue={odo}
+              onValueChange={(itemValue) => setOdo(itemValue)}
+              style={styles.picker}
+            >
+              <Picker.Item label="Chọn Combo" value="" />
+              {["5000", "10000", "15000"].map((o) => (
+                <Picker.Item key={o} label={"Combo : " + o + " km"} value={o} />
               ))}
             </Picker>
           </View>
@@ -306,10 +328,9 @@ const CreateBookingHaveItem = ({
                     <CustomSearchableDropdown
                       items={filteredSpareParts.map((part) => ({
                         id: part.sparePartsItemCostId,
-                        name: `${part.maintananceScheduleName} ${part.sparePartsItemName} - ${part.acturalCost} VND`,
+                        name: `${part.sparePartsItemName} - ${part.acturalCost} VND`,
                         cost: part.acturalCost,
                         sparePartsItemName: part.sparePartsItemName,
-
                       }))}
                       onItemSelect={(item) => {
                         handleSparePartChange(
@@ -401,7 +422,7 @@ const CreateBookingHaveItem = ({
                         id: service.maintenanceServiceCostId,
                         name: `${service.maintananceScheduleName} ${service.maintenanceServiceName} - ${service.acturalCost} VND`,
                         cost: service.acturalCost,
-                        maintenanceServiceName:service.maintenanceServiceName,
+                        maintenanceServiceName: service.maintenanceServiceName,
                       }))}
                       onItemSelect={(item) => {
                         handleServiceChange(
@@ -493,8 +514,7 @@ const CreateBookingHaveItem = ({
                 mode="date"
                 display="default"
                 onChange={onDateChange}
-                minimumDate={today} 
-
+                minimumDate={today}
               />
             )}
             {showTimePicker && (

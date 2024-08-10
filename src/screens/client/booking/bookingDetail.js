@@ -87,7 +87,6 @@ const BookingDetail = ({ route }) => {
               <Text style={styles.name}>
                 SĐT: {bookingById.responseCenter.phone}
               </Text>
-
               <Text style={styles.status}>
                 Trạng thái: {bookingById.responseCenter.status}
               </Text>
@@ -96,6 +95,20 @@ const BookingDetail = ({ route }) => {
               </Text>
               <Text style={styles.centerName}>
                 Địa chỉ: {bookingById.responseCenter.address}
+              </Text>
+              <Text style={styles.centerName}>
+                Số dịch vụ:{" "}
+                {
+                  bookingById?.responseMaintenanceInformation
+                    ?.responseMaintenanceServiceInfos?.length
+                }
+              </Text>
+              <Text style={styles.centerName}>
+                Số phụ tùng:{" "}
+                {
+                  bookingById?.responseMaintenanceInformation
+                    ?.responseMaintenanceSparePartInfos?.length
+                }
               </Text>
               <Text style={styles.centerName}>
                 Thông tin:{" "}

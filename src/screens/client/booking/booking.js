@@ -15,6 +15,7 @@ import { FontAwesome } from "@expo/vector-icons";
 import { getListBookingByClient } from "../../../app/Booking/actions";
 import { useNavigation } from "@react-navigation/native";
 import { Ionicons } from "@expo/vector-icons";
+import { cancel } from "../../../app/Center/actions";
 
 const Booking = () => {
   const navigation = useNavigation();
@@ -47,10 +48,13 @@ const Booking = () => {
   const sortedBookingList = sortStatus
     ? bookingListByClient.filter((item) => item.status === sortStatus)
     : bookingListByClient;
-
+  const handleCancel = async (id) => {
+    await dispatch(cancel(id));
+    alert("hủy đặt lịch thành công!");
+    fetchGetListBooking();
+  };
   return (
     <ScrollView style={{ marginTop: 10 }}>
-
       <View style={{ padding: 12 }}>
         <View
           style={{
@@ -244,6 +248,23 @@ const Booking = () => {
                     />
                     <Text style={{ color: "white" }}>Thông tin</Text>
                   </Pressable>
+                  {item?.status === "WAITING" && (
+                    <Pressable
+                      onPress={() => handleCancel(item?.bookingId)}
+                      style={{
+                        flexDirection: "row",
+                        backgroundColor: "#f5222d",
+                        padding: 10,
+                        borderRadius: 10,
+                        justifyContent: "center",
+                        alignItems: "center",
+                        marginHorizontal: 10,
+                        marginTop: 10,
+                      }}
+                    >
+                      <Text style={{ color: "white" }}>Hủy đặt lịch</Text>
+                    </Pressable>
+                  )}
                 </View>
               </Pressable>
             ))}
