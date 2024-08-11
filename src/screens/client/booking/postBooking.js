@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { TouchableOpacity, StyleSheet, View } from "react-native";
+import { TouchableOpacity, StyleSheet, View, Text } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import { Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
@@ -12,8 +12,8 @@ import { getListVehicleByClient } from "../../../app/Vehicle/actions";
 const PostBooking = ({ route }) => {
   const navigation = useNavigation();
   const dispatch = useDispatch();
-  const { maintenanceCenterId } = route.params;
-  const Tab = createMaterialTopTabNavigator();
+  const { maintenanceCenterId, tab } = route.params;
+  // const Tab = createMaterialTopTabNavigator();
   const { centerList } = useSelector((state) => state.center);
   const { vehicleListByClient } = useSelector((state) => state.vehicle);
   const fetchGetListCenter = async () => {
@@ -32,21 +32,41 @@ const PostBooking = ({ route }) => {
 
   return (
     <View style={styles.container}>
-      <View
-        style={{
-          marginLeft: 10,
-          width: 50,
-          padding: 7,
-          backgroundColor: "rgba(0,0,0,0.3)",
-          borderRadius: 10,
-        }}
-      >
-        <TouchableOpacity onPress={() => navigation.goBack()}>
-          <Ionicons name="arrow-back" size={30} color="white" />
-        </TouchableOpacity>
+      <View style={{ flexDirection: "row", alignItems: "center" }}>
+        <View
+          style={{
+            marginLeft: 10,
+            marginRight: 10,
+            width: 50,
+            padding: 7,
+            backgroundColor: "rgba(0,0,0,0.3)",
+            borderRadius: 10,
+          }}
+        >
+          <TouchableOpacity onPress={() => navigation.goBack()}>
+            <Ionicons name="arrow-back" size={30} color="white" />
+          </TouchableOpacity>
+        </View>
+        <View>
+          <Text style={styles.name}>{tab?"Đặt lịch":"Đặt lịch theo combo"}</Text>
+        </View>
       </View>
       <View style={styles.hr} />
-      <Tab.Navigator
+      {tab ? (
+        <CreateBooking
+          centerList={centerList}
+          maintenanceCenterId={maintenanceCenterId}
+          vehicleListByClient={vehicleListByClient}
+        />
+      ) : (
+        <CreateBookingHaveItem
+          centerList={centerList}
+          maintenanceCenterId={maintenanceCenterId}
+          vehicleListByClient={vehicleListByClient}
+        />
+      )}
+
+      {/* <Tab.Navigator
         screenOptions={{
           tabBarActiveTintColor: "#1C6758",
           tabBarInactiveTintColor: "gray",
@@ -75,7 +95,7 @@ const PostBooking = ({ route }) => {
             />
           )}
         />
-      </Tab.Navigator>
+      </Tab.Navigator> */}
     </View>
   );
 };
@@ -92,5 +112,10 @@ const styles = StyleSheet.create({
     borderBottomColor: "lightgray",
     borderBottomWidth: 1,
     marginTop: 10,
+  },
+  name: {
+    fontSize: 20,
+    fontWeight: "bold",
+    marginBottom: 8,
   },
 });

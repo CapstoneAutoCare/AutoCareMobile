@@ -31,16 +31,19 @@ const CreateBookingHaveItem = ({
     maintenanceCenterId || ""
   );
   const [note, setNote] = useState("");
-  const [odo, setOdo] = useState(0);
+  const [odo, setOdo] = useState("");
+  const [odoName, setOdoName] = useState("");
   const [spareParts, setSpareParts] = useState([]);
   const [services, setServices] = useState([]);
   const [availableSpareParts, setAvailableSpareParts] = useState([]);
   const [availableServices, setAvailableServices] = useState([]);
+  const [availableOdo, setAvailableOdo] = useState([]);
   const [bookingDate, setBookingDate] = useState(new Date());
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [showTimePicker, setShowTimePicker] = useState(false);
   const [filteredSpareParts, setFilteredSpareParts] = useState([]);
   const [filteredServices, setFilteredServices] = useState([]);
+  const [filteredOdo, setFilteredOdo] = useState([]);
 
   const { customerCareListByCenterId } = useSelector(
     (state) => state.customerCare
@@ -85,13 +88,30 @@ const CreateBookingHaveItem = ({
       console.error("Error fetching services:", error);
     }
   };
-
+  const fetchOdo = async () => {
+    try {
+      const accessToken = await AsyncStorage.getItem("ACCESS_TOKEN");
+      const response = await axios.get(
+        `https://autocareversion2.tryasp.net/api/MaintenanceServices/GetListPackageAndOdoTRUEByCenterId?id=${maintenanceCenter}`,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${accessToken}`,
+          },
+        }
+      );
+      setAvailableOdo(response.data);
+    } catch (error) {
+      console.error("Error fetching services:", error);
+    }
+  };
   useEffect(() => {
     const fetch = async () => {
       setLoadCenter(true);
       await fetchGetListCustomerCare();
       await fetchSpareParts();
       await fetchServices();
+      await fetchOdo();
     };
     if (maintenanceCenter) {
       fetch();
@@ -152,6 +172,7 @@ const CreateBookingHaveItem = ({
         alert("Vui lòng điền đầy đủ thông tin");
         return;
       }
+      
       const now = new Date();
       const vietnamTime = new Date(now.getTime() + 7 * 60 * 60 * 1000);
       const accessToken = await AsyncStorage.getItem("ACCESS_TOKEN");
@@ -160,12 +181,12 @@ const CreateBookingHaveItem = ({
         {
           vehicleId: vehicle,
           maintenanceCenterId: maintenanceCenter,
-          maintananceScheduleId: null,
+          // maintananceScheduleId: null,
           note: note,
           bookingDate: bookingDate.toISOString(),
           createMaintenanceInformationHaveItemsByClient: {
-            customerCareId: customerCare,
-            finishedDate: vietnamTime.toISOString(),
+            // customerCareId: customerCare,
+            // finishedDate: vietnamTime.toISOString(),
             createMaintenanceSparePartInfos:
               spareParts.length > 0 ? spareParts : null,
             createMaintenanceServiceInfos:
@@ -226,13 +247,20 @@ const CreateBookingHaveItem = ({
             service?.vehicleModelName === selectedVehicle?.vehicleModelName
         )
       );
+      setFilteredOdo(
+        availableOdo.filter(
+          (odo) => odo?.vehicleModelName === selectedVehicle?.vehicleModelName
+        )
+      );
     } else {
       setFilteredSpareParts([]);
       setFilteredServices([]);
+      setFilteredOdo([]);
     }
-  }, [vehicle, availableSpareParts, availableServices]);
+  }, [vehicle, availableSpareParts, availableServices, availableOdo]);
   useEffect(() => {
-    if (odo > 0) {
+    setServices([]);
+    if (odo) {
       setFilteredServices(
         availableServices.filter(
           (service) => service?.maintananceScheduleName === odo
@@ -273,7 +301,7 @@ const CreateBookingHaveItem = ({
               ))}
             </Picker>
           </View>
-          <View style={styles.inputContainer}>
+          {/* <View style={styles.inputContainer}>
             <Picker
               selectedValue={odo}
               onValueChange={(itemValue) => setOdo(itemValue)}
@@ -284,7 +312,7 @@ const CreateBookingHaveItem = ({
                 <Picker.Item key={o} label={"Combo : " + o + " km"} value={o} />
               ))}
             </Picker>
-          </View>
+          </View> */}
           <View style={styles.inputContainer}>
             <Picker
               selectedValue={maintenanceCenter}
@@ -301,9 +329,9 @@ const CreateBookingHaveItem = ({
               ))}
             </Picker>
           </View>
-          {maintenanceCenter !== "" && !loadCenter && (
+          {maintenanceCenter !== "" && (
             <>
-              <View style={styles.inputContainer}>
+              {/* <View style={styles.inputContainer}>
                 <Picker
                   selectedValue={customerCare}
                   onValueChange={(itemValue) => setCustomerCare(itemValue)}
@@ -320,6 +348,20 @@ const CreateBookingHaveItem = ({
                     />
                   ))}
                 </Picker>
+              </View> */}
+              <View style={styles.inputContainerCost}>
+                <CustomSearchableDropdown
+                  items={filteredOdo.map((odo) => ({
+                    id: odo.maintenanceServiceId,
+                    name: `${odo.vehiclesBrandName} ${odo.vehicleModelName} - ${odo.maintananceScheduleName} VND`,
+                    value: odo.maintananceScheduleName,
+                  }))}
+                  onItemSelect={(item) => {
+                    setOdo(item.value);
+                    setOdoName(item.name);
+                  }}
+                  placeholder={odoName || "Chọn Combo"}
+                />
               </View>
               <Text>Phụ Tùng</Text>
               {spareParts.map((sparePart, index) => (

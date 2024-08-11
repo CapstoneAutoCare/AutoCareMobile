@@ -67,6 +67,7 @@ const Booking = () => {
             onPress={() =>
               navigation.navigate("PostBooking", {
                 maintenanceCenterId: "",
+                tab: true,
               })
             }
             style={{
@@ -75,11 +76,27 @@ const Booking = () => {
               borderRadius: 10,
               justifyContent: "center",
               alignItems: "center",
-              marginHorizontal: 10,
-              marginTop: 10,
+              marginRight: 10,
             }}
           >
-            <Text style={{ color: "white" }}>+ Lên lịch sửa xe</Text>
+            <Text style={{ color: "white" }}>Đặt lịch</Text>
+          </Pressable>
+          <Pressable
+            onPress={() =>
+              navigation.navigate("PostBooking", {
+                maintenanceCenterId: "",
+                tab: false,
+              })
+            }
+            style={{
+              backgroundColor: "#52c41a",
+              padding: 10,
+              borderRadius: 10,
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
+            <Text style={{ color: "white" }}>Đặt theo combo</Text>
           </Pressable>
           <Pressable
             onPress={handleSortPress}

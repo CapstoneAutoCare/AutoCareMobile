@@ -34,13 +34,14 @@ const CreateBooking = ({
       }
       const accessToken = await AsyncStorage.getItem("ACCESS_TOKEN");
       const response = await axios.post(
-        "https://autocareversion2.tryasp.net/api/Bookings/Post",
+        "https://autocareversion2.tryasp.net/api/Bookings/PostHavePackage",
         {
           vehicleId: vehicle,
           maintenanceCenterId: maintenanceCenter,
           maintananceScheduleId: null,
           note: note,
           bookingDate: bookingDate.toISOString(),
+          informationName: "string",
         },
         {
           headers: {
