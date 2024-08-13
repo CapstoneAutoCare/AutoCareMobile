@@ -13,6 +13,7 @@ import COLORS from "./../../../constants/colors";
 import axios from "axios";
 import { useNavigation } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import CustomSearchableDropdown from "../../../features/CustomSearchableDropdown";
 
 const CreateBooking = ({
   centerList,
@@ -21,11 +22,56 @@ const CreateBooking = ({
 }) => {
   const navigation = useNavigation();
   const [vehicle, setVehicle] = useState("");
+   const [odo, setOdo] = useState("");
+   const [odoName, setOdoName] = useState("");
   const [maintenanceCenter, setMaintenanceCenter] = useState(maintenanceCenterId || "");
   const [note, setNote] = useState("");
   const [bookingDate, setBookingDate] = useState(new Date());
   const [showDatePicker, setShowDatePicker] = useState(false);
+    const [filteredOdo, setFilteredOdo] = useState([]);
+     const [availableOdo, setAvailableOdo] = useState([]);
   const [showTimePicker, setShowTimePicker] = useState(false);
+
+    const fetchOdo = async () => {
+      try {
+        const accessToken = await AsyncStorage.getItem("ACCESS_TOKEN");
+        const response = await axios.get(
+          `https://autocareversion2.tryasp.net/api/MaintenanceServices/GetListPackageAndOdoTRUEByCenterId?id=${maintenanceCenter}`,
+          {
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${accessToken}`,
+            },
+          }
+        );
+        setAvailableOdo(response.data);
+      } catch (error) {
+        console.error("Error fetching services:", error);
+      }
+    };
+    useEffect(() => {
+      const fetch = async () => {
+        await fetchOdo();
+      };
+      if (maintenanceCenter) {
+        fetch();
+      }
+    }, [maintenanceCenter]);
+      useEffect(() => {
+        const selectedVehicle = vehicleListByClient.find(
+          (v) => v.vehiclesId === vehicle
+        );
+        if (selectedVehicle) {
+          setFilteredOdo(
+            availableOdo.filter(
+              (odo) =>
+                odo?.vehicleModelName === selectedVehicle?.vehicleModelName
+            )
+          );
+        } else {
+          setFilteredOdo([]);
+        }
+      }, [vehicle, availableOdo]);
   const handleSignup = async () => {
     try {
       if (!note || !maintenanceCenter) {
@@ -38,7 +84,7 @@ const CreateBooking = ({
         {
           vehicleId: vehicle,
           maintenanceCenterId: maintenanceCenter,
-          maintananceScheduleId: null,
+          maintananceScheduleId: odo || null,
           note: note,
           bookingDate: bookingDate.toISOString(),
           informationName: "string",
@@ -121,7 +167,7 @@ const CreateBooking = ({
               {vehicleListByClient.map((vehicle) => (
                 <Picker.Item
                   key={vehicle.vehiclesId}
-                  label={vehicle.vehiclesBrandName + " " + vehicle.licensePlate} 
+                  label={vehicle.vehiclesBrandName + " " + vehicle.licensePlate}
                   value={vehicle.vehiclesId}
                 />
               ))}
@@ -143,6 +189,22 @@ const CreateBooking = ({
               ))}
             </Picker>
           </View>
+          {maintenanceCenter !== "" && (
+            <View style={styles.inputContainerCost}>
+              <CustomSearchableDropdown
+                items={filteredOdo.map((odo) => ({
+                  id: odo.maintenanceServiceId,
+                  name: `${odo.vehiclesBrandName} ${odo.vehicleModelName} - ${odo.maintananceScheduleName} VND`,
+                  value: odo.maintananceScheduleId,
+                }))}
+                onItemSelect={(item) => {
+                  setOdo(item.value);
+                  setOdoName(item.name);
+                }}
+                placeholder={odoName || "Chọn Combo"}
+              />
+            </View>
+          )}
           <View style={styles.inputContainer}>
             <Pressable
               onPress={() => setShowDatePicker(true)}
@@ -189,6 +251,15 @@ const styles = StyleSheet.create({
   form: {
     paddingHorizontal: 42,
     width: "100%",
+  },
+  inputContainerCost: {
+    flexDirection: "column",
+    backgroundColor: COLORS.white,
+    paddingVertical: 10,
+    borderRadius: 10,
+    marginBottom: 12,
+    marginTop: 10,
+    paddingHorizontal: 10,
   },
   inputContainer: {
     flexDirection: "row",

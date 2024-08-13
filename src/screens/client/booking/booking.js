@@ -23,6 +23,7 @@ const Booking = () => {
   const { bookingListByClient } = useSelector((state) => state.booking);
   const [sortStatus, setSortStatus] = useState(null);
   const [isModalVisible, setModalVisible] = useState(false);
+  const [isModalBooking, setModalBooking] = useState(false);
 
   const fetchGetListBooking = async () => {
     await dispatch(getListBookingByClient());
@@ -39,7 +40,9 @@ const Booking = () => {
   const handleSortPress = () => {
     setModalVisible(true);
   };
-
+  const handleBook = () => {
+    setModalBooking(true);
+  };
   const handleStatusSelect = (status) => {
     setSortStatus(status);
     setModalVisible(false);
@@ -64,12 +67,7 @@ const Booking = () => {
           }}
         >
           <Pressable
-            onPress={() =>
-              navigation.navigate("PostBooking", {
-                maintenanceCenterId: "",
-                tab: true,
-              })
-            }
+            onPress={handleBook}
             style={{
               backgroundColor: "#52c41a",
               padding: 10,
@@ -81,7 +79,7 @@ const Booking = () => {
           >
             <Text style={{ color: "white" }}>Đặt lịch</Text>
           </Pressable>
-          <Pressable
+          {/* <Pressable
             onPress={() =>
               navigation.navigate("PostBooking", {
                 maintenanceCenterId: "",
@@ -97,7 +95,7 @@ const Booking = () => {
             }}
           >
             <Text style={{ color: "white" }}>Đặt theo combo</Text>
-          </Pressable>
+          </Pressable> */}
           <Pressable
             onPress={handleSortPress}
             style={{
@@ -288,7 +286,6 @@ const Booking = () => {
         </View>
       </View>
 
-      {/* Modal for sorting */}
       <Modal
         animationType="slide"
         transparent={true}
@@ -312,6 +309,50 @@ const Booking = () => {
             <TouchableOpacity
               style={[styles.modalButton, { backgroundColor: "red" }]}
               onPress={() => setModalVisible(false)}
+            >
+              <Text style={styles.modalButtonText}>Đóng</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={isModalBooking}
+        onRequestClose={() => {
+          setModalBooking(!isModalBooking);
+        }}
+      >
+        <View style={styles.modalContainer}>
+          <View style={styles.modalContent}>
+            <Text style={styles.modalTitle}>Chọn Đặt lịch</Text>
+            <TouchableOpacity
+              style={styles.modalButton}
+              onPress={() => {
+                setModalBooking(false);
+                navigation.navigate("PostBooking", {
+                  maintenanceCenterId: "",
+                  tab: false,
+                });
+              }}
+            >
+              <Text style={styles.modalButtonText}>Đặt lịch</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.modalButton}
+              onPress={() => {
+                setModalBooking(false);
+                navigation.navigate("PostBooking", {
+                  maintenanceCenterId: "",
+                  tab: true,
+                });
+              }}
+            >
+              <Text style={styles.modalButtonText}>Đặt lịch Combo</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={[styles.modalButton, { backgroundColor: "red" }]}
+              onPress={() => setModalBooking(false)}
             >
               <Text style={styles.modalButtonText}>Đóng</Text>
             </TouchableOpacity>
