@@ -10,6 +10,7 @@ import ROUTES from "../../constants/routes";
 import CreateBookingInfo from "../../screens/customercare/createBookingInfo/createBookingInfo";
 import CreateBookingForWalkinGuest from "../../screens/customercare/createBookingInfo/createBookingForWalkinGuest";
 import FeedbackList from "../../screens/customercare/FeedbackList";
+import MaintenanceCenterInfoScreen from "../../screens/customercare/MaintenanceInfoScreen";
 const Stack = createNativeStackNavigator();
 const HomeScreenNavigator = ({ authenticated }) => {
   return (
@@ -37,6 +38,11 @@ const HomeScreenNavigator = ({ authenticated }) => {
       <Stack.Screen
         name={"CREATEBOOKINGFORWALK-INGUEST"}
         component={CreateBookingForWalkinGuest}
+        options={{ headerShown: false }}
+      />
+       <Stack.Screen
+        name={"MAINTENANCEINFO"}
+        component={MaintenanceCenterInfoScreen}
         options={{ headerShown: false }}
       />
     </Stack.Navigator>

@@ -8,7 +8,6 @@ import { fetchCentreData } from "../../app/CusCare/homepageSlice";
 const HomeScreen = () => {
   const dispatch = useDispatch();
   const navigation = useNavigation();
-
   const profile = useSelector((state) => state.user.profile);
   const centre = useSelector((state) => state.homepage.centre);
   const centreId = profile?.centreId; 
@@ -66,11 +65,11 @@ const HomeScreen = () => {
         </Card>
       </TouchableOpacity>
 
-      <TouchableOpacity onPress={() => handleNavigation('CREATEBOOKINGFORWALK-INGUEST')}>
+      <TouchableOpacity onPress={() => handleNavigation('MAINTENANCEINFO')}>
         <Card style={styles.card}>
           <ImageBackground source={{ uri: 'https://img.freepik.com/premium-vector/car-auto-garage-concept-premium-logo-design_645012-278.jpg' }} style={styles.image}>
             <View style={styles.overlay}>
-              <Text style={styles.text}>Tạo đơn</Text>
+              <Text style={styles.text}>Dịch Vụ</Text>
             </View>
           </ImageBackground>
         </Card>

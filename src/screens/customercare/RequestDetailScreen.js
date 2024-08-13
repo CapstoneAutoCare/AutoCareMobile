@@ -39,12 +39,17 @@ const RequestDetailScreen = () => {
   
   const handleUpdateStatus = async (newStatus) => {
     try {
-      await dispatch(updateStatus({ requestId, newStatus })).unwrap();
+      console.log("Start updating status: " + requestId, newStatus);
+      const result = await dispatch(updateStatus({ requestId, newStatus })).unwrap();
+      console.log("Status updated successfully:", result);
       dispatch(fetchRequestDetail(requestId));
+      console.log("Request detail fetched after status update.");
     } catch (error) {
-      setFetchError(error.message);
+      console.error("Error updating status:", error); // Log toàn bộ error object
+      setFetchError(error.message || "An unexpected error occurred.");
     }
   };
+  
 
   const handleAssignTask = async (id, technicianId) => {
     try {

@@ -55,15 +55,7 @@ const RequestInfoTab = ({ request, updateStatus, error, profile, assignTask}) =>
     }
   };
 
-  useEffect(() => {
-    const unsubscribe = navigation.addListener("focus", () => {
-      fetchStaffList();
-    });
-
-    fetchStaffList();
-
-    return unsubscribe;
-  }, [navigation]);
+  
   const toggleAssignModal = () => {
     setAssignModalVisible(!isAssignModalVisible);
   };
@@ -95,7 +87,7 @@ const RequestInfoTab = ({ request, updateStatus, error, profile, assignTask}) =>
       try {
         const accessToken = await AsyncStorage.getItem('ACCESS_TOKEN');
         const response = await axios.get(
-          `https://autocareversion2.tryasp.net/api/MaintenanceServiceCosts/GetListByClient?centerId=${request.maintenanceCenterId}`,
+          `https://autocareversion2.tryasp.net/api/MaintenanceServiceCosts/GetListByDifMaintenanceServiceAndInforIdAndBooleanFalse?centerId=${request.maintenanceCenterId}`,
           {
             headers: {
               'Content-Type': 'application/json',
@@ -111,7 +103,7 @@ const RequestInfoTab = ({ request, updateStatus, error, profile, assignTask}) =>
         console.error('Error fetching services:', error);
       }
     };
-  
+    fetchStaffList
     fetchSpareParts();
     fetchServices();
   }, [request.maintenanceCenterId, request?.responseVehicles.vehicleModelName]);
@@ -245,34 +237,43 @@ const RequestInfoTab = ({ request, updateStatus, error, profile, assignTask}) =>
   const handlePayment = async () => {
     try {
       const accessToken = await AsyncStorage.getItem('ACCESS_TOKEN');
-      const informationMaintenanceId = request.responseMaintenanceInformation?.informationMaintenanceId;
-      const description = "Payment for maintenance"; 
-      await axios.post(
-        'https://autocareversion2.tryasp.net/api/Receipts/Post',
-        { informationMaintenanceId, description },
-        {
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${accessToken}`,
-          },
-        }
-      );
+      const infoId = request.responseMaintenanceInformation?.informationMaintenanceId;
+      // Hàm để lấy dữ liệu hóa đơn (invoice)
       const fetchInvoiceData = async () => {
         try {
-          const response = await axios.get(`https://autocareversion2.tryasp.net/api/Receipts/GetByInforId?id=${request.responseMaintenanceInformation.informationMaintenanceId}`);
+          const response = await axios.get(`https://autocareversion2.tryasp.net/api/Receipts/GetByInforId?id=${infoId}`);
           setInvoiceData(response.data);
         } catch (error) {
           console.error('Error fetching invoice data:', error);
         }
       };
-      toggleInvoiceModal(),
+  
       fetchInvoiceData();
-      console.log(invoiceData);
+  
+      if (!invoiceData) {
+        const description = "Payment for maintenance"; 
+        await axios.post(
+          'https://autocareversion2.tryasp.net/api/Receipts/Post',
+          { informationMaintenanceId: infoId, description },
+          {
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${accessToken}`,
+            },
+          }
+        );
+  
+        // Sau khi tạo Receipt, gọi lại hàm fetchInvoiceData để cập nhật invoiceData
+        await fetchInvoiceData();
+      }
+  
+      toggleInvoiceModal();
     } catch (error) {
       console.error('Error during payment:', error);
       alert('Có lỗi xảy ra khi thanh toán. Vui lòng thử lại.');
     }
   };
+  
 const handleCheckin = async () => {
   try {
     const accessToken = await AsyncStorage.getItem('ACCESS_TOKEN');

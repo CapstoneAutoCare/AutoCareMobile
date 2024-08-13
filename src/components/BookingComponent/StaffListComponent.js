@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image } from 'react-native';
 
 const StaffListComponent = ({ staffList, selectedStaff, setSelectedStaff }) => {
   return (
@@ -10,7 +10,13 @@ const StaffListComponent = ({ staffList, selectedStaff, setSelectedStaff }) => {
           style={[styles.staffItem, selectedStaff?.technicianId === staff.technicianId && styles.selectedStaffItem]}
           onPress={() => setSelectedStaff(staff)}
         >
-          <Text>{staff.logo}</Text>
+          {staff?.logo && (
+                        <Image 
+                            source={{ uri: staff?.logo }} 
+                            style={styles.staffLogo} 
+                            resizeMode="contain"
+                        />
+                    )}
           <Text>{staff.firstName} {staff.lastName}</Text>
         </TouchableOpacity>
       ))}
@@ -36,6 +42,10 @@ const styles = StyleSheet.create({
   selectedStaffItem: {
     backgroundColor: '#d0e7ff',
   },
+  staffLogo:{
+    width: 50,
+        height: 50,
+  }
 });
 
 export default StaffListComponent;

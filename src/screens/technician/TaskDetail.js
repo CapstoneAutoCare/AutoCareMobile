@@ -9,12 +9,8 @@ const TaskDetail = ({ route, navigation }) => {
     try {
       // Update the task service status to DONE
       console.log(`COMPLETING SERVICE: ${serviceId}`);
-      await axios.patch(`https://autocareversion2.tryasp.net/api/MaintenanceTaskServiceInfoes/PatchStatus`, {
-        id: serviceId,
-        status: "DONE"
-      });
+      await axios.patch(`https://autocareversion2.tryasp.net/api/MaintenanceTaskServiceInfoes/PatchStatus?id=${serviceId}&status=DONE`);
       Alert.alert('Service Completed', 'The service status has been updated to DONE.');
-      navigation.goBack();
     } catch (error) {
       Alert.alert('Error', 'There was an error completing the service.');
     }
@@ -24,12 +20,8 @@ const TaskDetail = ({ route, navigation }) => {
     try {
       // Update the spare part status to DONE
       console.log(`COMPLETING SPARE PART: ${sparepartId}`);
-      await axios.patch(`https://autocareversion2.tryasp.net/api/MaintenanceTaskSparePartInfoes/PatchStatus`, {
-        id: sparepartId,
-        status: "DONE"
-      });
+      await axios.patch(`https://autocareversion2.tryasp.net/api/MaintenanceTaskSparePartInfoes/PatchStatus?id=${sparepartId}&status=DONE`);
       Alert.alert('Spare Part Completed', 'The spare part status has been updated to DONE.');
-      navigation.goBack();
     } catch (error) {
       Alert.alert('Error', 'There was an error completing the spare part.');
     }
@@ -44,7 +36,7 @@ const TaskDetail = ({ route, navigation }) => {
         {item.status !== 'DONE' && (
           <Button
             title="Complete Service"
-            onPress={() => handleCompleteService(item?.responseMainTaskServices?.maintenanceTaskServiceInfoId)}
+            onPress={() => handleCompleteService(item?.maintenanceTaskServiceInfoId)}
           />
         )}
       </View>
@@ -60,7 +52,7 @@ const TaskDetail = ({ route, navigation }) => {
         {item.status !== 'DONE' && (
           <Button
             title="Complete Spare Part"
-            onPress={() => handleCompleteSparepart(item?.responseMainTaskSpareParts?.maintenanceTaskSparePartInfoId)}
+            onPress={() => handleCompleteSparepart(item?.maintenanceTaskSparePartInfoId)}
           />
         )}
       </View>

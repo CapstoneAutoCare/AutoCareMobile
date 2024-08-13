@@ -1,6 +1,7 @@
 import Axios from 'axios';
 
 const API_BASE_URL = 'https://autocareversion2.tryasp.net/api';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export const fetchClientName = async (clientId) => {
   try {
@@ -50,10 +51,19 @@ export const getTechnicianDetail = async (technicianId) => {
 };
 export const updateStatus = async (requestId, newStatus) => {
   try {
-    const response = await Axios.patch(`${API_BASE_URL}/Bookings/UpdateStatus?bookingId=${requestId}&status=${newStatus}`);
+    const accessToken = await AsyncStorage.getItem('ACCESS_TOKEN');
+    const response = await Axios.patch(`${API_BASE_URL}/Bookings/UpdateStatus?bookingId=${requestId}&status=${newStatus}`, null,
+      {
+        headers: {
+          'Content-Type': 'text/plain',
+          Authorization: `Bearer ${accessToken}`,
+        }
+      }
+    );
     if (response.status !== 200) {
-      throw new Error('Failed to update status');
+      throw new Error(`Failed to update status`);
     }
+    return response.data; // Nếu cần trả về dữ liệu sau khi cập nhật
   } catch (error) {
     throw new Error('Failed to update status');
   }
