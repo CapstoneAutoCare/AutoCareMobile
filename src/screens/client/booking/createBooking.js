@@ -22,56 +22,57 @@ const CreateBooking = ({
 }) => {
   const navigation = useNavigation();
   const [vehicle, setVehicle] = useState("");
-   const [odo, setOdo] = useState("");
-   const [odoName, setOdoName] = useState("");
-  const [maintenanceCenter, setMaintenanceCenter] = useState(maintenanceCenterId || "");
+  const [odo, setOdo] = useState("");
+  const [odoName, setOdoName] = useState("");
+  const [maintenanceCenter, setMaintenanceCenter] = useState(
+    maintenanceCenterId || ""
+  );
   const [note, setNote] = useState("");
   const [bookingDate, setBookingDate] = useState(new Date());
   const [showDatePicker, setShowDatePicker] = useState(false);
-    const [filteredOdo, setFilteredOdo] = useState([]);
-     const [availableOdo, setAvailableOdo] = useState([]);
+  const [filteredOdo, setFilteredOdo] = useState([]);
+  const [availableOdo, setAvailableOdo] = useState([]);
   const [showTimePicker, setShowTimePicker] = useState(false);
 
-    const fetchOdo = async () => {
-      try {
-        const accessToken = await AsyncStorage.getItem("ACCESS_TOKEN");
-        const response = await axios.get(
-          `https://autocareversion2.tryasp.net/api/MaintenanceServices/GetListPackageAndOdoTRUEByCenterId?id=${maintenanceCenter}`,
-          {
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${accessToken}`,
-            },
-          }
-        );
-        setAvailableOdo(response.data);
-      } catch (error) {
-        console.error("Error fetching services:", error);
-      }
-    };
-    useEffect(() => {
-      const fetch = async () => {
-        await fetchOdo();
-      };
-      if (maintenanceCenter) {
-        fetch();
-      }
-    }, [maintenanceCenter]);
-      useEffect(() => {
-        const selectedVehicle = vehicleListByClient.find(
-          (v) => v.vehiclesId === vehicle
-        );
-        if (selectedVehicle) {
-          setFilteredOdo(
-            availableOdo.filter(
-              (odo) =>
-                odo?.vehicleModelName === selectedVehicle?.vehicleModelName
-            )
-          );
-        } else {
-          setFilteredOdo([]);
+  const fetchOdo = async () => {
+    try {
+      const accessToken = await AsyncStorage.getItem("ACCESS_TOKEN");
+      const response = await axios.get(
+        `https://autocareversion2.tryasp.net/api/MaintenanceSchedule/GetListPackageCenterId?id=${maintenanceCenter}`,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${accessToken}`,
+          },
         }
-      }, [vehicle, availableOdo]);
+      );
+      setAvailableOdo(response.data);
+    } catch (error) {
+      console.error("Error fetching services:", error);
+    }
+  };
+  useEffect(() => {
+    const fetch = async () => {
+      await fetchOdo();
+    };
+    if (maintenanceCenter) {
+      fetch();
+    }
+  }, [maintenanceCenter]);
+  useEffect(() => {
+    const selectedVehicle = vehicleListByClient.find(
+      (v) => v.vehiclesId === vehicle
+    );
+    if (selectedVehicle) {
+      setFilteredOdo(
+        availableOdo.filter(
+          (odo) => odo?.vehicleModelId === selectedVehicle?.vehicleModelId
+        )
+      );
+    } else {
+      setFilteredOdo([]);
+    }
+  }, [vehicle, availableOdo]);
   const handleSignup = async () => {
     try {
       if (!note || !maintenanceCenter) {
@@ -167,7 +168,13 @@ const CreateBooking = ({
               {vehicleListByClient.map((vehicle) => (
                 <Picker.Item
                   key={vehicle.vehiclesId}
-                  label={vehicle.vehiclesBrandName + " " + vehicle.licensePlate}
+                  label={
+                    vehicle.vehiclesBrandName +
+                    " " +
+                    vehicle.vehicleModelName +
+                    " " +
+                    vehicle.licensePlate
+                  }
                   value={vehicle.vehiclesId}
                 />
               ))}
@@ -193,13 +200,17 @@ const CreateBooking = ({
             <View style={styles.inputContainerCost}>
               <CustomSearchableDropdown
                 items={filteredOdo.map((odo) => ({
-                  id: odo.maintenanceServiceId,
-                  name: `${odo.vehiclesBrandName} ${odo.vehicleModelName} - ${odo.maintananceScheduleName} VND`,
-                  value: odo.maintananceScheduleId,
+                  id: odo.maintenanceServiceId || "",
+                  name: `${odo.vehiclesBrandName || ""} ${
+                    odo.vehicleModelName || ""
+                  } - Odo: ${odo.maintananceScheduleName || ""} Km `,
+                  value: odo.maintananceScheduleId || "",
                 }))}
                 onItemSelect={(item) => {
-                  setOdo(item.value);
-                  setOdoName(item.name);
+                  if (item && item.value) {
+                    setOdo(item.value);
+                    setOdoName(item.name || "");
+                  }
                 }}
                 placeholder={odoName || "Chọn Combo"}
               />

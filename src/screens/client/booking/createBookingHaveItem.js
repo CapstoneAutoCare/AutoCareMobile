@@ -18,7 +18,6 @@ import { useDispatch, useSelector } from "react-redux";
 import { getListCustomerCareByCenterId } from "../../../app/CustomerCare/actions";
 import CustomSearchableDropdown from "./../../../features/CustomSearchableDropdown";
 
-
 const StepOne = () => (
   <View style={styles.stepContainer}>
     <Text style={styles.stepText}>Step 1: Chọn trung tâm </Text>
@@ -68,13 +67,13 @@ const CreateBookingHaveItem = ({
   const [filteredSpareParts, setFilteredSpareParts] = useState([]);
   const [filteredServices, setFilteredServices] = useState([]);
   const [filteredOdo, setFilteredOdo] = useState([]);
-const [currentStep, setCurrentStep] = useState(0);
-   const steps = [
-     <StepOne key="step1" />,
-     <StepTwo key="step2" />,
-     <StepThree key="step3" />,
-     <StepFour key="step4" />,
-   ];
+  const [currentStep, setCurrentStep] = useState(0);
+  const steps = [
+    <StepOne key="step1" />,
+    <StepTwo key="step2" />,
+    <StepThree key="step3" />,
+    <StepFour key="step4" />,
+  ];
   const { customerCareListByCenterId } = useSelector(
     (state) => state.customerCare
   );
@@ -195,28 +194,28 @@ const [currentStep, setCurrentStep] = useState(0);
     newServices[index][key] = value;
     setServices(newServices);
   };
-    const onNext = () => {
-      if (currentStep < steps.length - 1) {
-        setCurrentStep(currentStep + 1);
-      }
-    };
+  const onNext = () => {
+    if (currentStep < steps.length - 1) {
+      setCurrentStep(currentStep + 1);
+    }
+  };
 
-    const onPrevious = () => {
-      if (currentStep > 0) {
-        setCurrentStep(currentStep - 1);
-      }
-    };
+  const onPrevious = () => {
+    if (currentStep > 0) {
+      setCurrentStep(currentStep - 1);
+    }
+  };
 
-    const onSubmit = () => {
-      alert("Form submitted!");
-    };
+  const onSubmit = () => {
+    alert("Form submitted!");
+  };
   const handleSignup = async () => {
     try {
       if (!note || !maintenanceCenter) {
         alert("Vui lòng điền đầy đủ thông tin");
         return;
       }
-      
+
       const now = new Date();
       const vietnamTime = new Date(now.getTime() + 7 * 60 * 60 * 1000);
       const accessToken = await AsyncStorage.getItem("ACCESS_TOKEN");
@@ -342,7 +341,11 @@ const [currentStep, setCurrentStep] = useState(0);
                     <Picker.Item
                       key={vehicle.vehiclesId}
                       label={
-                        vehicle.vehiclesBrandName + " " + vehicle.licensePlate
+                        vehicle.vehiclesBrandName +
+                        " " +
+                        vehicle.vehicleModelName +
+                        " " +
+                        vehicle.licensePlate
                       }
                       value={vehicle.vehiclesId}
                     />
@@ -608,11 +611,7 @@ const [currentStep, setCurrentStep] = useState(0);
         </View>
       </View>
       <View style={styles.footer}>
-        <Button
-          title="Sau"
-          onPress={onPrevious}
-          disabled={currentStep === 0}
-        />
+        <Button title="Sau" onPress={onPrevious} disabled={currentStep === 0} />
         {currentStep === 3 ? (
           <Button title="Tạo lịch" onPress={handleSignup} />
         ) : (
