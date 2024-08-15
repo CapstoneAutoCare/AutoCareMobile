@@ -212,7 +212,9 @@ const InforDetail = ({ route }) => {
         <View style={styles.modalContent}>
           <Text style={styles.modalTitle}>Đánh giá</Text>
           <Rating
-            showRating
+            // showRating
+            fractions={1}
+            // startingValue={1}
             onFinishRating={(rating) => setRating(rating)}
             style={{ paddingVertical: 10 }}
           />

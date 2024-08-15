@@ -10,21 +10,25 @@ import {
 import { useSelector, useDispatch } from "react-redux";
 import { AntDesign } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
-import { getCenterById, getServiceByCenter } from "../../../app/Center/actions";
+import { getCenterById, getPackageById, getServiceByCenter } from "../../../app/Center/actions";
 import { getSparePartByCenter } from "../../../app/SparePart/actions";
 import ServiceItem from "../../../components/ServiceItem";
 import ProductItem from "../../../components/ProductItem";
+import PackageItem from './../../../components/PackageItem';
 
 const CenterDetail = ({ route }) => {
   const { maintenanceCenterId } = route.params;
   const navigation = useNavigation();
   const dispatch = useDispatch();
-  const { centerById, serviceByCenter } = useSelector((state) => state.center);
+  const { centerById, serviceByCenter, packageById } = useSelector(
+    (state) => state.center
+  );
   const { sparePartByCenter } = useSelector((state) => state.sparePart);
 
   useEffect(() => {
     const fetchGetListSparePart = async () => {
       await dispatch(getCenterById(maintenanceCenterId));
+      await dispatch(getPackageById(maintenanceCenterId));
       await dispatch(getServiceByCenter(maintenanceCenterId));
       await dispatch(getSparePartByCenter(maintenanceCenterId));
 
@@ -115,6 +119,35 @@ const CenterDetail = ({ route }) => {
               }}
             >
               không có dịch vụ
+            </Text>
+          </View>
+        )}
+      </View>
+      <Text style={{ padding: 10, fontSize: 18, fontWeight: "bold" }}>
+        Danh sách combo
+      </Text>
+      <View
+        style={{
+          flexDirection: "row",
+          alignItems: "center",
+          justifyContent: "space-around",
+          flexWrap: "wrap",
+        }}
+      >
+        {packageById.length > 0 ? (
+          packageById.map((item, index) => (
+            <PackageItem item={item} key={index} />
+          ))
+        ) : (
+          <View style={{ justifyContent: "center", alignItems: "center" }}>
+            <Text
+              style={{
+                color: "black",
+                fontSize: 15,
+                fontWeight: "500",
+              }}
+            >
+              không có combo
             </Text>
           </View>
         )}

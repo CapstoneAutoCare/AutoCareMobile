@@ -89,4 +89,8 @@ export const centerService = {
     const url = `/MaintenanceCenters/GetById?id=${id}`;
     return axiosClient.get(url);
   },
+  getPackageById: (id) => {
+    const url = `/MaintenanceSchedule/GetListPackageCenterId?id=${id}`;
+    return axiosClient.get(url);
+  },
 };

@@ -248,3 +248,15 @@ export const getCenterById = createAsyncThunk(
     }
   }
 );
+export const getPackageById = createAsyncThunk(
+  "sparePart/getPackageById",
+  async (id, { rejectWithValue }) => {
+    try {
+      const response = await centerService.getPackageById(id);
+      return response.data;
+    } catch (error) {
+      console.log(error);
+      return rejectWithValue(error);
+    }
+  }
+);
