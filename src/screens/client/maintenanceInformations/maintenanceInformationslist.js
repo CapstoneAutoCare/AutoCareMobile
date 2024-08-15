@@ -26,7 +26,7 @@ const MaintenanceInformationsList = async () => {
   const fetchMaintenanceInformations = async (token) => {
     try {
       const response = await fetch(
-        "https://autocareversion2.tryasp.net/api/MaintenanceInformations/GetListByClient",
+        "http://solv2.runasp.net/api/MaintenanceInformations/GetListByClient",
         {
           method: "GET",
           headers: {

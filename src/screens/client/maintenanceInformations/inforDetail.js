@@ -51,7 +51,7 @@ const InforDetail = ({ route }) => {
       }
       const accessToken = await AsyncStorage.getItem("ACCESS_TOKEN");
       const response = await axios.post(
-        "https://autocareversion2.tryasp.net/api/Feedback/Post",
+        "http://solv2.runasp.net/api/Feedback/Post",
         {
           comment: comment,
           vote: rating,

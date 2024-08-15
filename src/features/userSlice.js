@@ -32,7 +32,7 @@ export const login = createAsyncThunk(
       await AsyncStorage.setItem("ACCOUNT_ID", jwtCode["sub"]);
       return jwtCode;
     } catch (error) {
-      console.log(error);
+      console.log("zx", error);
       return rejectWithValue(error.response?.data);
     }
   }

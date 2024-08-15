@@ -62,7 +62,7 @@ const MaintenanceCenterInfoScreen = ({ }) => {
         try {
             const accessToken = await AsyncStorage.getItem('ACCESS_TOKEN');
             const response = await axios.get(
-                `https://autocareversion2.tryasp.net/api/SparePartsItemCosts/GetListByClient?centerId=${profile.CentreId}`,
+                `http://solv2.runasp.net/api/SparePartsItemCosts/GetListByClient?centerId=${profile.CentreId}`,
                 {
                     headers: {
                         'Content-Type': 'application/json',
@@ -80,7 +80,7 @@ const MaintenanceCenterInfoScreen = ({ }) => {
         try {
             const accessToken = await AsyncStorage.getItem('ACCESS_TOKEN');
             const response = await axios.get(
-                `https://autocareversion2.tryasp.net/api/MaintenanceServiceCosts/GetListByDifMaintenanceServiceAndInforIdAndBooleanFalse?centerId=${profile.CentreId}`,
+                `http://solv2.runasp.net/api/MaintenanceServiceCosts/GetListByDifMaintenanceServiceAndInforIdAndBooleanFalse?centerId=${profile.CentreId}`,
                 {
                     headers: {
                         'Content-Type': 'application/json',
@@ -98,7 +98,7 @@ const MaintenanceCenterInfoScreen = ({ }) => {
         try {
             const accessToken = await AsyncStorage.getItem('ACCESS_TOKEN');
             const response = await axios.get(
-                `https://autocareversion2.tryasp.net/api/MaintenanceServices/GetListByCenterId?id=${profile.CentreId}`,
+                `http://solv2.runasp.net/api/MaintenanceServices/GetListByCenterId?id=${profile.CentreId}`,
                 {
                     headers: {
                         'Content-Type': 'application/json',
@@ -123,7 +123,7 @@ const MaintenanceCenterInfoScreen = ({ }) => {
         try {
             const accessToken = await AsyncStorage.getItem('ACCESS_TOKEN');
             const response = await axios.get(
-                `https://autocareversion2.tryasp.net/api/VehicleModel/GetAll`,
+                `http://solv2.runasp.net/api/VehicleModel/GetAll`,
                 {
                     headers: {
                         'Content-Type': 'application/json',

@@ -1,1 +1,1 @@
-export const BASE_URL = "https://autocareversion2.tryasp.net/api/";
+export const BASE_URL = "http://solv2.runasp.net/api/";

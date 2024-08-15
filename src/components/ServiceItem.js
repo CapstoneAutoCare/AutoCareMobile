@@ -28,7 +28,7 @@ const ServiceItem = ({ item }) => {
             ? item?.totalCost
             : item?.acturalCost
             ? item?.acturalCost
-            : item?.responseMaintenanceServiceCosts.length > 0
+            : item?.responseMaintenanceServiceCosts?.length > 0
             ? item?.responseMaintenanceServiceCosts[0].acturalCost
             : "trống"}{" "}
           VND

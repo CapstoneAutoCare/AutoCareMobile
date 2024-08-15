@@ -75,7 +75,7 @@ export default SparePartPut = ({ route }) => {
       setLoad(true);
       const accessToken = await AsyncStorage.getItem("ACCESS_TOKEN");
       const response = await axios.put(
-        `https://autocareversion2.tryasp.net/api/SparePartItem/Update?id=${sparePartsItemId}`,
+        `http://solv2.runasp.net/api/SparePartItem/Update?id=${sparePartsItemId}`,
         {
           sparePartsItemName: maintenanceServiceName,
           status,

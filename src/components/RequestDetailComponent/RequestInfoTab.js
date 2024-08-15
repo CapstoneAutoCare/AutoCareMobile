@@ -66,7 +66,7 @@ const RequestInfoTab = ({ request, updateStatus, error, profile, assignTask}) =>
       try {
         const accessToken = await AsyncStorage.getItem('ACCESS_TOKEN');
         const response = await axios.get(
-          `https://autocareversion2.tryasp.net/api/SparePartsItemCosts/GetListByClient?centerId=${request.maintenanceCenterId}`,
+          `http://solv2.runasp.net/api/SparePartsItemCosts/GetListByClient?centerId=${request.maintenanceCenterId}`,
           {
             headers: {
               'Content-Type': 'application/json',
@@ -87,7 +87,7 @@ const RequestInfoTab = ({ request, updateStatus, error, profile, assignTask}) =>
       try {
         const accessToken = await AsyncStorage.getItem('ACCESS_TOKEN');
         const response = await axios.get(
-          `https://autocareversion2.tryasp.net/api/MaintenanceServiceCosts/GetListByDifMaintenanceServiceAndInforIdAndBooleanFalse?centerId=${request.maintenanceCenterId}`,
+          `http://solv2.runasp.net/api/MaintenanceServiceCosts/GetListByDifMaintenanceServiceAndInforIdAndBooleanFalse?centerId=${request.maintenanceCenterId}`,
           {
             headers: {
               'Content-Type': 'application/json',
@@ -174,8 +174,8 @@ const RequestInfoTab = ({ request, updateStatus, error, profile, assignTask}) =>
       console.log('Saving with request:', request); // Log
 
       const url = modalType === 'SPARE_PART'
-      ? 'https://autocareversion2.tryasp.net/api/MaintenanceSparePartInfoes/Post'
-      : 'https://autocareversion2.tryasp.net/api/MaintenanceServiceInfoes/Post';
+      ? 'http://solv2.runasp.net/api/MaintenanceSparePartInfoes/Post'
+      : 'http://solv2.runasp.net/api/MaintenanceServiceInfoes/Post';
       
       const items = modalType === 'SPARE_PART' ? spareParts : services;
 
@@ -241,7 +241,7 @@ const RequestInfoTab = ({ request, updateStatus, error, profile, assignTask}) =>
       // Hàm để lấy dữ liệu hóa đơn (invoice)
       const fetchInvoiceData = async () => {
         try {
-          const response = await axios.get(`https://autocareversion2.tryasp.net/api/Receipts/GetByInforId?id=${infoId}`);
+          const response = await axios.get(`http://solv2.runasp.net/api/Receipts/GetByInforId?id=${infoId}`);
           setInvoiceData(response.data);
         } catch (error) {
           console.error('Error fetching invoice data:', error);
@@ -253,7 +253,7 @@ const RequestInfoTab = ({ request, updateStatus, error, profile, assignTask}) =>
       if (!invoiceData) {
         const description = "Payment for maintenance"; 
         await axios.post(
-          'https://autocareversion2.tryasp.net/api/Receipts/Post',
+          'http://solv2.runasp.net/api/Receipts/Post',
           { informationMaintenanceId: infoId, description },
           {
             headers: {
@@ -278,7 +278,7 @@ const handleCheckin = async () => {
   try {
     const accessToken = await AsyncStorage.getItem('ACCESS_TOKEN');
 
-    await axios.patch(`https://autocareversion2.tryasp.net/api/MaintenanceInformations/CHANGESTATUS?id=${request.responseMaintenanceInformation?.informationMaintenanceId}&status=CHECKIN`,
+    await axios.patch(`http://solv2.runasp.net/api/MaintenanceInformations/CHANGESTATUS?id=${request.responseMaintenanceInformation?.informationMaintenanceId}&status=CHECKIN`,
      {
         headers: {
           'Content-Type': 'text/plain',

@@ -40,7 +40,7 @@ const MaintenanceTaskTab = ({ maintenanceTasks, request, assignTask }) => {
         try {
           const accessToken = await AsyncStorage.getItem('ACCESS_TOKEN');
       
-          await axios.patch(`https://autocareversion2.tryasp.net/api/MaintenanceInformations/CHANGESTATUS?id=${request.responseMaintenanceInformation?.informationMaintenanceId}&status=REPAIRING`,
+          await axios.patch(`http://solv2.runasp.net/api/MaintenanceInformations/CHANGESTATUS?id=${request.responseMaintenanceInformation?.informationMaintenanceId}&status=REPAIRING`,
            {
               headers: {
                 'Content-Type': 'text/plain',

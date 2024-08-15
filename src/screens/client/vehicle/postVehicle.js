@@ -44,7 +44,7 @@ const VehiclePost = () => {
       setLoad(true);
       const accessToken = await AsyncStorage.getItem("ACCESS_TOKEN");
       const response = await axios.post(
-        "https://autocareversion2.tryasp.net/api/Vehicles/Post",
+        "http://solv2.runasp.net/api/Vehicles/Post",
         {
           vehicleModelId,
           color,

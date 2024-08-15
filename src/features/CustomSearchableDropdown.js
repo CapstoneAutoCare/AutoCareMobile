@@ -8,7 +8,36 @@ import {
   TouchableOpacity,
   StyleSheet,
 } from "react-native";
+import ServiceItem from "../components/ServiceItem";
 
+const ShowServiceItem = ({ item, handleItemSelect, labelKey }) => {
+  const [showServiceItem, setShowServiceItem] = useState(false);
+  return (
+    <TouchableOpacity style={styles.item}>
+      <View
+        style={{
+          flexDirection: "row",
+          justifyContent: "space-between",
+        }}
+      >
+        <Text style={styles.itemText} onPress={() => handleItemSelect(item)}>
+          {item[labelKey]}
+        </Text>
+        <Text
+          style={styles.itemText}
+          onPress={() => setShowServiceItem(!showServiceItem)}
+        >
+          show
+        </Text>
+      </View>
+      {showServiceItem &&
+        item?.responseMaintenanceServiceCosts &&
+        item?.responseMaintenanceServiceCosts.map((item, index) => (
+          <ServiceItem item={item} key={index} />
+        ))}
+    </TouchableOpacity>
+  );
+};
 const CustomSearchableDropdown = ({
   items,
   onItemSelect,
@@ -19,6 +48,7 @@ const CustomSearchableDropdown = ({
   const [modalVisible, setModalVisible] = useState(false);
   const [searchText, setSearchText] = useState("");
   const [filteredItems, setFilteredItems] = useState(items);
+  const [showServiceItem, setShowServiceItem] = useState(false);
  useEffect(() => {
    setFilteredItems(items);
  },[items])
@@ -56,14 +86,29 @@ const CustomSearchableDropdown = ({
           <FlatList
             data={filteredItems}
             keyExtractor={(item) => item[valueKey].toString()}
-            renderItem={({ item }) => (
-              <TouchableOpacity
-                onPress={() => handleItemSelect(item)}
-                style={styles.item}
-              >
-                <Text style={styles.itemText}>{item[labelKey]}</Text>
-              </TouchableOpacity>
-            )}
+            renderItem={({ item }) =>
+              item?.responseMaintenanceServiceCosts ? (
+                <ShowServiceItem
+                  item={item}
+                  handleItemSelect={handleItemSelect}
+                  labelKey={labelKey}
+                />
+              ) : (
+                <TouchableOpacity
+                  style={styles.item}
+                  onPress={() => handleItemSelect(item)}
+                >
+                  <View
+                    style={{
+                      flexDirection: "row",
+                      justifyContent: "space-between",
+                    }}
+                  >
+                    <Text style={styles.itemText}>{item[labelKey]}</Text>
+                  </View>
+                </TouchableOpacity>
+              )
+            }
           />
           <TouchableOpacity
             onPress={() => setModalVisible(false)}

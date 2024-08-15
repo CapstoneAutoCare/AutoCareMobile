@@ -2,7 +2,7 @@ import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
 
 export const fetchFeedbacks = createAsyncThunk('feedbacks/fetchFeedbacks', async (centreId) => {
-  const response = await axios.get(`https://autocareversion2.tryasp.net/api/Feedback/GetListByCenterId?id=${centreId}`);
+  const response = await axios.get(`http://solv2.runasp.net/api/Feedback/GetListByCenterId?id=${centreId}`);
   return response.data;
 });
 

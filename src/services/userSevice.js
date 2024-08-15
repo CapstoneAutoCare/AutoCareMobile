@@ -1,3 +1,4 @@
+import { BASE_URL } from "../../env";
 import axiosClient from "./axiosClient";
 
 export const userService = {

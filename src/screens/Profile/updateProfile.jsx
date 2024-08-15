@@ -91,7 +91,7 @@ export default UpdateProfile = () => {
        setLoad(true);
         const accessToken = await AsyncStorage.getItem("ACCESS_TOKEN");
       const response = await axios.put(
-        `https://autocareversion2.tryasp.net/api/Clients/Update?clientId=${profile.ClientId}`,
+        `http://solv2.runasp.net/api/Clients/Update?clientId=${profile.ClientId}`,
         {
           gender: gender,
           phone: phone,

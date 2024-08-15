@@ -95,7 +95,7 @@ export default CarePost = () => {
       }
       const accessToken = await AsyncStorage.getItem("ACCESS_TOKEN");
       const response = await axios.post(
-        "https://autocareversion2.tryasp.net/api/CustomerCares/Post",
+        "http://solv2.runasp.net/api/CustomerCares/Post",
         {
           email: email,
           password: passwordHash,

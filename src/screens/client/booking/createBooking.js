@@ -28,6 +28,7 @@ const CreateBooking = ({
     maintenanceCenterId || ""
   );
   const [note, setNote] = useState("");
+  const [load, setLoad] = useState(false);
   const [bookingDate, setBookingDate] = useState(new Date());
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [filteredOdo, setFilteredOdo] = useState([]);
@@ -38,7 +39,7 @@ const CreateBooking = ({
     try {
       const accessToken = await AsyncStorage.getItem("ACCESS_TOKEN");
       const response = await axios.get(
-        `https://autocareversion2.tryasp.net/api/MaintenanceSchedule/GetListPackageCenterId?id=${maintenanceCenter}`,
+        `http://solv2.runasp.net/api/MaintenanceServices/GetListPackageAndOdoTRUEByCenterId?id=${maintenanceCenter}`,
         {
           headers: {
             "Content-Type": "application/json",
@@ -79,9 +80,10 @@ const CreateBooking = ({
         alert("Vui lòng điền đầy đủ thông tin");
         return;
       }
+      setLoad(true);
       const accessToken = await AsyncStorage.getItem("ACCESS_TOKEN");
       const response = await axios.post(
-        "https://autocareversion2.tryasp.net/api/Bookings/PostHavePackage",
+        "http://solv2.runasp.net/api/Bookings/PostHavePackage",
         {
           vehicleId: vehicle,
           maintenanceCenterId: maintenanceCenter,
@@ -100,12 +102,15 @@ const CreateBooking = ({
       );
 
       if (response.status === 200) {
+        setLoad(false);
         alert("Tạo lịch thành công!");
         navigation.navigate("Booking");
       } else {
+          setLoad(false);
         alert("Tạo lịch không thành công. Vui lòng thử lại.");
       }
     } catch (error) {
+        setLoad(false);
       console.error("Error during:", error);
       if (error.response) {
         console.error("Server responded with:", error.response.data);
@@ -140,7 +145,7 @@ const CreateBooking = ({
     const currentTime = selectedTime || bookingDate;
     setShowTimePicker(false);
     const updatedDate = new Date(
-      bookingDate.setHours(currentTime.getHours(), currentTime.getMinutes())
+      bookingDate.setHours(currentTime.getHours() + 7, currentTime.getMinutes())
     );
     setBookingDate(updatedDate);
   };
@@ -205,6 +210,7 @@ const CreateBooking = ({
                     odo.vehicleModelName || ""
                   } - Odo: ${odo.maintananceScheduleName || ""} Km `,
                   value: odo.maintananceScheduleId || "",
+                  ...odo,
                 }))}
                 onItemSelect={(item) => {
                   if (item && item.value) {
@@ -244,9 +250,15 @@ const CreateBooking = ({
               />
             )}
           </View>
-          <Pressable style={styles.button} onPress={handleSignup}>
-            <Text style={styles.buttonText}>Tạo lịch</Text>
-          </Pressable>
+          {load ? (
+            <Pressable style={styles.button}>
+              <Text style={styles.buttonText}>dang tạo lịch ...</Text>
+            </Pressable>
+          ) : (
+            <Pressable style={styles.button} onPress={handleSignup}>
+              <Text style={styles.buttonText}>Tạo lịch</Text>
+            </Pressable>
+          )}
         </View>
       </View>
     </ScrollView>

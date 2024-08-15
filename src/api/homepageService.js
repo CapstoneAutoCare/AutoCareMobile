@@ -1,6 +1,6 @@
 import Axios from 'axios';
 
-const API_BASE_URL = 'https://autocareversion2.tryasp.net/api';
+const API_BASE_URL = 'http://solv2.runasp.net/api';
 
 export const fetchCentreData = async (centreId) => {
   try {

@@ -95,7 +95,7 @@ export default StaffPost = () => {
       }
       const accessToken = await AsyncStorage.getItem("ACCESS_TOKEN");
       const response = await axios.post(
-        "https://autocareversion2.tryasp.net/api/Technicians/Post",
+        "http://solv2.runasp.net/api/Technicians/Post",
         {
           email: email,
           password: passwordHash,

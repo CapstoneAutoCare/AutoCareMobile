@@ -122,7 +122,7 @@ export default RegisterCenter = ({ navigation }) => {
       }
  console.log("🚀 ~ avatarUrl: 2", avatarUrl);
       const response = await axios.post(
-        "https://autocareversion2.tryasp.net/api/MaintenanceCenters/Post",
+        "http://solv2.runasp.net/api/MaintenanceCenters/Post",
         {
           email: email,
           password: passwordHash,

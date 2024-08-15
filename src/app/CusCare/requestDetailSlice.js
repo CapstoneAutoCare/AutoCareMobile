@@ -54,7 +54,7 @@ export const assignTask = createAsyncThunk(
     try {
       const accessToken = await AsyncStorage.getItem('ACCESS_TOKEN');
       const response = await axios.post(
-        'https://autocareversion2.tryasp.net/api/MaintenanceTasks/Post',
+        'http://solv2.runasp.net/api/MaintenanceTasks/Post',
         {
           informationMaintenanceId: id,
           technicianId: technicianId,
@@ -88,7 +88,7 @@ export const fetchMaintenanceTasks = createAsyncThunk(
       const accessToken = await AsyncStorage.getItem('ACCESS_TOKEN');
       if (!accessToken) throw new Error("No access token found");
 
-      const response = await axios.get('https://autocareversion2.tryasp.net/api/MaintenanceTasks/GetListByCustomerCare', {
+      const response = await axios.get('http://solv2.runasp.net/api/MaintenanceTasks/GetListByCustomerCare', {
         headers: {
           'Authorization': `Bearer ${accessToken}`
         }
