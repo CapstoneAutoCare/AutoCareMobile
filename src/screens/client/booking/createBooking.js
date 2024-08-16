@@ -127,7 +127,7 @@ const CreateBooking = ({
           maintananceScheduleId: odo || null,
           note: note,
           bookingDate: bookingDate.toISOString(),
-          informationName: "string",
+          informationName: "Đặt Lịch Bảo Dưỡng",
         },
         {
           headers: {
