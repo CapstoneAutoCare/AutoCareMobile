@@ -20,8 +20,8 @@ const Product = () => {
   const sparePartList = useSelector((state) => state.sparePart.sparePartList);
 
   const [sortedSparePartList, setSortedSparePartList] = useState([]);
-  const [sortOrder, setSortOrder] = useState("asc"); // asc for ascending, desc for descending
-  const [modalVisible, setModalVisible] = useState(false); // Modal visibility state
+  const [sortOrder, setSortOrder] = useState("asc"); 
+  const [modalVisible, setModalVisible] = useState(false); 
 
   const fetchGetListSparePart = async () => {
     await dispatch(getListSparePart());
