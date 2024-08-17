@@ -10,13 +10,11 @@ import {
 import { Picker } from "@react-native-picker/picker";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import COLORS from "./../../../constants/colors";
-import axios from "axios";
+import axiosClient from "../../../services/axiosClient";
 import { useNavigation } from "@react-navigation/native";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useSelector } from "react-redux";
 import { getProfile } from "../../../features/userSlice";
 import { useAppDispatch } from "../../../app/hooks";
-import { BASE_URL } from "../../../../env";
 const CreateBookingForWalkinGuest = ({
     centerList,
     maintenanceCenterId,
@@ -56,46 +54,46 @@ const CreateBookingForWalkinGuest = ({
 
     useEffect(() => {
         const fetchSpareParts = async () => {
-            try {
-                const accessToken = await AsyncStorage.getItem("ACCESS_TOKEN");
-                const response = await axios.get(
-                    `${BASE_URL}/SparePartsItemCosts/GetListByClient?centerId=${profile.CentreId}`,
-                    {
-                        headers: {
-                            "Content-Type": "application/json",
-                            Authorization: `Bearer ${accessToken}`,
-                        },
-                    }
-                );
-                setAvailableSpareParts(response.data);
-            } catch (error) {
-                console.error("Error fetching spare parts:", error);
-            }
+          try {
+            const response = await axiosClient.get(
+              `SparePartsItemCosts/GetListByClient?centerId=${profile.CentreId}`,
+              {
+                headers: {
+                  'Content-Type': 'application/json',
+                },
+              }
+            );
+            const filteredSpareParts = response.data.filter(
+              (item) => item.vehicleModelName === request?.responseVehicles.vehicleModelName
+            );
+            setAvailableSpareParts(filteredSpareParts);
+          } catch (error) {
+            console.error('Error fetching spare parts:', error);
+          }
         };
-
+      
         const fetchServices = async () => {
-            try {
-                const accessToken = await AsyncStorage.getItem("ACCESS_TOKEN");
-                const response = await axios.get(
-                    `${BASE_URL}/MaintenanceServiceCosts/GetListByClient?centerId=${profile.CentreId}`,
-                    {
-                        headers: {
-                            "Content-Type": "application/json",
-                            Authorization: `Bearer ${accessToken}`,
-                        },
-                    }
-                );
-                setAvailableServices(response.data);
-            } catch (error) {
-                console.error("Error fetching services:", error);
-            }
+          try {
+            const response = await axiosClient.get(
+              `MaintenanceServiceCosts/GetListByDifMaintenanceServiceAndInforIdAndBooleanFalse?centerId=${profile.CentreId}`,
+              {
+                headers: {
+                  'Content-Type': 'application/json',
+                },
+              }
+            );
+            const filteredServices = response.data.filter(
+              (item) => item.vehicleModelName === request?.responseVehicles.vehicleModelName
+            );
+            setAvailableServices(filteredServices);
+          } catch (error) {
+            console.error('Error fetching services:', error);
+          }
         };
-
-        if (profile && profile.CentreId) {
-            fetchSpareParts();
-            fetchServices();
-        }
-    }, [profile]);
+      
+        fetchSpareParts();
+        fetchServices();
+      }, [profile]);
 
     useEffect(() => {
         const fetch = async () => {
@@ -156,71 +154,64 @@ const CreateBookingForWalkinGuest = ({
 
     const handleSignup = async () => {
         try {
-            if (!note || !maintenanceCenter) {
-                alert("Vui lòng điền đầy đủ thông tin");
-                return;
+          if (!note || !maintenanceCenter) {
+            alert("Vui lòng điền đầy đủ thông tin");
+            return;
+          }
+      
+          const now = new Date();
+          const vietnamTime = new Date(now.getTime() + 7 * 60 * 60 * 1000);
+      
+          const response = await axiosClient.post(
+            'Bookings/PostHaveItems',
+            {
+              vehicleId: vehicle,
+              maintenanceCenterId: maintenanceCenter,
+              maintananceScheduleId: null,
+              note: note,
+              bookingDate: bookingDate.toISOString(),
+              createMaintenanceInformationHaveItemsByClient: {
+                customerCareId: customerCare,
+                finishedDate: vietnamTime.toISOString(),
+                createMaintenanceSparePartInfos: spareParts.length > 0 ? spareParts : null,
+                createMaintenanceServiceInfos: services.length > 0 ? services : null,
+              },
+            },
+            {
+              headers: {
+                'Content-Type': 'application/json',
+              },
             }
-            const now = new Date();
-            const vietnamTime = new Date(now.getTime() + 7 * 60 * 60 * 1000);
-            const accessToken = await AsyncStorage.getItem("ACCESS_TOKEN");
-            const response = await axios.post(
-                `${BASE_URL}/Bookings/PostHaveItems`,
-                {
-                    vehicleId: vehicle,
-                    maintenanceCenterId: maintenanceCenter,
-                    maintananceScheduleId: null,
-                    note: note,
-                    bookingDate: bookingDate.toISOString(),
-                    createMaintenanceInformationHaveItemsByClient: {
-                        customerCareId: customerCare,
-                        finishedDate: vietnamTime.toISOString(),
-                        createMaintenanceSparePartInfos:
-                            spareParts.length > 0 ? spareParts : null,
-                        createMaintenanceServiceInfos:
-                            services.length > 0 ? services : null,
-                    },
-                },
-                {
-                    headers: {
-                        "Content-Type": "application/json",
-                        Authorization: `Bearer ${accessToken}`,
-                    },
-                }
-            );
-
-            if (response.status === 200) {
-                alert("Tạo lịch thành công!");
-                navigation.navigate("Booking");
-            } else {
-                alert("Tạo lịch không thành công. Vui lòng thử lại.");
-            }
+          );
+      
+          if (response.status === 200) {
+            alert("Tạo lịch thành công!");
+            navigation.navigate("Booking");
+          } else {
+            alert("Tạo lịch không thành công. Vui lòng thử lại.");
+          }
         } catch (error) {
-            console.error("Error during:", error);
-            if (error.response) {
-                console.error("Server responded with:", error.response.data);
-                console.error("Status code:", error.response.status);
-                alert(
-                    "Server responded with an error. Please check the console for details."
-                );
-            } else if (error.request) {
-                console.error("No response received:", error.request);
-                alert(
-                    "No response received from the server. Please check your network connection."
-                );
-            } else {
-                console.error("Error setting up the request:", error.message);
-                alert(
-                    "An error occurred during the request setup. Please check the console for details."
-                );
-            }
+          console.error("Error during signup:", error);
+          if (error.response) {
+            console.error("Server responded with:", error.response.data);
+            console.error("Status code:", error.response.status);
+            alert("Server responded with an error. Please check the console for details.");
+          } else if (error.request) {
+            console.error("No response received:", error.request);
+            alert("No response received from the server. Please check your network connection.");
+          } else {
+            console.error("Error setting up the request:", error.message);
+            alert("An error occurred during the request setup. Please check the console for details.");
+          }
         }
-    };
+      };
+      
     const onDateChange = (event, selectedDate) => {
         const currentDate = selectedDate || bookingDate;
         setShowDatePicker(false);
         setBookingDate(currentDate);
         if (event.type === "set") {
-            setShowTimePicker(true);
+            setShowTimePicker(true); // Show time picker after date is selected
         }
     };
 

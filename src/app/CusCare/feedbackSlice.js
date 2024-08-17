@@ -1,9 +1,8 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import axios from 'axios';
-import { BASE_URL } from '../../../env';
+import axiosClient from '../../services/axiosClient'; 
 
 export const fetchFeedbacks = createAsyncThunk('feedbacks/fetchFeedbacks', async (centreId) => {
-  const response = await axios.get(`${BASE_URL}/Feedback/GetListByCenterId?id=${centreId}`);
+  const response = await axiosClient.get(`Feedback/GetListByCenterId?id=${centreId}`);
   return response.data;
 });
 

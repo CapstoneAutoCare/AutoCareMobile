@@ -1,32 +1,37 @@
 import React from 'react';
 import { View, Text, Image, StyleSheet, FlatList, Button, Alert } from 'react-native';
-import axios from 'axios';
-import { BASE_URL } from '../../../env';
-
-const TaskDetail = ({ route, navigation }) => {
+import axiosClient from '../../services/axiosClient';
+const TaskDetail = ({ route }) => {
   const { task } = route.params;
 
   const handleCompleteService = async (serviceId) => {
     try {
       // Update the task service status to DONE
       console.log(`COMPLETING SERVICE: ${serviceId}`);
-      await axios.patch(`${BASE_URL}/MaintenanceTaskServiceInfoes/PatchStatus?id=${serviceId}&status=DONE`);
+      await axiosClient.patch(
+        `MaintenanceTaskServiceInfoes/PatchStatus?id=${serviceId}&status=DONE`
+      );
       Alert.alert('Service Completed', 'The service status has been updated to DONE.');
     } catch (error) {
       Alert.alert('Error', 'There was an error completing the service.');
+      console.error('Error completing service:', error);
     }
   };
-
+  
   const handleCompleteSparepart = async (sparepartId) => {
     try {
       // Update the spare part status to DONE
       console.log(`COMPLETING SPARE PART: ${sparepartId}`);
-      await axios.patch(`${BASE_URL}/MaintenanceTaskSparePartInfoes/PatchStatus?id=${sparepartId}&status=DONE`);
+      await axiosClient.patch(
+        `/MaintenanceTaskSparePartInfoes/PatchStatus?id=${sparepartId}&status=DONE`
+      );
       Alert.alert('Spare Part Completed', 'The spare part status has been updated to DONE.');
     } catch (error) {
       Alert.alert('Error', 'There was an error completing the spare part.');
+      console.error('Error completing spare part:', error);
     }
   };
+  
 
   const renderService = ({ item }) => (
     <View style={styles.itemContainer}>

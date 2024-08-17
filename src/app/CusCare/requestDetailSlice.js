@@ -7,10 +7,8 @@ import {
   updateStatus as updateStatusAPI,
   fetchStaffByCenterId,
 } from '../../api/requestDetailService';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import axios from 'axios';
-import { BASE_URL } from '../../../env';
-
+import axiosClient from '../../services/axiosClient';
+// Async thunk để fetch request detail
 export const fetchRequestDetail = createAsyncThunk(
   'requestDetail/fetchRequestDetail',
   async (requestId, thunkAPI) => {
@@ -53,9 +51,8 @@ export const assignTask = createAsyncThunk(
   'requestDetail/assignTask',
   async ({ id, technicianId }, { rejectWithValue }) => {
     try {
-      const accessToken = await AsyncStorage.getItem('ACCESS_TOKEN');
-      const response = await axios.post(
-        `${BASE_URL}/MaintenanceTasks/Post`,
+      const response = await axiosClient.post(
+        'MaintenanceTasks/Post',
         {
           informationMaintenanceId: id,
           technicianId: technicianId,
@@ -64,7 +61,6 @@ export const assignTask = createAsyncThunk(
         {
           headers: {
             'Content-Type': 'application/json',
-            Authorization: `Bearer ${accessToken}`,
           }
         }
       );
@@ -82,19 +78,12 @@ export const assignTask = createAsyncThunk(
     }
   }
 );
+
 export const fetchMaintenanceTasks = createAsyncThunk(
   'requestDetail/fetchMaintenanceTasks',
   async (_, thunkAPI) => {
     try {
-      const accessToken = await AsyncStorage.getItem('ACCESS_TOKEN');
-      if (!accessToken) throw new Error("No access token found");
-
-      const response = await axios
-      .get(`${BASE_URL}/MaintenanceTasks/GetListByCustomerCare`, {
-        headers: {
-          'Authorization': `Bearer ${accessToken}`
-        }
-      });
+      const response = await axiosClient.get('MaintenanceTasks/GetListByCustomerCare');
       return response.data;
     } catch (error) {
       return thunkAPI.rejectWithValue(error.message);

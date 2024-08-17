@@ -151,7 +151,6 @@ const InforDetail = ({ route }) => {
             <Text style={styles.status}>
               Thông tin xe : {info?.responseVehicles?.description}
             </Text>
-
             <Text style={styles.centerName}>
               Ngày bảo trì :{" "}
               {moment(info?.createdDate).format("DD/MM/YYYY HH:mm")}
@@ -161,6 +160,7 @@ const InforDetail = ({ route }) => {
               {moment(info?.finishedDate).format("DD/MM/YYYY HH:mm")}
             </Text>
             <Text style={styles.centerName}>Thông tin: {info.note}</Text>
+           
           </View>
           {info.status === "YETPAID" && (
             <Pressable
@@ -181,41 +181,73 @@ const InforDetail = ({ route }) => {
           )}
         </View>
       )}
+
       <Text style={{ padding: 10, fontSize: 18, fontWeight: "bold" }}>
-        Danh sách dịch vụ
+        Danh sách dịch vụ và phụ tùng
       </Text>
-      <View style={styles.listContainer}>
-        {info?.responseMaintenanceServiceInfos.length > 0 ? (
-          info?.responseMaintenanceServiceInfos.map((item, index) => (
-            <ServiceItem item={item} key={index} />
-          ))
-        ) : (
-          <View style={styles.noItem}>
-            <Text style={styles.noItemText}>không có dịch vụ</Text>
+      <View style={styles.tableContainer}>
+        <View style={styles.tableHeader}>
+          <Text style={[styles.tableHeaderText, styles.tableCol1]}>
+            Loại
+          </Text>
+          <Text style={[styles.tableHeaderText, styles.tableCol2]}>
+            Tên
+          </Text>
+          <Text style={[styles.tableHeaderText, styles.tableCol3]}>
+            Đơn Giá
+          </Text>
+          <Text style={[styles.tableHeaderText, styles.tableCol4]}>
+            Số lượng
+          </Text>
+          <Text style={[styles.tableHeaderText, styles.tableCol5]}>
+            Tổng Tiền
+          </Text>
+        </View>
+        {info?.responseMaintenanceServiceInfos.map((item, index) => (
+          <View key={index} style={styles.tableRow}>
+            <Text style={[styles.tableText, styles.tableCol1]}>
+              Dịch vụ
+            </Text>
+            <Text style={[styles.tableText, styles.tableCol2]}>
+              {item.maintenanceServiceInfoName}
+            </Text>
+            <Text style={[styles.tableText, styles.tableCol3]}>
+              {item.actualCost} đồng
+            </Text>
+            <Text style={[styles.tableText, styles.tableCol4]}>
+              {item.quantity} lần
+            </Text>
+            <Text style={[styles.tableText, styles.tableCol5]}>
+              {item.totalCost} đồng
+            </Text>
           </View>
-        )}
-      </View>
-      <Text style={{ padding: 10, fontSize: 18, fontWeight: "bold" }}>
-        Danh sách phụ tùng
-      </Text>
-      <View style={styles.listContainer}>
-        {info?.responseMaintenanceSparePartInfos.length > 0 ? (
-          info?.responseMaintenanceSparePartInfos.map((item, index) => (
-            <ProductItem item={item} key={index} />
-          ))
-        ) : (
-          <View style={styles.noItem}>
-            <Text style={styles.noItemText}>không có dịch vụ</Text>
+        ))}
+        {info?.responseMaintenanceSparePartInfos.map((item, index) => (
+          <View key={index} style={styles.tableRow}>
+            <Text style={[styles.tableText, styles.tableCol1]}>
+              Phụ tùng
+            </Text>
+            <Text style={[styles.tableText, styles.tableCol2]}>
+              {item.maintenanceSparePartInfoName}
+            </Text>
+            <Text style={[styles.tableText, styles.tableCol3]}>
+              {item.actualCost} đồng
+            </Text>
+            <Text style={[styles.tableText, styles.tableCol3]}>
+              {item.quantity} cái
+            </Text>
+            <Text style={[styles.tableText, styles.tableCol3]}>
+              {item.totalCost} đồng
+            </Text>
           </View>
-        )}
+        ))}
       </View>
+
       <Modal isVisible={isModalVisible}>
         <View style={styles.modalContent}>
           <Text style={styles.modalTitle}>Đánh giá</Text>
           <Rating
-            // showRating
-            fractions={1}
-            // startingValue={1}
+            showRating
             onFinishRating={(rating) => setRating(rating)}
             style={{ paddingVertical: 10 }}
           />
@@ -324,21 +356,51 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginHorizontal: 10,
     marginTop: 10,
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    backgroundColor: "#3b5998",
+    borderRadius: 5,
+    alignSelf: "flex-end",
   },
-  listContainer: {
+  tableContainer: {
+    margin: 20,
+    borderWidth: 1,
+    borderColor: "#ccc",
+    borderRadius: 8,
+    overflow: "hidden",
+  },
+  tableHeader: {
     flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-around",
-    flexWrap: "wrap",
+    backgroundColor: "#f2f2f2",
+    paddingVertical: 10,
   },
-  noItem: {
-    justifyContent: "center",
-    alignItems: "center",
+  tableHeaderText: {
+    fontWeight: "bold",
+    textAlign: "center",
   },
-  noItemText: {
-    color: "black",
-    fontSize: 15,
-    fontWeight: "500",
+  tableCol1: {
+    flex: 1,
+  },
+  tableCol2: {
+    flex: 2,
+  },
+  tableCol3: {
+    flex: 1,
+  },
+  tableCol4: {
+    flex: 1,
+  },
+  tableCol5: {
+    flex: 1,
+  },
+  tableRow: {
+    flexDirection: "row",
+    paddingVertical: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: "#f2f2f2",
+  },
+  tableText: {
+    textAlign: "center",
   },
   modalContent: {
     backgroundColor: "white",

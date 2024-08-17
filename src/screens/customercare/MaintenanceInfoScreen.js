@@ -1,11 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, TouchableOpacity, Modal, FlatList, StyleSheet, TextInput, ScrollView, KeyboardAvoidingView, Platform, Image } from 'react-native';
-import axios from 'axios';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import axiosClient from '../../services/axiosClient';
 import { getProfile } from "../../features/userSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigation } from '@react-navigation/native';
-import { BASE_URL } from '../../../env';
 function useDebounce(value, delay) {
     const [debouncedValue, setDebouncedValue] = useState(value);
 
@@ -14,7 +12,7 @@ function useDebounce(value, delay) {
             setDebouncedValue(value);
         }, delay);
 
-    
+        // Cleanup timeout khi component unmount hoặc khi giá trị thay đổi
         return () => {
             clearTimeout(handler);
         };
@@ -37,8 +35,8 @@ const MaintenanceCenterInfoScreen = ({ }) => {
     const [selectedModel, setSelectedModel] = useState(null);
     const [odometerReading, setOdometerReading] = useState('');
     const [isModelFilterEnabled, setIsModelFilterEnabled] = useState(false);
-
-    const debouncedModel = useDebounce(selectedModel, 300); 
+// State debounce
+    const debouncedModel = useDebounce(selectedModel, 300); // Trì hoãn 300ms
 
     const navigation = useNavigation();
     const { profile } = useSelector((state) => state.user || {});
@@ -61,57 +59,52 @@ const MaintenanceCenterInfoScreen = ({ }) => {
 
     const fetchSpareParts = async () => {
         try {
-            const accessToken = await AsyncStorage.getItem('ACCESS_TOKEN');
-            const response = await axios.get(
-                `${BASE_URL}/SparePartsItemCosts/GetListByClient?centerId=${profile.CentreId}`,
-                {
-                    headers: {
-                        'Content-Type': 'application/json',
-                        Authorization: `Bearer ${accessToken}`,
-                    },
-                }
-            );
-            setAvailableSpareParts(response.data);
+          const response = await axiosClient.get(
+            `SparePartsItemCosts/GetListByClient?centerId=${profile.CentreId}`,
+            {
+              headers: {
+                'Content-Type': 'application/json',
+              },
+            }
+          );
+          setAvailableSpareParts(response.data);
         } catch (error) {
-            console.error('Error fetching spare parts:', error);
+          console.error('Error fetching spare parts:', error);
         }
-    };
-
-    const fetchServices = async () => {
+      };
+      
+      const fetchServices = async () => {
         try {
-            const accessToken = await AsyncStorage.getItem('ACCESS_TOKEN');
-            const response = await axios.get(
-                `${BASE_URL}/MaintenanceServiceCosts/GetListByDifMaintenanceServiceAndInforIdAndBooleanFalse?centerId=${profile.CentreId}`,
-                {
-                    headers: {
-                        'Content-Type': 'application/json',
-                        Authorization: `Bearer ${accessToken}`,
-                    },
-                }
-            );
-            setAvailableServices(response.data);
+          const response = await axiosClient.get(
+            `MaintenanceServiceCosts/GetListByDifMaintenanceServiceAndInforIdAndBooleanFalse?centerId=${profile.CentreId}`,
+            {
+              headers: {
+                'Content-Type': 'application/json',
+              },
+            }
+          );
+          setAvailableServices(response.data);
         } catch (error) {
-            console.error('Error fetching services:', error);
+          console.error('Error fetching services:', error);
         }
-    };
-
-    const fetchServicePackages = async () => {
+      };
+      
+      const fetchServicePackages = async () => {
         try {
-            const accessToken = await AsyncStorage.getItem('ACCESS_TOKEN');
-            const response = await axios.get(
-                `${BASE_URL}/MaintenanceServices/GetListByCenterId?id=${profile.CentreId}`,
-                {
-                    headers: {
-                        'Content-Type': 'application/json',
-                        Authorization: `Bearer ${accessToken}`,
-                    },
-                }
-            );
-            setServicePackages(response.data);
+          const response = await axiosClient.get(
+            `MaintenanceServices/GetListByCenterId?id=${profile.CentreId}`,
+            {
+              headers: {
+                'Content-Type': 'application/json',
+              },
+            }
+          );
+          setServicePackages(response.data);
         } catch (error) {
-            console.error('Error fetching service packages:', error);
+          console.error('Error fetching service packages:', error);
         }
-    };
+      };
+      
 
     useEffect(() => {
         fetchSpareParts();
@@ -122,22 +115,20 @@ const MaintenanceCenterInfoScreen = ({ }) => {
     }, []);
     const fetchVehicleModels = async () => {
         try {
-            const accessToken = await AsyncStorage.getItem('ACCESS_TOKEN');
-            const response = await axios.get(
-                `${BASE_URL}/VehicleModel/GetAll`,
-                {
-                    headers: {
-                        'Content-Type': 'application/json',
-                        Authorization: `Bearer ${accessToken}`,
-                    },
-                }
-            );
-            setVehicleModels(response.data);
+          const response = await axiosClient.get(
+            'VehicleModel/GetAll',
+            {
+              headers: {
+                'Content-Type': 'application/json',
+              },
+            }
+          );
+          setVehicleModels(response.data);
         } catch (error) {
-            console.error('Error fetching vehicle models:', error);
+          console.error('Error fetching vehicle models:', error);
         }
-    };
-
+      };
+      
     const openModal = (data, type) => {
         setSelectedData(data);
         if (type === 'spareParts') setSparePartsModalVisible(true);
@@ -162,13 +153,13 @@ const MaintenanceCenterInfoScreen = ({ }) => {
         setIsModelFilterEnabled,
         selectedModel,
         setSelectedModel,
-        vehicleModels = [],  
+        vehicleModels = [],  // Default to empty array
         odometerReading,
         setOdometerReading
     }) => {
         return (
             <>
-                
+                {/* Checkbox for Model Filter */}
                 <View style={styles.filterContainer}>
                     <Text>Filter by Vehicle Model</Text>
                     <TouchableOpacity onPress={() => setIsModelFilterEnabled(!isModelFilterEnabled)}>
@@ -178,20 +169,20 @@ const MaintenanceCenterInfoScreen = ({ }) => {
                     </TouchableOpacity>
                 </View>
 
-                
+                {/* Vehicle Model Search Box */}
                 {isModelFilterEnabled && (
                     <View style={styles.searchContainer}>
                         <TextInput
                             style={styles.searchInput}
                             placeholder="Search Vehicle Model..."
-                            onChangeText={setSelectedModel} 
+                            onChangeText={setSelectedModel} // Trực tiếp cập nhật selectedModel
                             value={selectedModel}
                         />
                         <FlatList
                             data={vehicleModels.filter(model => model.vehicleModelName.includes(selectedModel))}
                             keyExtractor={(item) => item.vehicleModelId.toString()}
                             renderItem={({ item }) => (
-                                <TouchableOpacity onPress={() => setSelectedModel(item.vehicleModelName)}>
+                                <TouchableOpacity onPress={() => setSelectedModel(item)}>
                                     <Text style={styles.itemText}>{item.vehicleModelName}</Text>
                                 </TouchableOpacity>
                             )}
@@ -199,7 +190,7 @@ const MaintenanceCenterInfoScreen = ({ }) => {
                     </View>
                 )}
 
-                
+                {/* Odometer Reading Input */}
                 <TextInput
                     style={styles.searchInput}
                     placeholder="Enter Odometer Reading..."
@@ -244,13 +235,13 @@ const MaintenanceCenterInfoScreen = ({ }) => {
                             {renderFilteredList(
                                 servicePackages.filter(item =>
                                     (!isModelFilterEnabled || item.vehicleModelId === selectedModel?.vehicleModelId) &&
-                                    (!odometerReading || (item.maintananceScheduleName && item.maintananceScheduleName.includes(odometerReading)))
+                                    (!odometerReading || (item?.maintananceScheduleName && item?.maintananceScheduleName.includes(odometerReading)))
                                 ),
                                 item => item.maintenanceServiceId.toString(),
                                 ({ item }) => (
                                     <TouchableOpacity onPress={() => openDetailModal(item, 'servicePackage')}>
                                         <Text style={styles.itemText}>
-                                            {"Gói dịch vụ tại mốc odoo " + item.maintananceScheduleName + " dành cho xe " + item.vehiclesBrandName + " " + item.vehicleModelName}
+                                            {"Gói dịch vụ tại mốc odoo " + item?.maintananceScheduleName + " dành cho xe " + item?.vehiclesBrandName + " " + item.vehicleModelName}
                                         </Text>
                                     </TouchableOpacity>
                                 )
@@ -310,7 +301,7 @@ const MaintenanceCenterInfoScreen = ({ }) => {
                             {renderFilteredList(
                                 availableSpareParts.filter(item =>
                                     (!isModelFilterEnabled || item.vehicleModelId === selectedModel?.vehicleModelId) &&
-                                    (!odometerReading || (item.maintananceScheduleName && item.maintananceScheduleName.includes(odometerReading)))
+                                    (!odometerReading || (item?.maintananceScheduleName && item?.maintananceScheduleName.includes(odometerReading)))
                                 ),
                                 item => item.sparePartsItemCostId.toString(),
                                 ({ item }) => (

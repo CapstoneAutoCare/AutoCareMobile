@@ -5,16 +5,14 @@ import { MaterialIcons } from '@expo/vector-icons';
 import Moment from 'moment';
 import ErrorComponent from '../ErrorComponent';
 import Modal from 'react-native-modal';
-import axios from 'axios';
 import SparePartComponent from '../BookingComponent/SparePartComponent';
 import ServiceComponent from '../BookingComponent/ServiceComponent';
-import InvoiceComponent from '../BookingComponent/InvoiceComponent'; // Import InvoiceComponent
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import InvoiceComponent from '../BookingComponent/InvoiceComponent'; 
 import { useDispatch, useSelector } from 'react-redux';
 import StaffListComponent from '../BookingComponent/StaffListComponent';
 import { fetchStaffByCenter, setIsTaskAssigned } from '../../app/CusCare/requestDetailSlice';
 import { useNavigation } from '@react-navigation/native';
-import { BASE_URL } from '../../../env';
+import axiosClient from '../../services/axiosClient';
 const RequestInfoTab = ({ request, updateStatus, error, profile, assignTask}) => {
   const navigation = useNavigation();
   const dispatch = useDispatch();
@@ -65,13 +63,11 @@ const RequestInfoTab = ({ request, updateStatus, error, profile, assignTask}) =>
   useEffect(() => {
     const fetchSpareParts = async () => {
       try {
-        const accessToken = await AsyncStorage.getItem('ACCESS_TOKEN');
-        const response = await axios.get(
-          `${BASE_URL}/SparePartsItemCosts/GetListByClient?centerId=${request.maintenanceCenterId}`,
+        const response = await axiosClient.get(
+          `SparePartsItemCosts/GetListByClient?centerId=${request.maintenanceCenterId}`,
           {
             headers: {
               'Content-Type': 'application/json',
-              Authorization: `Bearer ${accessToken}`,
             },
           }
         );
@@ -86,13 +82,11 @@ const RequestInfoTab = ({ request, updateStatus, error, profile, assignTask}) =>
   
     const fetchServices = async () => {
       try {
-        const accessToken = await AsyncStorage.getItem('ACCESS_TOKEN');
-        const response = await axios.get(
-          `${BASE_URL}/MaintenanceServiceCosts/GetListByDifMaintenanceServiceAndInforIdAndBooleanFalse?centerId=${request.maintenanceCenterId}`,
+        const response = await axiosClient.get(
+          `MaintenanceServiceCosts/GetListByDifMaintenanceServiceAndInforIdAndBooleanFalse?centerId=${request.maintenanceCenterId}`,
           {
             headers: {
               'Content-Type': 'application/json',
-              Authorization: `Bearer ${accessToken}`,
             },
           }
         );
@@ -104,11 +98,10 @@ const RequestInfoTab = ({ request, updateStatus, error, profile, assignTask}) =>
         console.error('Error fetching services:', error);
       }
     };
-    fetchStaffList
+  
     fetchSpareParts();
     fetchServices();
   }, [request.maintenanceCenterId, request?.responseVehicles.vehicleModelName]);
-  
   
    
   
@@ -171,15 +164,14 @@ const RequestInfoTab = ({ request, updateStatus, error, profile, assignTask}) =>
 
   const handleSave = async () => {
     try {
-      const accessToken = await AsyncStorage.getItem('ACCESS_TOKEN');
-      console.log('Saving with request:', request); // Log
-
+      console.log('Saving with request:', request); 
+  
       const url = modalType === 'SPARE_PART'
-      ? `${BASE_URL}/MaintenanceSparePartInfoes/Post`
-      : `${BASE_URL}/MaintenanceServiceInfoes/Post`;
+        ? 'MaintenanceSparePartInfoes/Post'
+        : 'MaintenanceServiceInfoes/Post';
       
       const items = modalType === 'SPARE_PART' ? spareParts : services;
-
+  
       for (const item of items) {
         const payload = {
           maintenanceInformationId: mInfoId,
@@ -198,22 +190,16 @@ const RequestInfoTab = ({ request, updateStatus, error, profile, assignTask}) =>
               actualCost: item.actualCost,
               note: item.note,
             })
-        };  
-
-        // Log payload for debugging
-        console.log('Payload:', payload);
-
-        const response = await axios.post(
-          url,
-          payload,
-          {
-            headers: {
-              'Content-Type': 'application/json',
-              Authorization: `Bearer ${accessToken}`,
-            },
-          }
-        );
-
+        };
+  
+       
+  
+        const response = await axiosClient.post(url, payload, {
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        });
+  
         if (response.status !== 200) {
           alert('Lưu không thành công. Vui lòng thử lại.');
           return;
@@ -235,15 +221,15 @@ const RequestInfoTab = ({ request, updateStatus, error, profile, assignTask}) =>
       alert('Có lỗi xảy ra. Vui lòng thử lại.');
     }
   };
+  
   const handlePayment = async () => {
     try {
-      const accessToken = await AsyncStorage.getItem('ACCESS_TOKEN');
       const infoId = request.responseMaintenanceInformation?.informationMaintenanceId;
-      // Hàm để lấy dữ liệu hóa đơn (invoice)
+  
+     
       const fetchInvoiceData = async () => {
         try {
-          const response = await axios
-          .get(`${BASE_URL}/Receipts/GetByInforId?id=${infoId}`);
+          const response = await axiosClient.get(`Receipts/GetByInforId?id=${infoId}`);
           setInvoiceData(response.data);
         } catch (error) {
           console.error('Error fetching invoice data:', error);
@@ -254,18 +240,17 @@ const RequestInfoTab = ({ request, updateStatus, error, profile, assignTask}) =>
   
       if (!invoiceData) {
         const description = "Payment for maintenance"; 
-        await axios.post(
-          `${BASE_URL}/Receipts/Post`,
+        await axiosClient.post(
+          'Receipts/Post',
           { informationMaintenanceId: infoId, description },
           {
             headers: {
               'Content-Type': 'application/json',
-              Authorization: `Bearer ${accessToken}`,
             },
           }
         );
   
-      
+       
         await fetchInvoiceData();
       }
   
@@ -276,24 +261,26 @@ const RequestInfoTab = ({ request, updateStatus, error, profile, assignTask}) =>
     }
   };
   
-const handleCheckin = async () => {
-  try {
-    const accessToken = await AsyncStorage.getItem('ACCESS_TOKEN');
-
-    await axios
-    .patch(`${BASE_URL}/MaintenanceInformations/CHANGESTATUS?id=${request.responseMaintenanceInformation?.informationMaintenanceId}&status=CHECKIN`,
-     {
-        headers: {
-          'Content-Type': 'text/plain',
-          Authorization: `Bearer ${accessToken}`,
-        },
-      }
-    );   
-  } catch (error) {
-    console.error('Error during checkin:', error);
-    alert('Có lỗi xảy ra khi check in xe. Vui lòng thử lại.');
-  }
-};
+  
+  const handleCheckin = async () => {
+    try {
+      const infoId = request.responseMaintenanceInformation?.informationMaintenanceId;
+      
+      await axiosClient.patch(
+        `MaintenanceInformations/CHANGESTATUS?id=${infoId}&status=CHECKIN`,
+        null, 
+        {
+          headers: {
+            'Content-Type': 'text/plain',
+          },
+        }
+      );   
+    } catch (error) {
+      console.error('Error during checkin:', error);
+      alert('Có lỗi xảy ra khi check in xe. Vui lòng thử lại.');
+    }
+  };
+  
 const handleAssignTask = async () => {
   if (!selectedStaff) {
     alert('Please select a staff member');

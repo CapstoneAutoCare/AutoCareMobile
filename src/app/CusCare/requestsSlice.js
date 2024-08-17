@@ -1,46 +1,33 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import Axios from 'axios';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { BASE_URL } from '../../../env';
+import axiosClient from '../../services/axiosClient';
 
 export const fetchRequests = createAsyncThunk('requests/fetchRequests', async (centreId) => {
-  const accessToken = await AsyncStorage.getItem('ACCESS_TOKEN');
-  const response = await Axios.get(
-    `${BASE_URL}/Bookings/GetListByCenterId?id=${centreId}`,{
+  try {
+    const response = await axiosClient.get(`Bookings/GetListByCenterId?id=${centreId}`, {
       headers: {
         'Content-Type': 'text/plain',
-        Authorization: `Bearer ${accessToken}`,
       },
-    }
-  );
-  const requestsWithNames = await Promise.all(response.data.map(async (request) => {
-    const clientName = request.responseClient.firstName + " " + request.responseClient.lastName;
-    const vehicleNumber = request.responseVehicles.licensePlate;
-    const maintenanceCenterName = request.responseCenter.maintenanceCenterName;
-    return {
-      ...request,
-      clientName,
-      vehicleNumber,
-      maintenanceCenterName,
-    };
-  }));
-  return requestsWithNames;
+    });
+
+    const requestsWithNames = await Promise.all(response.data.map(async (request) => {
+      const clientName = `${request.responseClient.firstName} ${request.responseClient.lastName}`;
+      const vehicleNumber = request.responseVehicles.licensePlate;
+      const maintenanceCenterName = request.responseCenter.maintenanceCenterName;
+      
+      return {
+        ...request,
+        clientName,
+        vehicleNumber,
+        maintenanceCenterName,
+      };
+    }));
+
+    return requestsWithNames;
+  } catch (error) {
+    throw new Error('Failed to fetch requests');
+  }
 });
 
-const fetchClientName = async (clientId) => {
-  const response = await Axios.get(`${BASE_URL}/Clients/GetById?id=${clientId}`);
-  return `${response.data.firstName} ${response.data.lastName}`;
-};
-
-const fetchVehicleNumber = async (vehicleId) => {
-  const response = await Axios.get(`${BASE_URL}/Vehicles/GetById?id=${vehicleId}`);
-  return response.data.licensePlate;
-};
-
-const fetchMaintenanceCenterName = async (maintenanceCenterId) => {
-  const response = await Axios.get(`${BASE_URL}/MaintenanceCenters/GetById?id=${maintenanceCenterId}`);
-  return response.data.maintenanceCenterName;
-};
 
 const requestSlice = createSlice({
   name: 'requests',

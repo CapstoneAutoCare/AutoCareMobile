@@ -2,10 +2,9 @@ import React, { useEffect, useState } from "react";
 import { View, Text, TextInput, Pressable, StyleSheet, ScrollView } from "react-native";
 import { Picker } from "@react-native-picker/picker";
 import COLORS from "./../../../constants/colors";
-import axios from "axios";
+import axiosClient from "../../../services/axiosClient";
 import { useNavigation, useRoute } from "@react-navigation/native";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import { BASE_URL } from "../../../../env";
+
 
 const CreateBookingInfo = () => {
     const navigation = useNavigation();
@@ -21,52 +20,46 @@ const CreateBookingInfo = () => {
 
     useEffect(() => {
         const fetchSpareParts = async () => {
-            try {
-              const accessToken = await AsyncStorage.getItem('ACCESS_TOKEN');
-              const response = await axios.get(
-                `${BASE_URL}/SparePartsItemCosts/GetListByClient?centerId=${profile.CentreId}`,
-                {
-                  headers: {
-                    'Content-Type': 'application/json',
-                    Authorization: `Bearer ${accessToken}`,
-                  },
-                }
-              );
-              const filteredSpareParts = response.data.filter(
-                (item) => item.vehicleModelName === request?.responseVehicles.vehicleModelName
-              );
-              setAvailableSpareParts(filteredSpareParts);
-            } catch (error) {
-              console.error('Error fetching spare parts:', error);
-            }
-          };
-        
-          const fetchServices = async () => {
-            try {
-              const accessToken = await AsyncStorage.getItem('ACCESS_TOKEN');
-              const response = await axios.get(
-                `${BASE_URL}/MaintenanceServiceCosts/GetListByClient?centerId=${profile.CentreId}`,
-                {
-                  headers: {
-                    'Content-Type': 'application/json',
-                    Authorization: `Bearer ${accessToken}`,
-                  },
-                }
-              );
-              const filteredServices = response.data.filter(
-                (item) => item.vehicleModelName === request?.responseVehicles.vehicleModelName
-              );
-              setAvailableServices(filteredServices);
-            } catch (error) {
-              console.error('Error fetching services:', error);
-            }
-          };
-
-        if (profile && profile.CentreId) {
-            fetchSpareParts();
-            fetchServices();
-        }
-    }, [profile]);
+          try {
+            const response = await axiosClient.get(
+              `SparePartsItemCosts/GetListByClient?centerId=${profile.CentreId}`,
+              {
+                headers: {
+                  'Content-Type': 'application/json',
+                },
+              }
+            );
+            const filteredSpareParts = response.data.filter(
+              (item) => item.vehicleModelName === request?.responseVehicles.vehicleModelName
+            );
+            setAvailableSpareParts(filteredSpareParts);
+          } catch (error) {
+            console.error('Error fetching spare parts:', error);
+          }
+        };
+      
+        const fetchServices = async () => {
+          try {
+            const response = await axiosClient.get(
+              `MaintenanceServiceCosts/GetListByDifMaintenanceServiceAndInforIdAndBooleanFalse?centerId=${profile.CentreId}`,
+              {
+                headers: {
+                  'Content-Type': 'application/json',
+                },
+              }
+            );
+            const filteredServices = response.data.filter(
+              (item) => item.vehicleModelName === request?.responseVehicles.vehicleModelName
+            );
+            setAvailableServices(filteredServices);
+          } catch (error) {
+            console.error('Error fetching services:', error);
+          }
+        };
+      
+        fetchSpareParts();
+        fetchServices();
+      }, [profile]);
 
     const handleAddSparePart = () => {
         setSpareParts([
@@ -118,52 +111,53 @@ const CreateBookingInfo = () => {
 
     const handleSignup = async () => {
         try {
-            if (!note) {
-                alert("Vui lòng điền đầy đủ thông tin");
-                return;
+          if (!note) {
+            alert("Vui lòng điền đầy đủ thông tin");
+            return;
+          }
+      
+          const now = new Date();
+          const vietnamTime = new Date(now.getTime() + 7 * 60 * 60 * 1000);
+          
+          const response = await axiosClient.post(
+            'MaintenanceInformations/PostHaveItems',
+            {
+              informationMaintenanceName: "string",
+              finishedDate: vietnamTime.toISOString(),
+              note: note,
+              bookingId: request.bookingId,
+              createMaintenanceSparePartInfos: spareParts.length > 0 ? spareParts : null,
+              createMaintenanceServiceInfos: services.length > 0 ? services : null,
+            },
+            {
+              headers: {
+                'Content-Type': 'application/json',
+              },
             }
-            const now = new Date();
-            const vietnamTime = new Date(now.getTime() + 7 * 60 * 60 * 1000);
-            const accessToken = await AsyncStorage.getItem("ACCESS_TOKEN");
-            const response = await axios.post(
-                `${BASE_URL}api/MaintenanceInformations/PostHaveItems`,
-                {
-                    informationMaintenanceName: "string",
-                    finishedDate: vietnamTime.toISOString(),
-                    note: note,
-                    bookingId: request.bookingId,
-                    createMaintenanceSparePartInfos: spareParts.length > 0 ? spareParts : null,
-                    createMaintenanceServiceInfos: services.length > 0 ? services : null,
-                },
-                {
-                    headers: {
-                        "Content-Type": "application/json",
-                        Authorization: `Bearer ${accessToken}`,
-                    },
-                }
-            );
-
-            if (response.status === 200) {
-                alert("Tạo lịch thành công!");
-                navigation.navigate('REQUEST_DETAIL', { requestId: request.requestId });
-            } else {
-                alert("Tạo lịch không thành công. Vui lòng thử lại.");
-            }
+          );
+      
+          if (response.status === 200) {
+            alert("Tạo lịch thành công!");
+            navigation.navigate('REQUEST_DETAIL', { requestId: request.requestId });
+          } else {
+            alert("Tạo lịch không thành công. Vui lòng thử lại.");
+          }
         } catch (error) {
-            console.error("Error during:", error);
-            if (error.response) {
-                console.error("Server responded with:", error.response.data);
-                console.error("Status code:", error.response.status);
-                alert("Server responded with an error. Please check the console for details.");
-            } else if (error.request) {
-                console.error("No response received:", error.request);
-                alert("No response received from the server. Please check your network connection.");
-            } else {
-                console.error("Error setting up the request:", error.message);
-                alert("An error occurred during the request setup. Please check the console for details.");
-            }
+          console.error("Error during signup:", error);
+          if (error.response) {
+            console.error("Server responded with:", error.response.data);
+            console.error("Status code:", error.response.status);
+            alert("Server responded with an error. Please check the console for details.");
+          } else if (error.request) {
+            console.error("No response received:", error.request);
+            alert("No response received from the server. Please check your network connection.");
+          } else {
+            console.error("Error setting up the request:", error.message);
+            alert("An error occurred during the request setup. Please check the console for details.");
+          }
         }
-    };
+      };
+      
 
     return (
         <ScrollView style={{ marginTop: 20 }}>

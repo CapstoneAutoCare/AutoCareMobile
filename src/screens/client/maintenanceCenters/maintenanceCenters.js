@@ -20,7 +20,8 @@ import { getListCenter, getListCenterActive } from "../../../app/Center/actions"
 import { getProfile } from "../../../features/userSlice";
 import levenshtein from "fast-levenshtein";
 import { Ionicons } from "@expo/vector-icons";
-
+import  CustomPicker from "../../../components/CustomPicker";
+import { citiesWithDistricts } from "./locationData";
 const MaintenanceCenters = () => {
   const navigation = useNavigation();
   const dispatch = useDispatch();
@@ -30,6 +31,10 @@ const MaintenanceCenters = () => {
   const [isModalVisible, setModalVisible] = useState(false);
   const [sortOrder, setSortOrder] = useState("default");
   const [searchQuery, setSearchQuery] = useState("");
+  const [selectedCity, setSelectedCity] = useState('');
+  const [selectedDistrict, setSelectedDistrict] = useState('');
+  
+
 
   const fetchGetListBooking = async () => {
     await dispatch(getProfile());
@@ -92,7 +97,34 @@ const MaintenanceCenters = () => {
       sortStores();
     }
   };
+  const filterCenters = () => {
+    let filteredCenters = centerList;
+  
+    if (selectedCity) {
+      filteredCenters = filteredCenters.filter(
+        (store) => store.city.toLowerCase() === selectedCity.toLowerCase()
+      );
+    }
+  
+    if (selectedDistrict) {
+      filteredCenters = filteredCenters.filter(
+        (store) => store.district.toLowerCase() === selectedDistrict.toLowerCase()
+      );
+    }
+  
+    setSortedStores(filteredCenters);
+  };
+  useEffect(() => {
+    filterCenters();
+  }, [selectedCity, selectedDistrict]);
+  
+  const handleCityChange = (city) => {
+    setSelectedCity(city);
+    setSelectedDistrict(""); // Reset district when city changes
+  };
 
+  const districts = selectedCity ? citiesWithDistricts[selectedCity] : [];
+ 
   return (
     <ScrollView style={{ marginTop: 10 }}>
       <View style={{ padding: 12 }}>
@@ -109,6 +141,7 @@ const MaintenanceCenters = () => {
             value={searchQuery}
             onChangeText={handleSearch}
           />
+           
           <Pressable
             onPress={handleSortPress}
             style={{
@@ -127,6 +160,26 @@ const MaintenanceCenters = () => {
             <Ionicons name="filter" size={20} color="black" />
           </Pressable>
         </View>
+        <View style={styles.pickerRow}>
+        <CustomPicker
+          data={Object.keys(citiesWithDistricts)}
+          selectedValue={selectedCity}
+          onValueChange={handleCityChange}
+          placeholder="Chọn thành phố"
+        />
+        
+        {selectedCity && (
+          <CustomPicker
+            data={districts}
+            selectedValue={selectedDistrict}
+            onValueChange={(value) => setSelectedDistrict(value)}
+            placeholder="Chọn quận/huyện"
+          />
+        )}
+      </View>
+
+
+
         <View>
           {sortedStores?.length > 0 &&
             sortedStores.map((item, index) => (
@@ -380,4 +433,14 @@ const styles = StyleSheet.create({
     width: 200,
     // marginHorizontal: 10,
   },
+  pickerRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginVertical: 10,
+  },
+  pickerContainer: {
+    flex: 1,
+    marginHorizontal: 5,
+  },
+  
 });
