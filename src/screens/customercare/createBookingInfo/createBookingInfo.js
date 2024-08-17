@@ -24,7 +24,7 @@ const CreateBookingInfo = () => {
             try {
               const accessToken = await AsyncStorage.getItem('ACCESS_TOKEN');
               const response = await axios.get(
-                `${BASE_URL}api/SparePartsItemCosts/GetListByClient?centerId=${profile.CentreId}`,
+                `${BASE_URL}/SparePartsItemCosts/GetListByClient?centerId=${profile.CentreId}`,
                 {
                   headers: {
                     'Content-Type': 'application/json',
@@ -45,7 +45,7 @@ const CreateBookingInfo = () => {
             try {
               const accessToken = await AsyncStorage.getItem('ACCESS_TOKEN');
               const response = await axios.get(
-                `${BASE_URL}api/MaintenanceServiceCosts/GetListByClient?centerId=${profile.CentreId}`,
+                `${BASE_URL}/MaintenanceServiceCosts/GetListByClient?centerId=${profile.CentreId}`,
                 {
                   headers: {
                     'Content-Type': 'application/json',

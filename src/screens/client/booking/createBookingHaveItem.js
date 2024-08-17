@@ -17,6 +17,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useDispatch, useSelector } from "react-redux";
 import { getListCustomerCareByCenterId } from "../../../app/CustomerCare/actions";
 import CustomSearchableDropdown from "./../../../features/CustomSearchableDropdown";
+import { BASE_URL } from "../../../../env";
 
 const StepOne = () => (
   <View style={styles.stepContainer}>
@@ -86,7 +87,7 @@ const CreateBookingHaveItem = ({
     try {
       const accessToken = await AsyncStorage.getItem("ACCESS_TOKEN");
       const response = await axios.get(
-        `https://capstoneautocareapi20240816003911.azurewebsites.net/api/SparePartsItemCosts/GetListByClient?centerId=${maintenanceCenter}`,
+        `${BASE_URL}/SparePartsItemCosts/GetListByClient?centerId=${maintenanceCenter}`,
         {
           headers: {
             "Content-Type": "application/json",
@@ -104,7 +105,7 @@ const CreateBookingHaveItem = ({
     try {
       const accessToken = await AsyncStorage.getItem("ACCESS_TOKEN");
       const response = await axios.get(
-        `https://capstoneautocareapi20240816003911.azurewebsites.net/api/MaintenanceServiceCosts/GetListByClient?centerId=${maintenanceCenter}`,
+        `${BASE_URL}/MaintenanceServiceCosts/GetListByClient?centerId=${maintenanceCenter}`,
         {
           headers: {
             "Content-Type": "application/json",
@@ -121,7 +122,7 @@ const CreateBookingHaveItem = ({
     try {
       const accessToken = await AsyncStorage.getItem("ACCESS_TOKEN");
       const response = await axios.get(
-        `https://capstoneautocareapi20240816003911.azurewebsites.net/api/MaintenanceServices/GetListPackageAndOdoTRUEByCenterId?id=${maintenanceCenter}`,
+        `${BASE_URL}/MaintenanceServices/GetListPackageAndOdoTRUEByCenterId?id=${maintenanceCenter}`,
         {
           headers: {
             "Content-Type": "application/json",

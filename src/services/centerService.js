@@ -5,6 +5,10 @@ export const centerService = {
     const url = `/MaintenanceCenters/GetAll`;
     return axiosClient.get(url);
   },
+  getListCenterActive: () => {
+    const url = `/MaintenanceCenters/GetAllStatusActive`;
+    return axiosClient.get(url);
+  },
   getListInformations: () => {
     const url = `/MaintenanceInformations/GetListByClient`;
     return axiosClient.get(url);

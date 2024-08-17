@@ -59,7 +59,7 @@ const CreateBookingForWalkinGuest = ({
             try {
                 const accessToken = await AsyncStorage.getItem("ACCESS_TOKEN");
                 const response = await axios.get(
-                    `${BASE_URL}api/SparePartsItemCosts/GetListByClient?centerId=${profile.CentreId}`,
+                    `${BASE_URL}/SparePartsItemCosts/GetListByClient?centerId=${profile.CentreId}`,
                     {
                         headers: {
                             "Content-Type": "application/json",
@@ -77,7 +77,7 @@ const CreateBookingForWalkinGuest = ({
             try {
                 const accessToken = await AsyncStorage.getItem("ACCESS_TOKEN");
                 const response = await axios.get(
-                    `${BASE_URL}api/MaintenanceServiceCosts/GetListByClient?centerId=${profile.CentreId}`,
+                    `${BASE_URL}/MaintenanceServiceCosts/GetListByClient?centerId=${profile.CentreId}`,
                     {
                         headers: {
                             "Content-Type": "application/json",
@@ -164,7 +164,7 @@ const CreateBookingForWalkinGuest = ({
             const vietnamTime = new Date(now.getTime() + 7 * 60 * 60 * 1000);
             const accessToken = await AsyncStorage.getItem("ACCESS_TOKEN");
             const response = await axios.post(
-                `${BASE_URL}api/Bookings/PostHaveItems`,
+                `${BASE_URL}/Bookings/PostHaveItems`,
                 {
                     vehicleId: vehicle,
                     maintenanceCenterId: maintenanceCenter,
@@ -220,7 +220,7 @@ const CreateBookingForWalkinGuest = ({
         setShowDatePicker(false);
         setBookingDate(currentDate);
         if (event.type === "set") {
-            setShowTimePicker(true); // Show time picker after date is selected
+            setShowTimePicker(true);
         }
     };
 

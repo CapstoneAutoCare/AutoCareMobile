@@ -27,9 +27,10 @@ import { uploadImage } from "../../configs/storeImageToFirebase";
 import { useSelector } from "react-redux";
 import moment from "moment";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { BASE_URL } from "../../../env";
 export default ChangePassword = () => {
-     const navigation = useNavigation();
-      const [load, setLoad] = useState(false);
+  const navigation = useNavigation();
+  const [load, setLoad] = useState(false);
   const [passwordOld, setPasswordOld] = useState("");
   const [passwordHash, setPasswordHash] = useState("");
   const [password2, setPassword2] = useState("");
@@ -42,14 +43,14 @@ export default ChangePassword = () => {
         alert("Vui lòng điền đầy đủ thông tin");
         return;
       }
-       if (passwordHash !== password2) {
-         alert("Nhập lại mật khẩu không đúng");
-         return;
-       }
-       setLoad(true);
-       const accessToken = await AsyncStorage.getItem("ACCESS_TOKEN");
+      if (passwordHash !== password2) {
+        alert("Nhập lại mật khẩu không đúng");
+        return;
+      }
+      setLoad(true);
+      const accessToken = await AsyncStorage.getItem("ACCESS_TOKEN");
       const response = await axios.patch(
-        "https://capstoneautocareapi20240816003911.azurewebsites.net/api/Accounts/ChangePassword",
+        `${BASE_URL}/Accounts/ChangePassword`,
         {
           oldPassword: passwordOld,
           newPassword: passwordHash,
@@ -72,7 +73,7 @@ export default ChangePassword = () => {
         alert("Mật khẩu củ không đúng. Vui lòng thử lại.");
       }
     } catch (error) {
-        setLoad(false);
+      setLoad(false);
       console.error("Error during signup:", error);
       if (error.response) {
         console.error("Server responded with:", error.response.data);

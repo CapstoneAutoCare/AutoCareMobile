@@ -26,6 +26,7 @@ import moment from "moment";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { uploadImage } from "../../../configs/storeImageToFirebase";
 import COLORS from "../../../constants/colors";
+import { BASE_URL } from "../../../../env";
 export default UpdateProfile = () => {
   const navigation = useNavigation();
   const { profile } = useSelector((state) => state.user);
@@ -94,7 +95,7 @@ export default UpdateProfile = () => {
        setLoad(true);
         const accessToken = await AsyncStorage.getItem("ACCESS_TOKEN");
       const response = await axios.put(
-        `https://capstoneautocareapi20240816003911.azurewebsites.net/api/MaintenanceCenters/Update?centerId=${profile.MaintenanceCenterId}`,
+        `${BASE_URL}/MaintenanceCenters/Update?centerId=${profile.MaintenanceCenterId}`,
         {
           gender: gender,
           phone: phone,

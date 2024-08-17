@@ -1,8 +1,9 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
+import { BASE_URL } from '../../../env';
 
 export const fetchFeedbacks = createAsyncThunk('feedbacks/fetchFeedbacks', async (centreId) => {
-  const response = await axios.get(`https://capstoneautocareapi20240816003911.azurewebsites.net/api/Feedback/GetListByCenterId?id=${centreId}`);
+  const response = await axios.get(`${BASE_URL}/Feedback/GetListByCenterId?id=${centreId}`);
   return response.data;
 });
 

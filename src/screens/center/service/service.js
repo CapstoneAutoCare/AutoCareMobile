@@ -20,8 +20,8 @@ const Service = () => {
   const { serviceList } = useSelector((state) => state.center);
 
   const [sortedServiceList, setSortedServiceList] = useState([]);
-  const [sortOrder, setSortOrder] = useState("asc"); // asc for ascending, desc for descending
-  const [modalVisible, setModalVisible] = useState(false); // Modal visibility state
+  const [sortOrder, setSortOrder] = useState("asc");
+  const [modalVisible, setModalVisible] = useState(false); 
 
   const fetchGetListSparePart = async () => {
     await dispatch(getListService());
@@ -56,7 +56,7 @@ const Service = () => {
     });
     setSortedServiceList(sortedList);
     setSortOrder(order);
-    setModalVisible(false); // Close the modal after sorting
+    setModalVisible(false); 
   };
 
   return (
@@ -86,7 +86,7 @@ const Service = () => {
           <Text style={{ color: "white" }}>+ Thêm dịch vụ</Text>
         </Pressable>
         <Pressable
-          onPress={() => setModalVisible(true)} // Show the modal on press
+          onPress={() => setModalVisible(true)} 
           style={{
             marginHorizontal: 10,
             flexDirection: "row",
@@ -130,7 +130,7 @@ const Service = () => {
         )}
       </View>
 
-      {/* Modal for sorting options */}
+   
       <Modal
         animationType="slide"
         transparent={true}

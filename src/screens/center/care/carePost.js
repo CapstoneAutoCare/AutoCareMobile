@@ -27,6 +27,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { uploadImage } from "../../../configs/storeImageToFirebase";
 import COLORS from "../../../constants/colors";
 import DateTimePicker from "react-native-modal-datetime-picker";
+import { BASE_URL } from "../../../../env";
 export default CarePost = () => {
   const navigation = useNavigation();
   const [firstName, setFirstName] = useState("");
@@ -95,7 +96,7 @@ export default CarePost = () => {
       }
       const accessToken = await AsyncStorage.getItem("ACCESS_TOKEN");
       const response = await axios.post(
-        "https://capstoneautocareapi20240816003911.azurewebsites.net/api/CustomerCares/Post",
+        `${BASE_URL}/CustomerCares/Post`,
         {
           email: email,
           password: passwordHash,

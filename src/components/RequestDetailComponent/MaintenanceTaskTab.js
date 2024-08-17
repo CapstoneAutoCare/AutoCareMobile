@@ -8,6 +8,7 @@ import { fetchStaffByCenter } from '../../app/CusCare/requestDetailSlice';
 import { useDispatch, useSelector } from 'react-redux';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
+import { BASE_URL } from '../../../env';
 const MaintenanceTaskTab = ({ maintenanceTasks, request, assignTask }) => {
     const [technicianDetails, setTechnicianDetails] = useState({});
     const mInfoId = request.responseMaintenanceInformation.informationMaintenanceId;
@@ -40,7 +41,8 @@ const MaintenanceTaskTab = ({ maintenanceTasks, request, assignTask }) => {
         try {
           const accessToken = await AsyncStorage.getItem('ACCESS_TOKEN');
       
-          await axios.patch(`https://capstoneautocareapi20240816003911.azurewebsites.net/api/MaintenanceInformations/CHANGESTATUS?id=${request.responseMaintenanceInformation?.informationMaintenanceId}&status=REPAIRING`,
+          await axios
+          .patch(`${BASE_URL}/MaintenanceInformations/CHANGESTATUS?id=${request.responseMaintenanceInformation?.informationMaintenanceId}&status=REPAIRING`,
            {
               headers: {
                 'Content-Type': 'text/plain',

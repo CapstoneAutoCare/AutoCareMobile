@@ -13,7 +13,6 @@ const PostBooking = ({ route }) => {
   const navigation = useNavigation();
   const dispatch = useDispatch();
   const { maintenanceCenterId, tab } = route.params;
-  // const Tab = createMaterialTopTabNavigator();
   const { centerList } = useSelector((state) => state.center);
   const { vehicleListByClient } = useSelector((state) => state.vehicle);
   const fetchGetListCenter = async () => {

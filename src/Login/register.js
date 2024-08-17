@@ -28,6 +28,7 @@ import {
   uploadImage,
 } from "../configs/storeImageToFirebase";
 import DateTimePicker from "react-native-modal-datetime-picker";
+import { BASE_URL } from "../../env";
 export default Register = ({ navigation }) => {
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
@@ -114,7 +115,7 @@ export default Register = ({ navigation }) => {
       }
 
       const response = await axios.post(
-        "https://capstoneautocareapi20240816003911.azurewebsites.net/api/Clients/Post",
+        `${BASE_URL}/Clients/Post`,
         {
           email: email,
           password: passwordHash,

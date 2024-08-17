@@ -12,6 +12,7 @@ import {
 } from "../../../app/Center/actions";
 import { useDispatch, useSelector } from "react-redux";
 import { getSparePart } from "../../../app/SparePart/actions";
+import { BASE_URL } from "../../../../env";
 
 const SparePartPost = () => {
   const dispatch = useDispatch();
@@ -43,7 +44,7 @@ const SparePartPost = () => {
       setLoad(true);
       const accessToken = await AsyncStorage.getItem("ACCESS_TOKEN");
       const response = await axios.post(
-        "https://capstoneautocareapi20240816003911.azurewebsites.net/api/SparePartItem/Post",
+        `${BASE_URL}/SparePartItem/Post`,
         {
           sparePartsItemName: sparePartsItemName,
           sparePartsId: sparePart || null,

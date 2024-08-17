@@ -27,7 +27,7 @@ const MaintenanceInformationsList = async () => {
   const fetchMaintenanceInformations = async (token) => {
     try {
       const response = await fetch(
-        `${BASE_URL}api/MaintenanceInformations/GetListByClient`,
+        `${BASE_URL}/MaintenanceInformations/GetListByClient`,
         {
           method: "GET",
           headers: {

@@ -16,7 +16,7 @@ import {
   MaterialCommunityIcons,
 } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
-import { getListCenter } from "../../../app/Center/actions";
+import { getListCenter, getListCenterActive } from "../../../app/Center/actions";
 import { getProfile } from "../../../features/userSlice";
 import levenshtein from "fast-levenshtein";
 import { Ionicons } from "@expo/vector-icons";
@@ -33,7 +33,7 @@ const MaintenanceCenters = () => {
 
   const fetchGetListBooking = async () => {
     await dispatch(getProfile());
-    await dispatch(getListCenter());
+    await dispatch(getListCenterActive());
   };
 
   useEffect(() => {

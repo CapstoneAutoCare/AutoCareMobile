@@ -1,11 +1,12 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import Axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { BASE_URL } from '../../../env';
 
 export const fetchRequests = createAsyncThunk('requests/fetchRequests', async (centreId) => {
   const accessToken = await AsyncStorage.getItem('ACCESS_TOKEN');
   const response = await Axios.get(
-    `https://capstoneautocareapi20240816003911.azurewebsites.net/api/Bookings/GetListByCenterId?id=${centreId}`,{
+    `${BASE_URL}/Bookings/GetListByCenterId?id=${centreId}`,{
       headers: {
         'Content-Type': 'text/plain',
         Authorization: `Bearer ${accessToken}`,
@@ -27,17 +28,17 @@ export const fetchRequests = createAsyncThunk('requests/fetchRequests', async (c
 });
 
 const fetchClientName = async (clientId) => {
-  const response = await Axios.get(`https://capstoneautocareapi20240816003911.azurewebsites.net/api/Clients/GetById?id=${clientId}`);
+  const response = await Axios.get(`${BASE_URL}/Clients/GetById?id=${clientId}`);
   return `${response.data.firstName} ${response.data.lastName}`;
 };
 
 const fetchVehicleNumber = async (vehicleId) => {
-  const response = await Axios.get(`https://capstoneautocareapi20240816003911.azurewebsites.net/api/Vehicles/GetById?id=${vehicleId}`);
+  const response = await Axios.get(`${BASE_URL}/Vehicles/GetById?id=${vehicleId}`);
   return response.data.licensePlate;
 };
 
 const fetchMaintenanceCenterName = async (maintenanceCenterId) => {
-  const response = await Axios.get(`https://capstoneautocareapi20240816003911.azurewebsites.net/api/MaintenanceCenters/GetById?id=${maintenanceCenterId}`);
+  const response = await Axios.get(`${BASE_URL}/MaintenanceCenters/GetById?id=${maintenanceCenterId}`);
   return response.data.maintenanceCenterName;
 };
 

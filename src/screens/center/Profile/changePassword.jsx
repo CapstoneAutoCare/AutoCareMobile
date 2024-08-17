@@ -24,6 +24,7 @@ import { RadioButton } from "react-native-paper";
 import { useNavigation } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import COLORS from "../../../constants/colors";
+import { BASE_URL } from "../../../../env";
 export default ChangePassword = () => {
   const navigation = useNavigation();
   const [load, setLoad] = useState(false);
@@ -46,7 +47,7 @@ export default ChangePassword = () => {
        setLoad(true);
        const accessToken = await AsyncStorage.getItem("ACCESS_TOKEN");
       const response = await axios.patch(
-        "https://capstoneautocareapi20240816003911.azurewebsites.net/api/Accounts/ChangePassword",
+        `${BASE_URL}/Accounts/ChangePassword`,
         {
           oldPassword: passwordOld,
           newPassword: passwordHash,

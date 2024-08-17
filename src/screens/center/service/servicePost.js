@@ -8,6 +8,7 @@ import { useNavigation } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { getService, postServiceCost } from "../../../app/Center/actions";
 import { useDispatch, useSelector } from "react-redux";
+import { BASE_URL } from "../../../../env";
 const ServicePost = () => {
   const dispatch = useDispatch();
   const navigation = useNavigation();
@@ -35,7 +36,7 @@ const ServicePost = () => {
       setLoad(true);
       const accessToken = await AsyncStorage.getItem("ACCESS_TOKEN");
       const response = await axios.post(
-        "https://capstoneautocareapi20240816003911.azurewebsites.net/api/MaintenanceServices/Post",
+        `${BASE_URL}/MaintenanceServices/Post`,
         {
           maintenanceServiceName: maintenanceServiceName,
           serviceCareId:serviceAll || null,

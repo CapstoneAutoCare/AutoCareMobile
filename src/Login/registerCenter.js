@@ -30,6 +30,7 @@ import {
 } from "../configs/storeImageToFirebase";
 import vietnamLocations from "../api/vietnamLocations.json";
 import CustomSearchableDropdown from "../features/CustomSearchableDropdown";
+import { BASE_URL } from "../../env";
 export default RegisterCenter = ({ navigation }) => {
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
@@ -122,7 +123,7 @@ export default RegisterCenter = ({ navigation }) => {
       }
  console.log("🚀 ~ avatarUrl: 2", avatarUrl);
       const response = await axios.post(
-        "https://capstoneautocareapi20240816003911.azurewebsites.net/api/MaintenanceCenters/Post",
+        `${BASE_URL}/MaintenanceCenters/Post`,
         {
           email: email,
           password: passwordHash,

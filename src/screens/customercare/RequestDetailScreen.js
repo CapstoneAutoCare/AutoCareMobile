@@ -5,13 +5,13 @@ import { useDispatch, useSelector } from 'react-redux';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import RequestInfoTab from '../../components/RequestDetailComponent/RequestInfoTab';
 import MaintenanceInfoTab from '../../components/RequestDetailComponent/MaintenanceInfoTab';
-import MaintenanceTaskTab from '../../components/RequestDetailComponent/MaintenanceTaskTab'; // Import the new component
+import MaintenanceTaskTab from '../../components/RequestDetailComponent/MaintenanceTaskTab'; 
 
 import ErrorComponent from '../../components/ErrorComponent';
 import {
   assignTask,
   fetchRequestDetail,
-  fetchMaintenanceTasks, // Import the fetchMaintenanceTasks thunk
+  fetchMaintenanceTasks,
   updateStatus,
   
 } from '../../app/CusCare/requestDetailSlice';
@@ -45,7 +45,7 @@ const RequestDetailScreen = () => {
       dispatch(fetchRequestDetail(requestId));
       console.log("Request detail fetched after status update.");
     } catch (error) {
-      console.error("Error updating status:", error); // Log toàn bộ error object
+      console.error("Error updating status:", error);
       setFetchError(error.message || "An unexpected error occurred.");
     }
   };

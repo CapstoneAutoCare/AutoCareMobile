@@ -43,7 +43,7 @@ const ProductItem = ({ item }) => {
             flexDirection: "row",
             alignItems: "center",
             justifyContent: "center",
-            marginHorizontal: 5, // Thay vì sử dụng gap, sử dụng marginHorizontal
+            marginHorizontal: 5, 
           }}
         >
           <Pressable

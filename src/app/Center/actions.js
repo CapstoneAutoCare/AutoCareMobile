@@ -13,6 +13,18 @@ export const getListCenter = createAsyncThunk(
     }
   }
 );
+export const getListCenterActive = createAsyncThunk(
+  "MaintenanceCenters/getListCenterActive",
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await centerService.getListCenterActive();
+      return response.data;
+    } catch (error) {
+      console.log(error);
+      return rejectWithValue(error);
+    }
+  }
+);
 export const getListInformations = createAsyncThunk(
   "MaintenanceInformations/GetAll",
   async (_, { rejectWithValue }) => {

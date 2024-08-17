@@ -25,6 +25,7 @@ import { useNavigation } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { uploadImage } from "../../../configs/storeImageToFirebase";
 import COLORS from "../../../constants/colors";
+import { BASE_URL } from "../../../../env";
 
 export default SparePartPut = ({ route }) => {
   const { sparePartsItemId, sparePartsItemName, image, status } = route.params;
@@ -75,7 +76,7 @@ export default SparePartPut = ({ route }) => {
       setLoad(true);
       const accessToken = await AsyncStorage.getItem("ACCESS_TOKEN");
       const response = await axios.put(
-        `https://capstoneautocareapi20240816003911.azurewebsites.net/api/SparePartItem/Update?id=${sparePartsItemId}`,
+        `${BASE_URL}/SparePartItem/Update?id=${sparePartsItemId}`,
         {
           sparePartsItemName: maintenanceServiceName,
           status,

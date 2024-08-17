@@ -70,7 +70,7 @@ const CreateBooking = ({
     try {
       const accessToken = await AsyncStorage.getItem("ACCESS_TOKEN");
       const response = await axios.get(
-        `${BASE_URL}MaintenanceSchedule/GetListPackageCenterId?id=${maintenanceCenter}`,
+        `${BASE_URL}/MaintenanceSchedule/GetListPackageCenterId?id=${maintenanceCenter}`,
         {
           headers: {
             "Content-Type": "application/json",
@@ -90,7 +90,7 @@ const CreateBooking = ({
       if (!maintenanceCenter || !vehicle) return;
 
       const response = await axios.get(
-        `${BASE_URL}MaintenanceServices/GetListPackageAndOdoTRUEByCenterIdAndVehicleModelId?id=${maintenanceCenter}&modelId=${modelId}`,
+        `${BASE_URL}/MaintenanceServices/GetListPackageAndOdoTRUEByCenterIdAndVehicleModelId?id=${maintenanceCenter}&modelId=${modelId}`,
         {
           headers: {
             accept: "text/plain",
@@ -120,7 +120,7 @@ const CreateBooking = ({
       setLoad(true);
       const accessToken = await AsyncStorage.getItem("ACCESS_TOKEN");
       const response = await axios.post(
-        `${BASE_URL}Bookings/PostHavePackage`,
+        `${BASE_URL}/Bookings/PostHavePackage`,
         {
           vehicleId: vehicle,
           maintenanceCenterId: maintenanceCenter,

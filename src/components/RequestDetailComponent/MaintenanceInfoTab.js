@@ -12,7 +12,7 @@ const MaintenanceInfoTab = ({ request, error }) => {
   const route = useRoute();
   const { profile: navigationProfile, centre: navigationCentre } = route.params || {};
 
-  // Nếu không có profile từ route params, lấy từ Redux store
+
   const profile = navigationProfile || useSelector((state) => state.user.profile);
   const centre = navigationCentre || useSelector((state) => state.homepage.centre);
 

@@ -44,7 +44,7 @@ const BookingDetail = ({ route }) => {
       {bookingById && (
         <View>
           <View style={styles.card}>
-            {/* <Image style={styles.image} source={{ uri: bookingById.logo }} /> */}
+           
 
             <View style={{ alignItems: "left" }}>
               <Text style={styles.name}>

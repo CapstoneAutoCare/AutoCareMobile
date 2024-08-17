@@ -26,6 +26,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { uploadImage } from "../../../configs/storeImageToFirebase";
 import COLORS from "../../../constants/colors";
 import moment from "moment";
+import { BASE_URL } from "../../../../env";
 export default CarePut = ({ route }) => {
   const profile = route.params;
   const navigation = useNavigation();
@@ -94,7 +95,7 @@ export default CarePut = ({ route }) => {
         });
       const accessToken = await AsyncStorage.getItem("ACCESS_TOKEN");
       const response = await axios.put(
-        `https://capstoneautocareapi20240816003911.azurewebsites.net/api/CustomerCares/Update?customercareId=${profile.customercareId}`,
+        `${BASE_URL}/CustomerCares/Update?customercareId=${profile.customercareId}`,
         {
           gender: gender,
           phone: phone,

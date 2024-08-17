@@ -27,6 +27,7 @@ import { uploadImage } from "../../configs/storeImageToFirebase";
 import { useSelector } from "react-redux";
 import moment from "moment";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { BASE_URL } from "../../../env";
 export default UpdateProfile = () => {
   const navigation = useNavigation();
   const { profile } = useSelector((state) => state.user);
@@ -91,7 +92,7 @@ export default UpdateProfile = () => {
        setLoad(true);
         const accessToken = await AsyncStorage.getItem("ACCESS_TOKEN");
       const response = await axios.put(
-        `https://capstoneautocareapi20240816003911.azurewebsites.net/api/Clients/Update?clientId=${profile.ClientId}`,
+        `${BASE_URL}/Clients/Update?clientId=${profile.ClientId}`,
         {
           gender: gender,
           phone: phone,

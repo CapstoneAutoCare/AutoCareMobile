@@ -14,6 +14,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import StaffListComponent from '../BookingComponent/StaffListComponent';
 import { fetchStaffByCenter, setIsTaskAssigned } from '../../app/CusCare/requestDetailSlice';
 import { useNavigation } from '@react-navigation/native';
+import { BASE_URL } from '../../../env';
 const RequestInfoTab = ({ request, updateStatus, error, profile, assignTask}) => {
   const navigation = useNavigation();
   const dispatch = useDispatch();
@@ -66,7 +67,7 @@ const RequestInfoTab = ({ request, updateStatus, error, profile, assignTask}) =>
       try {
         const accessToken = await AsyncStorage.getItem('ACCESS_TOKEN');
         const response = await axios.get(
-          `https://capstoneautocareapi20240816003911.azurewebsites.net/api/SparePartsItemCosts/GetListByClient?centerId=${request.maintenanceCenterId}`,
+          `${BASE_URL}/SparePartsItemCosts/GetListByClient?centerId=${request.maintenanceCenterId}`,
           {
             headers: {
               'Content-Type': 'application/json',
@@ -87,7 +88,7 @@ const RequestInfoTab = ({ request, updateStatus, error, profile, assignTask}) =>
       try {
         const accessToken = await AsyncStorage.getItem('ACCESS_TOKEN');
         const response = await axios.get(
-          `https://capstoneautocareapi20240816003911.azurewebsites.net/api/MaintenanceServiceCosts/GetListByDifMaintenanceServiceAndInforIdAndBooleanFalse?centerId=${request.maintenanceCenterId}`,
+          `${BASE_URL}/MaintenanceServiceCosts/GetListByDifMaintenanceServiceAndInforIdAndBooleanFalse?centerId=${request.maintenanceCenterId}`,
           {
             headers: {
               'Content-Type': 'application/json',
@@ -174,8 +175,8 @@ const RequestInfoTab = ({ request, updateStatus, error, profile, assignTask}) =>
       console.log('Saving with request:', request); // Log
 
       const url = modalType === 'SPARE_PART'
-      ? 'https://capstoneautocareapi20240816003911.azurewebsites.net/api/MaintenanceSparePartInfoes/Post'
-      : 'https://capstoneautocareapi20240816003911.azurewebsites.net/api/MaintenanceServiceInfoes/Post';
+      ? `${BASE_URL}/MaintenanceSparePartInfoes/Post`
+      : `${BASE_URL}/MaintenanceServiceInfoes/Post`;
       
       const items = modalType === 'SPARE_PART' ? spareParts : services;
 
@@ -241,7 +242,8 @@ const RequestInfoTab = ({ request, updateStatus, error, profile, assignTask}) =>
       // Hàm để lấy dữ liệu hóa đơn (invoice)
       const fetchInvoiceData = async () => {
         try {
-          const response = await axios.get(`https://capstoneautocareapi20240816003911.azurewebsites.net/api/Receipts/GetByInforId?id=${infoId}`);
+          const response = await axios
+          .get(`${BASE_URL}/Receipts/GetByInforId?id=${infoId}`);
           setInvoiceData(response.data);
         } catch (error) {
           console.error('Error fetching invoice data:', error);
@@ -253,7 +255,7 @@ const RequestInfoTab = ({ request, updateStatus, error, profile, assignTask}) =>
       if (!invoiceData) {
         const description = "Payment for maintenance"; 
         await axios.post(
-          'https://capstoneautocareapi20240816003911.azurewebsites.net/api/Receipts/Post',
+          `${BASE_URL}/Receipts/Post`,
           { informationMaintenanceId: infoId, description },
           {
             headers: {
@@ -263,7 +265,7 @@ const RequestInfoTab = ({ request, updateStatus, error, profile, assignTask}) =>
           }
         );
   
-        // Sau khi tạo Receipt, gọi lại hàm fetchInvoiceData để cập nhật invoiceData
+      
         await fetchInvoiceData();
       }
   
@@ -278,7 +280,8 @@ const handleCheckin = async () => {
   try {
     const accessToken = await AsyncStorage.getItem('ACCESS_TOKEN');
 
-    await axios.patch(`https://capstoneautocareapi20240816003911.azurewebsites.net/api/MaintenanceInformations/CHANGESTATUS?id=${request.responseMaintenanceInformation?.informationMaintenanceId}&status=CHECKIN`,
+    await axios
+    .patch(`${BASE_URL}/MaintenanceInformations/CHANGESTATUS?id=${request.responseMaintenanceInformation?.informationMaintenanceId}&status=CHECKIN`,
      {
         headers: {
           'Content-Type': 'text/plain',

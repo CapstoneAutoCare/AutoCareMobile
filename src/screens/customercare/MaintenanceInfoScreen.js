@@ -14,7 +14,7 @@ function useDebounce(value, delay) {
             setDebouncedValue(value);
         }, delay);
 
-        // Cleanup timeout khi component unmount hoặc khi giá trị thay đổi
+    
         return () => {
             clearTimeout(handler);
         };
@@ -37,8 +37,8 @@ const MaintenanceCenterInfoScreen = ({ }) => {
     const [selectedModel, setSelectedModel] = useState(null);
     const [odometerReading, setOdometerReading] = useState('');
     const [isModelFilterEnabled, setIsModelFilterEnabled] = useState(false);
-// State debounce
-    const debouncedModel = useDebounce(selectedModel, 300); // Trì hoãn 300ms
+
+    const debouncedModel = useDebounce(selectedModel, 300); 
 
     const navigation = useNavigation();
     const { profile } = useSelector((state) => state.user || {});
@@ -63,7 +63,7 @@ const MaintenanceCenterInfoScreen = ({ }) => {
         try {
             const accessToken = await AsyncStorage.getItem('ACCESS_TOKEN');
             const response = await axios.get(
-                `${BASE_URL}api/SparePartsItemCosts/GetListByClient?centerId=${profile.CentreId}`,
+                `${BASE_URL}/SparePartsItemCosts/GetListByClient?centerId=${profile.CentreId}`,
                 {
                     headers: {
                         'Content-Type': 'application/json',
@@ -81,7 +81,7 @@ const MaintenanceCenterInfoScreen = ({ }) => {
         try {
             const accessToken = await AsyncStorage.getItem('ACCESS_TOKEN');
             const response = await axios.get(
-                `${BASE_URL}api/MaintenanceServiceCosts/GetListByDifMaintenanceServiceAndInforIdAndBooleanFalse?centerId=${profile.CentreId}`,
+                `${BASE_URL}/MaintenanceServiceCosts/GetListByDifMaintenanceServiceAndInforIdAndBooleanFalse?centerId=${profile.CentreId}`,
                 {
                     headers: {
                         'Content-Type': 'application/json',
@@ -99,7 +99,7 @@ const MaintenanceCenterInfoScreen = ({ }) => {
         try {
             const accessToken = await AsyncStorage.getItem('ACCESS_TOKEN');
             const response = await axios.get(
-                `${BASE_URL}api/MaintenanceServices/GetListByCenterId?id=${profile.CentreId}`,
+                `${BASE_URL}/MaintenanceServices/GetListByCenterId?id=${profile.CentreId}`,
                 {
                     headers: {
                         'Content-Type': 'application/json',
@@ -124,7 +124,7 @@ const MaintenanceCenterInfoScreen = ({ }) => {
         try {
             const accessToken = await AsyncStorage.getItem('ACCESS_TOKEN');
             const response = await axios.get(
-                `${BASE_URL}api/VehicleModel/GetAll`,
+                `${BASE_URL}/VehicleModel/GetAll`,
                 {
                     headers: {
                         'Content-Type': 'application/json',
@@ -162,13 +162,13 @@ const MaintenanceCenterInfoScreen = ({ }) => {
         setIsModelFilterEnabled,
         selectedModel,
         setSelectedModel,
-        vehicleModels = [],  // Default to empty array
+        vehicleModels = [],  
         odometerReading,
         setOdometerReading
     }) => {
         return (
             <>
-                {/* Checkbox for Model Filter */}
+                
                 <View style={styles.filterContainer}>
                     <Text>Filter by Vehicle Model</Text>
                     <TouchableOpacity onPress={() => setIsModelFilterEnabled(!isModelFilterEnabled)}>
@@ -178,13 +178,13 @@ const MaintenanceCenterInfoScreen = ({ }) => {
                     </TouchableOpacity>
                 </View>
 
-                {/* Vehicle Model Search Box */}
+                
                 {isModelFilterEnabled && (
                     <View style={styles.searchContainer}>
                         <TextInput
                             style={styles.searchInput}
                             placeholder="Search Vehicle Model..."
-                            onChangeText={setSelectedModel} // Trực tiếp cập nhật selectedModel
+                            onChangeText={setSelectedModel} 
                             value={selectedModel}
                         />
                         <FlatList
@@ -199,7 +199,7 @@ const MaintenanceCenterInfoScreen = ({ }) => {
                     </View>
                 )}
 
-                {/* Odometer Reading Input */}
+                
                 <TextInput
                     style={styles.searchInput}
                     placeholder="Enter Odometer Reading..."
