@@ -94,7 +94,7 @@ export default CarePut = ({ route }) => {
         });
       const accessToken = await AsyncStorage.getItem("ACCESS_TOKEN");
       const response = await axios.put(
-        `http://solv2.runasp.net/api/CustomerCares/Update?customercareId=${profile.customercareId}`,
+        `https://capstoneautocareapi20240816003911.azurewebsites.net/api/CustomerCares/Update?customercareId=${profile.customercareId}`,
         {
           gender: gender,
           phone: phone,

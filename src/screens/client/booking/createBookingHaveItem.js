@@ -86,7 +86,7 @@ const CreateBookingHaveItem = ({
     try {
       const accessToken = await AsyncStorage.getItem("ACCESS_TOKEN");
       const response = await axios.get(
-        `http://solv2.runasp.net/api/SparePartsItemCosts/GetListByClient?centerId=${maintenanceCenter}`,
+        `https://capstoneautocareapi20240816003911.azurewebsites.net/api/SparePartsItemCosts/GetListByClient?centerId=${maintenanceCenter}`,
         {
           headers: {
             "Content-Type": "application/json",
@@ -104,7 +104,7 @@ const CreateBookingHaveItem = ({
     try {
       const accessToken = await AsyncStorage.getItem("ACCESS_TOKEN");
       const response = await axios.get(
-        `http://solv2.runasp.net/api/MaintenanceServiceCosts/GetListByClient?centerId=${maintenanceCenter}`,
+        `https://capstoneautocareapi20240816003911.azurewebsites.net/api/MaintenanceServiceCosts/GetListByClient?centerId=${maintenanceCenter}`,
         {
           headers: {
             "Content-Type": "application/json",
@@ -121,7 +121,7 @@ const CreateBookingHaveItem = ({
     try {
       const accessToken = await AsyncStorage.getItem("ACCESS_TOKEN");
       const response = await axios.get(
-        `http://solv2.runasp.net/api/MaintenanceServices/GetListPackageAndOdoTRUEByCenterId?id=${maintenanceCenter}`,
+        `https://capstoneautocareapi20240816003911.azurewebsites.net/api/MaintenanceServices/GetListPackageAndOdoTRUEByCenterId?id=${maintenanceCenter}`,
         {
           headers: {
             "Content-Type": "application/json",
@@ -220,7 +220,7 @@ const CreateBookingHaveItem = ({
       const vietnamTime = new Date(now.getTime() + 7 * 60 * 60 * 1000);
       const accessToken = await AsyncStorage.getItem("ACCESS_TOKEN");
       const response = await axios.post(
-        "http://solv2.runasp.net/api/Bookings/PostHaveItems",
+        "https://capstoneautocareapi20240816003911.azurewebsites.net/api/Bookings/PostHaveItems",
         {
           vehicleId: vehicle,
           maintenanceCenterId: maintenanceCenter,
@@ -322,15 +322,6 @@ const CreateBookingHaveItem = ({
           {currentStep === 0 ? (
             <>
               <View style={styles.inputContainer}>
-                <TextInput
-                  style={styles.textInput}
-                  placeholder="Lưu ý"
-                  value={note}
-                  onChangeText={(text) => setNote(text)}
-                  required={true}
-                />
-              </View>
-              <View style={styles.inputContainer}>
                 <Picker
                   selectedValue={vehicle}
                   onValueChange={(itemValue) => setVehicle(itemValue)}
@@ -379,6 +370,15 @@ const CreateBookingHaveItem = ({
                     />
                   ))}
                 </Picker>
+              </View>
+              <View style={styles.inputContainer}>
+                <TextInput
+                  style={styles.textInput}
+                  placeholder="Lưu ý"
+                  value={note}
+                  onChangeText={(text) => setNote(text)}
+                  required={true}
+                />
               </View>
             </>
           ) : currentStep === 1 ? (
@@ -611,11 +611,18 @@ const CreateBookingHaveItem = ({
         </View>
       </View>
       <View style={styles.footer}>
-        <Button title="Sau" onPress={onPrevious} disabled={currentStep === 0} />
+        {/* <Button style={styles.bottomFooter} title="Sau" onPress={onPrevious} disabled={currentStep === 0} /> */}
+        <Pressable style={styles.bottomFooter} onPress={onPrevious}>
+          <Text style={{ color: "white" }}>Sau</Text>
+        </Pressable>
         {currentStep === 3 ? (
-          <Button title="Tạo lịch" onPress={handleSignup} />
+          <Pressable style={styles.bottomFooter} onPress={handleSignup}>
+            <Text style={{ color: "white" }}>Tạo lịch</Text>
+          </Pressable>
         ) : (
-          <Button title="Tiếp" onPress={onNext} />
+          <Pressable style={styles.bottomFooter} onPress={onNext}>
+            <Text style={{ color: "white" }}>Tiếp</Text>
+          </Pressable>
         )}
       </View>
     </ScrollView>
@@ -631,6 +638,16 @@ const styles = StyleSheet.create({
   footer: {
     flexDirection: "row",
     justifyContent: "space-between",
+  },
+  bottomFooter: {
+    flexDirection: "row",
+    backgroundColor: "#0066b2",
+    padding: 10,
+    borderRadius: 10,
+    justifyContent: "center",
+    alignItems: "center",
+    marginHorizontal: 10,
+    marginTop: 10,
   },
   stepContent: {
     flex: 1,

@@ -1,1 +1,1 @@
-export const BASE_URL = "http://solv2.runasp.net/api/";
+export const BASE_URL = "https://capstoneautocareapi20240816003911.azurewebsites.net/api/";

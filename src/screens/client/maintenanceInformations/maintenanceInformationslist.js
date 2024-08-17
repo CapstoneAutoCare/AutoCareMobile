@@ -26,7 +26,7 @@ const MaintenanceInformationsList = async () => {
   const fetchMaintenanceInformations = async (token) => {
     try {
       const response = await fetch(
-        "http://solv2.runasp.net/api/MaintenanceInformations/GetListByClient",
+        "https://capstoneautocareapi20240816003911.azurewebsites.net/api/MaintenanceInformations/GetListByClient",
         {
           method: "GET",
           headers: {

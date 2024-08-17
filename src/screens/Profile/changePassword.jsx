@@ -49,7 +49,7 @@ export default ChangePassword = () => {
        setLoad(true);
        const accessToken = await AsyncStorage.getItem("ACCESS_TOKEN");
       const response = await axios.patch(
-        "http://solv2.runasp.net/api/Accounts/ChangePassword",
+        "https://capstoneautocareapi20240816003911.azurewebsites.net/api/Accounts/ChangePassword",
         {
           oldPassword: passwordOld,
           newPassword: passwordHash,

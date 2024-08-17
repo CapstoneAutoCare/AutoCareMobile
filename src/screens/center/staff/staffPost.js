@@ -95,7 +95,7 @@ export default StaffPost = () => {
       }
       const accessToken = await AsyncStorage.getItem("ACCESS_TOKEN");
       const response = await axios.post(
-        "http://solv2.runasp.net/api/Technicians/Post",
+        "https://capstoneautocareapi20240816003911.azurewebsites.net/api/Technicians/Post",
         {
           email: email,
           password: passwordHash,

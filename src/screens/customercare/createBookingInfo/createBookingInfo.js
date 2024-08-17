@@ -23,7 +23,7 @@ const CreateBookingInfo = () => {
             try {
               const accessToken = await AsyncStorage.getItem('ACCESS_TOKEN');
               const response = await axios.get(
-                `http://solv2.runasp.net/api/SparePartsItemCosts/GetListByClient?centerId=${profile.CentreId}`,
+                `https://capstoneautocareapi20240816003911.azurewebsites.net/api/SparePartsItemCosts/GetListByClient?centerId=${profile.CentreId}`,
                 {
                   headers: {
                     'Content-Type': 'application/json',
@@ -44,7 +44,7 @@ const CreateBookingInfo = () => {
             try {
               const accessToken = await AsyncStorage.getItem('ACCESS_TOKEN');
               const response = await axios.get(
-                `http://solv2.runasp.net/api/MaintenanceServiceCosts/GetListByClient?centerId=${profile.CentreId}`,
+                `https://capstoneautocareapi20240816003911.azurewebsites.net/api/MaintenanceServiceCosts/GetListByClient?centerId=${profile.CentreId}`,
                 {
                   headers: {
                     'Content-Type': 'application/json',
@@ -125,7 +125,7 @@ const CreateBookingInfo = () => {
             const vietnamTime = new Date(now.getTime() + 7 * 60 * 60 * 1000);
             const accessToken = await AsyncStorage.getItem("ACCESS_TOKEN");
             const response = await axios.post(
-                "http://solv2.runasp.net/api/MaintenanceInformations/PostHaveItems",
+                "https://capstoneautocareapi20240816003911.azurewebsites.net/api/MaintenanceInformations/PostHaveItems",
                 {
                     informationMaintenanceName: "string",
                     finishedDate: vietnamTime.toISOString(),

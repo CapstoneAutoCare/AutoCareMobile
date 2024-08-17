@@ -43,7 +43,7 @@ const SparePartPost = () => {
       setLoad(true);
       const accessToken = await AsyncStorage.getItem("ACCESS_TOKEN");
       const response = await axios.post(
-        "http://solv2.runasp.net/api/SparePartItem/Post",
+        "https://capstoneautocareapi20240816003911.azurewebsites.net/api/SparePartItem/Post",
         {
           sparePartsItemName: sparePartsItemName,
           sparePartsId: sparePart || null,

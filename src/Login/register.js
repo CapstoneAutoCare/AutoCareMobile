@@ -114,7 +114,7 @@ export default Register = ({ navigation }) => {
       }
 
       const response = await axios.post(
-        "http://solv2.runasp.net/api/Clients/Post",
+        "https://capstoneautocareapi20240816003911.azurewebsites.net/api/Clients/Post",
         {
           email: email,
           password: passwordHash,

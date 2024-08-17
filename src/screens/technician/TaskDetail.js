@@ -9,7 +9,7 @@ const TaskDetail = ({ route, navigation }) => {
     try {
       // Update the task service status to DONE
       console.log(`COMPLETING SERVICE: ${serviceId}`);
-      await axios.patch(`http://solv2.runasp.net/api/MaintenanceTaskServiceInfoes/PatchStatus?id=${serviceId}&status=DONE`);
+      await axios.patch(`https://capstoneautocareapi20240816003911.azurewebsites.net/api/MaintenanceTaskServiceInfoes/PatchStatus?id=${serviceId}&status=DONE`);
       Alert.alert('Service Completed', 'The service status has been updated to DONE.');
     } catch (error) {
       Alert.alert('Error', 'There was an error completing the service.');
@@ -20,7 +20,7 @@ const TaskDetail = ({ route, navigation }) => {
     try {
       // Update the spare part status to DONE
       console.log(`COMPLETING SPARE PART: ${sparepartId}`);
-      await axios.patch(`http://solv2.runasp.net/api/MaintenanceTaskSparePartInfoes/PatchStatus?id=${sparepartId}&status=DONE`);
+      await axios.patch(`https://capstoneautocareapi20240816003911.azurewebsites.net/api/MaintenanceTaskSparePartInfoes/PatchStatus?id=${sparepartId}&status=DONE`);
       Alert.alert('Spare Part Completed', 'The spare part status has been updated to DONE.');
     } catch (error) {
       Alert.alert('Error', 'There was an error completing the spare part.');

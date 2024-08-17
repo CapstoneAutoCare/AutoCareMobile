@@ -45,7 +45,7 @@ const Receipts = ({ route }) => {
     try {
       const accessToken = await AsyncStorage.getItem("ACCESS_TOKEN");
       const response = await axios.post(
-        "http://solv2.runasp.net/api/Payments/CreateVnPayPaymentUrl",
+        "https://capstoneautocareapi20240816003911.azurewebsites.net/api/Payments/CreateVnPayPaymentUrl",
         requestBody,
         {
           headers: {

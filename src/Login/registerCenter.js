@@ -122,7 +122,7 @@ export default RegisterCenter = ({ navigation }) => {
       }
  console.log("🚀 ~ avatarUrl: 2", avatarUrl);
       const response = await axios.post(
-        "http://solv2.runasp.net/api/MaintenanceCenters/Post",
+        "https://capstoneautocareapi20240816003911.azurewebsites.net/api/MaintenanceCenters/Post",
         {
           email: email,
           password: passwordHash,

@@ -193,25 +193,16 @@ const CreateBooking = ({
     <ScrollView style={{ marginTop: 20 }}>
       <View style={styles.container}>
         <View style={styles.form}>
-          <View style={styles.inputContainer}>
-            <TextInput
-              style={styles.textInput}
-              placeholder="Lưu ý"
-              value={note}
-              onChangeText={(text) => setNote(text)}
-            />
-          </View>
-
           {centerList.length > 0 && (
             <View style={styles.inputContainer}>
               <Picker
                 selectedValue={vehicle}
                 onValueChange={(itemValue) => {
                   setVehicle(itemValue);
-                  setFilteredOdo([]); 
+                  setFilteredOdo([]);
                   setOdo("");
-                  setOdoName(""); 
-                  fetchOdoList(); 
+                  setOdoName("");
+                  fetchOdoList();
                 }}
                 style={styles.picker}
               >
@@ -240,9 +231,9 @@ const CreateBooking = ({
                 onValueChange={(itemValue) => {
                   setMaintenanceCenter(itemValue);
                   setFilteredOdo([]);
-                  setOdo(""); 
-                  setOdoName(""); 
-                  fetchOdo(); 
+                  setOdo("");
+                  setOdoName("");
+                  fetchOdo();
                   fetchOdoList();
                 }}
                 style={styles.picker}
@@ -264,8 +255,9 @@ const CreateBooking = ({
               <CustomSearchableDropdown
                 items={filteredOdo.map((odo) => ({
                   id: odo.maintenanceServiceId || "",
-                  name: `${odo.vehiclesBrandName || ""} ${odo.vehicleModelName || ""
-                    } - Odo: ${odo.maintananceScheduleName || ""} Km `,
+                  name: `${odo.vehiclesBrandName || ""} ${
+                    odo.vehicleModelName || ""
+                  } - Odo: ${odo.maintananceScheduleName || ""} Km `,
                   value: odo.maintananceScheduleId || "",
                   imageUrl: odo.imageUrl || "",
                   maintenanceServiceName: odo.maintenanceServiceName || "",
@@ -275,7 +267,7 @@ const CreateBooking = ({
                   if (item && item.value) {
                     setOdo(item.value);
                     setOdoName(item.name || "");
-                    setScheduleId(item.value); 
+                    setScheduleId(item.value);
                   }
                 }}
                 placeholder={odoName || "Chọn Combo"}
@@ -287,8 +279,8 @@ const CreateBooking = ({
             <View style={styles.inputContainer}>
               <Pressable
                 onPress={() => {
-                  fetchOdoList(); 
-                  setShowDialog(true); 
+                  fetchOdoList();
+                  setShowDialog(true);
                   console.log(odoList);
                 }}
                 style={styles.showButton}
@@ -326,20 +318,30 @@ const CreateBooking = ({
               />
             )}
           </View>
-
-          {maintenanceCenter && vehicle && odo.length > 0 && odoList.length > 0 && (
-            <View>
-              {load ? (
-                <Pressable style={styles.button}>
-                  <Text style={styles.buttonText}>Đang tạo lịch ...</Text>
-                </Pressable>
-              ) : (
-                <Pressable style={styles.button} onPress={handleSignup}>
-                  <Text style={styles.buttonText}>Tạo lịch</Text>
-                </Pressable>
-              )}
-            </View>
-          )}
+          <View style={styles.inputContainer}>
+            <TextInput
+              style={styles.textInput}
+              placeholder="Lưu ý"
+              value={note}
+              onChangeText={(text) => setNote(text)}
+            />
+          </View>
+          {maintenanceCenter &&
+            vehicle &&
+            odo.length > 0 &&
+            odoList.length > 0 && (
+              <View>
+                {load ? (
+                  <Pressable style={styles.button}>
+                    <Text style={styles.buttonText}>Đang tạo lịch ...</Text>
+                  </Pressable>
+                ) : (
+                  <Pressable style={styles.button} onPress={handleSignup}>
+                    <Text style={styles.buttonText}>Tạo lịch</Text>
+                  </Pressable>
+                )}
+              </View>
+            )}
         </View>
 
         <Modal
@@ -365,7 +367,6 @@ const CreateBooking = ({
             </View>
           </View>
         </Modal>
-
       </View>
     </ScrollView>
   );

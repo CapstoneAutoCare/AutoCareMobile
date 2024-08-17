@@ -94,7 +94,7 @@ export default UpdateProfile = () => {
        setLoad(true);
         const accessToken = await AsyncStorage.getItem("ACCESS_TOKEN");
       const response = await axios.put(
-        `http://solv2.runasp.net/api/MaintenanceCenters/Update?centerId=${profile.MaintenanceCenterId}`,
+        `https://capstoneautocareapi20240816003911.azurewebsites.net/api/MaintenanceCenters/Update?centerId=${profile.MaintenanceCenterId}`,
         {
           gender: gender,
           phone: phone,
