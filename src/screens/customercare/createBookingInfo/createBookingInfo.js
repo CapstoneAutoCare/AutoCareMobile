@@ -5,6 +5,7 @@ import COLORS from "./../../../constants/colors";
 import axios from "axios";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { BASE_URL } from "../../../../env";
 
 const CreateBookingInfo = () => {
     const navigation = useNavigation();
@@ -23,7 +24,7 @@ const CreateBookingInfo = () => {
             try {
               const accessToken = await AsyncStorage.getItem('ACCESS_TOKEN');
               const response = await axios.get(
-                `https://capstoneautocareapi20240816003911.azurewebsites.net/api/SparePartsItemCosts/GetListByClient?centerId=${profile.CentreId}`,
+                `${BASE_URL}api/SparePartsItemCosts/GetListByClient?centerId=${profile.CentreId}`,
                 {
                   headers: {
                     'Content-Type': 'application/json',
@@ -44,7 +45,7 @@ const CreateBookingInfo = () => {
             try {
               const accessToken = await AsyncStorage.getItem('ACCESS_TOKEN');
               const response = await axios.get(
-                `https://capstoneautocareapi20240816003911.azurewebsites.net/api/MaintenanceServiceCosts/GetListByClient?centerId=${profile.CentreId}`,
+                `${BASE_URL}api/MaintenanceServiceCosts/GetListByClient?centerId=${profile.CentreId}`,
                 {
                   headers: {
                     'Content-Type': 'application/json',
@@ -125,7 +126,7 @@ const CreateBookingInfo = () => {
             const vietnamTime = new Date(now.getTime() + 7 * 60 * 60 * 1000);
             const accessToken = await AsyncStorage.getItem("ACCESS_TOKEN");
             const response = await axios.post(
-                "https://capstoneautocareapi20240816003911.azurewebsites.net/api/MaintenanceInformations/PostHaveItems",
+                `${BASE_URL}api/MaintenanceInformations/PostHaveItems`,
                 {
                     informationMaintenanceName: "string",
                     finishedDate: vietnamTime.toISOString(),

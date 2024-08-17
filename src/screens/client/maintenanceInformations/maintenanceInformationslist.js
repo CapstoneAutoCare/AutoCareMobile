@@ -13,6 +13,7 @@ import {
 import { Modal, Text } from "react-native-paper";
 import { Ionicons } from "@expo/vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { BASE_URL } from "../../../../env";
 
 const MaintenanceInformationsList = async () => {
   const [data, setData] = useState("");
@@ -26,7 +27,7 @@ const MaintenanceInformationsList = async () => {
   const fetchMaintenanceInformations = async (token) => {
     try {
       const response = await fetch(
-        "https://capstoneautocareapi20240816003911.azurewebsites.net/api/MaintenanceInformations/GetListByClient",
+        `${BASE_URL}api/MaintenanceInformations/GetListByClient`,
         {
           method: "GET",
           headers: {

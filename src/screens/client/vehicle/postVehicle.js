@@ -15,6 +15,7 @@ import { useNavigation } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useDispatch, useSelector } from "react-redux";
 import { getListVehicleModel } from "../../../app/Vehicle/actions";
+import { BASE_URL } from "../../../../env";
 const VehiclePost = () => {
   const dispatch = useDispatch();
   const navigation = useNavigation();
@@ -44,7 +45,7 @@ const VehiclePost = () => {
       setLoad(true);
       const accessToken = await AsyncStorage.getItem("ACCESS_TOKEN");
       const response = await axios.post(
-        "https://capstoneautocareapi20240816003911.azurewebsites.net/api/Vehicles/Post",
+        `${BASE_URL}api/Vehicles/Post`,
         {
           vehicleModelId,
           color,

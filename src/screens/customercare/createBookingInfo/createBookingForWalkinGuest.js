@@ -16,6 +16,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useSelector } from "react-redux";
 import { getProfile } from "../../../features/userSlice";
 import { useAppDispatch } from "../../../app/hooks";
+import { BASE_URL } from "../../../../env";
 const CreateBookingForWalkinGuest = ({
     centerList,
     maintenanceCenterId,
@@ -58,7 +59,7 @@ const CreateBookingForWalkinGuest = ({
             try {
                 const accessToken = await AsyncStorage.getItem("ACCESS_TOKEN");
                 const response = await axios.get(
-                    `https://capstoneautocareapi20240816003911.azurewebsites.net/api/SparePartsItemCosts/GetListByClient?centerId=${profile.CentreId}`,
+                    `${BASE_URL}api/SparePartsItemCosts/GetListByClient?centerId=${profile.CentreId}`,
                     {
                         headers: {
                             "Content-Type": "application/json",
@@ -76,7 +77,7 @@ const CreateBookingForWalkinGuest = ({
             try {
                 const accessToken = await AsyncStorage.getItem("ACCESS_TOKEN");
                 const response = await axios.get(
-                    `https://capstoneautocareapi20240816003911.azurewebsites.net/api/MaintenanceServiceCosts/GetListByClient?centerId=${profile.CentreId}`,
+                    `${BASE_URL}api/MaintenanceServiceCosts/GetListByClient?centerId=${profile.CentreId}`,
                     {
                         headers: {
                             "Content-Type": "application/json",
@@ -163,7 +164,7 @@ const CreateBookingForWalkinGuest = ({
             const vietnamTime = new Date(now.getTime() + 7 * 60 * 60 * 1000);
             const accessToken = await AsyncStorage.getItem("ACCESS_TOKEN");
             const response = await axios.post(
-                "https://capstoneautocareapi20240816003911.azurewebsites.net/api/Bookings/PostHaveItems",
+                `${BASE_URL}api/Bookings/PostHaveItems`,
                 {
                     vehicleId: vehicle,
                     maintenanceCenterId: maintenanceCenter,

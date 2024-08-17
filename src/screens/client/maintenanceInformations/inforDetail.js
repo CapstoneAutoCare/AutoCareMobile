@@ -18,6 +18,7 @@ import ServiceItem from "../../../components/ServiceItem";
 import ProductItem from "../../../components/ProductItem";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
+import { BASE_URL } from "../../../../env";
 
 const InforDetail = ({ route }) => {
   const { info } = route.params;
@@ -51,7 +52,7 @@ const InforDetail = ({ route }) => {
       }
       const accessToken = await AsyncStorage.getItem("ACCESS_TOKEN");
       const response = await axios.post(
-        "https://capstoneautocareapi20240816003911.azurewebsites.net/api/Feedback/Post",
+        `${BASE_URL}api/Feedback/Post`,
         {
           comment: comment,
           vote: rating,

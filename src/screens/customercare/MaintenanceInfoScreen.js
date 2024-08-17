@@ -5,6 +5,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { getProfile } from "../../features/userSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigation } from '@react-navigation/native';
+import { BASE_URL } from '../../../env';
 function useDebounce(value, delay) {
     const [debouncedValue, setDebouncedValue] = useState(value);
 
@@ -62,7 +63,7 @@ const MaintenanceCenterInfoScreen = ({ }) => {
         try {
             const accessToken = await AsyncStorage.getItem('ACCESS_TOKEN');
             const response = await axios.get(
-                `https://capstoneautocareapi20240816003911.azurewebsites.net/api/SparePartsItemCosts/GetListByClient?centerId=${profile.CentreId}`,
+                `${BASE_URL}api/SparePartsItemCosts/GetListByClient?centerId=${profile.CentreId}`,
                 {
                     headers: {
                         'Content-Type': 'application/json',
@@ -80,7 +81,7 @@ const MaintenanceCenterInfoScreen = ({ }) => {
         try {
             const accessToken = await AsyncStorage.getItem('ACCESS_TOKEN');
             const response = await axios.get(
-                `https://capstoneautocareapi20240816003911.azurewebsites.net/api/MaintenanceServiceCosts/GetListByDifMaintenanceServiceAndInforIdAndBooleanFalse?centerId=${profile.CentreId}`,
+                `${BASE_URL}api/MaintenanceServiceCosts/GetListByDifMaintenanceServiceAndInforIdAndBooleanFalse?centerId=${profile.CentreId}`,
                 {
                     headers: {
                         'Content-Type': 'application/json',
@@ -98,7 +99,7 @@ const MaintenanceCenterInfoScreen = ({ }) => {
         try {
             const accessToken = await AsyncStorage.getItem('ACCESS_TOKEN');
             const response = await axios.get(
-                `https://capstoneautocareapi20240816003911.azurewebsites.net/api/MaintenanceServices/GetListByCenterId?id=${profile.CentreId}`,
+                `${BASE_URL}api/MaintenanceServices/GetListByCenterId?id=${profile.CentreId}`,
                 {
                     headers: {
                         'Content-Type': 'application/json',
@@ -123,7 +124,7 @@ const MaintenanceCenterInfoScreen = ({ }) => {
         try {
             const accessToken = await AsyncStorage.getItem('ACCESS_TOKEN');
             const response = await axios.get(
-                `https://capstoneautocareapi20240816003911.azurewebsites.net/api/VehicleModel/GetAll`,
+                `${BASE_URL}api/VehicleModel/GetAll`,
                 {
                     headers: {
                         'Content-Type': 'application/json',

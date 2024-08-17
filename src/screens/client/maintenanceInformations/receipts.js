@@ -17,6 +17,7 @@ import moment from "moment";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
 import { getReceiptById } from "../../../app/Center/actions";
+import { BASE_URL } from "../../../../env";
 
 const Receipts = ({ route }) => {
     const { info } = route.params;
@@ -45,7 +46,7 @@ const Receipts = ({ route }) => {
     try {
       const accessToken = await AsyncStorage.getItem("ACCESS_TOKEN");
       const response = await axios.post(
-        "https://capstoneautocareapi20240816003911.azurewebsites.net/api/Payments/CreateVnPayPaymentUrl",
+        `${BASE_URL}api/Payments/CreateVnPayPaymentUrl`,
         requestBody,
         {
           headers: {
