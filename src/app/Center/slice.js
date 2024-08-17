@@ -1,5 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { getCenterById, getListCare, getListCareById, getListCenter, getListInformations, getListService, getListServiceById, getListStaff, getListStaffById, getPackageById, getReceiptById, getService, getServiceByCenter } from "./actions";
+import { getCenterById, getListCare, getListCareById, getListCenter, getListCenterActive, getListInformations, getListService, getListServiceById, getListStaff, getListStaffById, getPackageById, getReceiptById, getService, getServiceByCenter } from "./actions";
 
 const accountSlice = createSlice({
   name: "center",
@@ -73,6 +73,10 @@ const accountSlice = createSlice({
     builder.addCase(getListCareById.fulfilled, (state, action) => {
       state.loading = false;
       state.careById = action.payload;
+    })
+    builder.addCase(getListCenterActive.fulfilled, (state, action) => {
+      state.loading = false;
+      state.centerList = action.payload;
     });
   },
 });

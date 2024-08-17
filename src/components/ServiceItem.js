@@ -57,7 +57,7 @@ const ServiceItem = ({ item }) => {
             }}
             onPress={() =>
               navigation.navigate("SERVICE_DETAIL", {
-                maintenanceServiceId: item.maintenanceServiceId,
+                maintenanceServiceId: item?.maintenanceServiceId,
               })
             }
           >

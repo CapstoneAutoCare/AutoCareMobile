@@ -49,18 +49,18 @@ const CenterDetail = ({ route }) => {
       </View>
       {centerById && (
         <View style={styles.card}>
-          <Image style={styles.image} source={{ uri: centerById.logo }} />
+          <Image style={styles.image} source={{ uri: centerById?.logo }} />
 
           <View style={{ alignItems: "left" }}>
-            <Text style={styles.name}>{centerById.maintenanceCenterName}</Text>
-            <Text style={styles.name}>email: {centerById.email}</Text>
-            <Text style={styles.name}>SĐT: {centerById.phone}</Text>
+            <Text style={styles.name}>{centerById?.maintenanceCenterName}</Text>
+            <Text style={styles.name}>email: {centerById?.email}</Text>
+            <Text style={styles.name}>SĐT: {centerById?.phone}</Text>
 
-            <Text style={styles.status}>Trạng thái: {centerById.status}</Text>
-            <Text style={styles.centerName}>Đánh giá: {centerById.rating}</Text>
-            <Text style={styles.centerName}>Địa chỉ: {centerById.address}</Text>
+            <Text style={styles.status}>Trạng thái: {centerById?.status}</Text>
+            <Text style={styles.centerName}>Đánh giá: {centerById?.rating}</Text>
+            <Text style={styles.centerName}>Địa chỉ: {centerById?.address}</Text>
             <Text style={styles.centerName}>
-              Thông tin: {centerById.maintenanceCenterDescription}
+              Thông tin: {centerById?.maintenanceCenterDescription}
             </Text>
           </View>
         </View>
@@ -76,8 +76,8 @@ const CenterDetail = ({ route }) => {
           flexWrap: "wrap",
         }}
       >
-        {serviceByCenter.length > 0 ? (
-          serviceByCenter.map((item, index) => (
+        {serviceByCenter?.length > 0 ? (
+          serviceByCenter?.map((item, index) => (
             <ServiceItem item={item} key={index} />
           ))
         ) : (
@@ -105,8 +105,8 @@ const CenterDetail = ({ route }) => {
           flexWrap: "wrap",
         }}
       >
-        {sparePartByCenter.length > 0 ? (
-          sparePartByCenter.map((item, index) => (
+        {sparePartByCenter?.length > 0 ? (
+          sparePartByCenter?.map((item, index) => (
             <ProductItem item={item} key={index} />
           ))
         ) : (
@@ -134,8 +134,8 @@ const CenterDetail = ({ route }) => {
           flexWrap: "wrap",
         }}
       >
-        {packageById.length > 0 ? (
-          packageById.map((item, index) => (
+        {packageById?.length > 0 ? (
+          packageById?.map((item, index) => (
             <PackageItem item={item} key={index} />
           ))
         ) : (
