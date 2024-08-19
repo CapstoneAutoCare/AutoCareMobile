@@ -2556,7 +2556,7 @@ at-least-node@^1.0.0:
     "@react-navigation/native" "^6.1.17"
     "@react-navigation/native-stack" "^6.9.26"
     "@reduxjs/toolkit" "^2.2.1"
-    autocarecar "file:../../../AppData/Local/Yarn/Cache/v6/npm-autocarecar-1.0.0-5d8f0d2a-5fa7-46b4-9bd6-20ec2bf41a26-1723747903842/node_modules/autocarecar"
+    autocarecar "file:../../../AppData/Local/Yarn/Cache/v6/npm-autocarecar-1.0.0-8c174d74-1dc3-4454-9fc7-aa84ddb29394-1724076282622/node_modules/autocarecar"
     axios "^1.6.7"
     expo "~51.0.9"
     expo-barcode-scanner "^13.0.1"
@@ -2571,6 +2571,7 @@ at-least-node@^1.0.0:
     levenshtein "^1.0.5"
     moment "^2.30.1"
     moment-timezone "^0.5.45"
+    o "^2.3.2"
     react "18.2.0"
     react-native "0.74.1"
     react-native-dropdown-select-list "^2.0.5"
@@ -5476,7 +5477,7 @@ mkdirp@^1.0.3, mkdirp@^1.0.4:
 
 moment-timezone@^0.5.45:
   version "0.5.45"
-  resolved "https://registry.npmjs.org/moment-timezone/-/moment-timezone-0.5.45.tgz"
+  resolved "https://registry.yarnpkg.com/moment-timezone/-/moment-timezone-0.5.45.tgz#cb685acd56bac10e69d93c536366eb65aa6bcf5c"
   integrity sha512-HIWmqA86KcmCAhnMAN0wuDOARV/525R2+lOLotuGFzn4HO+FH+/645z2wx0Dt3iDv6/p61SIvKnDstISainhLQ==
   dependencies:
     moment "^2.29.4"
@@ -5637,7 +5638,7 @@ nullthrows@^1.1.1:
 
 o@^2.3.2:
   version "2.3.2"
-  resolved "https://registry.yarnpkg.com/o/-/o-2.3.2.tgz#b9ff06868af6d5c875d5f1ce9574f998978d0753"
+  resolved "https://registry.npmjs.org/o/-/o-2.3.2.tgz"
   integrity sha512-KoP5gG518iPVmAwaxJBmc7f5NC/3cEaS4iCN5ynZDsw4gHJs4NJSiICDbSoxty6+xQ8/LFWatq6Yk3HhGKEGhA==
 
 ob1@0.80.9:

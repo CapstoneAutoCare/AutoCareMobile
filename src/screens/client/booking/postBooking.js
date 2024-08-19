@@ -47,7 +47,7 @@ const PostBooking = ({ route }) => {
           </TouchableOpacity>
         </View>
         <View>
-          <Text style={styles.name}>{!tab?"Đặt lịch":"Đặt lịch theo combo"}</Text>
+          <Text style={styles.name}>{!tab?"Đặt lịch":"Đặt lịch theo gói Odo"}</Text>
         </View>
       </View>
       <View style={styles.hr} />

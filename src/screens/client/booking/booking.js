@@ -348,7 +348,7 @@ const Booking = () => {
                 });
               }}
             >
-              <Text style={styles.modalButtonText}>Đặt lịch Combo</Text>
+              <Text style={styles.modalButtonText}>Đặt lịch theo gói Odo</Text>
             </TouchableOpacity>
             <TouchableOpacity
               style={[styles.modalButton, { backgroundColor: "red" }]}

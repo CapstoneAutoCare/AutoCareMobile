@@ -110,7 +110,12 @@ const CreateBooking = ({
     }
   };
 
-  // Handle form submission
+    // Tạo một bản sao của bookingDate để tránh thay đổi trực tiếp
+    const adjustedBookingDate = new Date(bookingDate);
+
+    // Thêm 7 giờ vào thời gian
+    adjustedBookingDate.setHours(adjustedBookingDate.getHours() + 7);
+
   const handleSignup = async () => {
     try {
       if (!note || !maintenanceCenter) {
@@ -126,7 +131,7 @@ const CreateBooking = ({
           maintenanceCenterId: maintenanceCenter,
           maintananceScheduleId: odo || null,
           note: note,
-          bookingDate: bookingDate.toISOString(),
+          bookingDate: adjustedBookingDate.toISOString(),
           informationName: "Đặt Lịch Bảo Dưỡng",
         },
         {
@@ -175,7 +180,7 @@ const CreateBooking = ({
     const currentTime = selectedTime || bookingDate;
     setShowTimePicker(false);
     const updatedDate = new Date(
-      bookingDate.setHours(currentTime.getHours() + 7, currentTime.getMinutes())
+      bookingDate.setHours(currentTime.getHours(), currentTime.getMinutes())
     );
     setBookingDate(updatedDate);
   };

@@ -45,7 +45,7 @@ const VehiclePost = () => {
       setLoad(true);
       const accessToken = await AsyncStorage.getItem("ACCESS_TOKEN");
       const response = await axios.post(
-        `${BASE_URL}api/Vehicles/Post`,
+        `${BASE_URL}/Vehicles/Post`,
         {
           vehicleModelId,
           color,
