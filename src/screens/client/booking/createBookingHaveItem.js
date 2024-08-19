@@ -210,6 +210,11 @@ const CreateBookingHaveItem = ({
   const onSubmit = () => {
     alert("Form submitted!");
   };
+    // Tạo một bản sao của bookingDate để tránh thay đổi trực tiếp
+    const adjustedBookingDate = new Date(bookingDate);
+
+    // Thêm 7 giờ vào thời gian
+    adjustedBookingDate.setHours(adjustedBookingDate.getHours() + 7);
   const handleSignup = async () => {
     try {
       if (!note || !maintenanceCenter) {
@@ -227,7 +232,7 @@ const CreateBookingHaveItem = ({
           maintenanceCenterId: maintenanceCenter,
           // maintananceScheduleId: null,
           note: note,
-          bookingDate: bookingDate.toISOString(),
+          bookingDate: adjustedBookingDate.toISOString(),
           createMaintenanceInformationHaveItemsByClient: {
             // customerCareId: customerCare,
             // finishedDate: vietnamTime.toISOString(),
@@ -270,7 +275,7 @@ const CreateBookingHaveItem = ({
     const currentTime = selectedTime || bookingDate;
     setShowTimePicker(false);
     const updatedDate = new Date(
-      bookingDate.setHours(currentTime.getHours() + 7, currentTime.getMinutes())
+      bookingDate.setHours(currentTime.getHours(), currentTime.getMinutes())
     );
     setBookingDate(updatedDate);
   };

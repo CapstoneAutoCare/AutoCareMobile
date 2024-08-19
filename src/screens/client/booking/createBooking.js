@@ -110,11 +110,11 @@ const CreateBooking = ({
     }
   };
 
-    // Tạo một bản sao của bookingDate để tránh thay đổi trực tiếp
-    const adjustedBookingDate = new Date(bookingDate);
+  // Tạo một bản sao của bookingDate để tránh thay đổi trực tiếp
+  const adjustedBookingDate = new Date(bookingDate);
 
-    // Thêm 7 giờ vào thời gian
-    adjustedBookingDate.setHours(adjustedBookingDate.getHours() + 7);
+  // Thêm 7 giờ vào thời gian
+  adjustedBookingDate.setHours(adjustedBookingDate.getHours() + 7);
 
   const handleSignup = async () => {
     try {
@@ -260,9 +260,8 @@ const CreateBooking = ({
               <CustomSearchableDropdown
                 items={filteredOdo.map((odo) => ({
                   id: odo.maintenanceServiceId || "",
-                  name: `${odo.vehiclesBrandName || ""} ${
-                    odo.vehicleModelName || ""
-                  } - Odo: ${odo.maintananceScheduleName || ""} Km `,
+                  name: `${odo.vehiclesBrandName || ""} ${odo.vehicleModelName || ""
+                    } - Odo: ${odo.maintananceScheduleName || ""} Km `,
                   value: odo.maintananceScheduleId || "",
                   imageUrl: odo.imageUrl || "",
                   maintenanceServiceName: odo.maintenanceServiceName || "",

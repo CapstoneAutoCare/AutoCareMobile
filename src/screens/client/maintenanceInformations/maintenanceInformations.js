@@ -233,7 +233,9 @@ const MaintenanceInformations = () => {
                       }}
                     >
                       Ngày hoàn thành :{" "}
-                      {moment(item?.finishedDate).format("DD/MM/YYYY HH:mm")}
+                      {item?.finishedDate == "0001-01-01T00:00:00"
+                        ? ""
+                        : moment(item.finishedDate).format("DD/MM/YYYY HH:mm")}
                     </Text>
                     <View style={{ marginTop: 10 }}>
                       <Text style={{ fontSize: 13, fontWeight: "600" }}>
