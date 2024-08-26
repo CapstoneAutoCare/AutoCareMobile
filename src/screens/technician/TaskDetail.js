@@ -11,13 +11,21 @@ const TaskDetail = ({ route }) => {
       await axiosClient.patch(
         `MaintenanceTaskServiceInfoes/PatchStatus?id=${serviceId}&status=DONE`
       );
-      Alert.alert('Service Completed', 'The service status has been updated to DONE.');
+      Alert.alert('Đã xong công việc.');
     } catch (error) {
-      Alert.alert('Error', 'There was an error completing the service.');
+      Alert.alert('Lỗi không thể hoàn thành');
       console.error('Error completing service:', error);
     }
   };
-  
+  const translateStatus = (status) => {
+    const statusMapping = {
+      DONE: "Hoàn Tất",
+      ACCEPTED: "Đang Thực Hiện",
+      ACTIVE: "Đang Thực Hiện"
+      
+    };
+    return statusMapping[status] || status;
+  };
   const handleCompleteSparepart = async (sparepartId) => {
     try {
       // Update the spare part status to DONE
@@ -25,9 +33,9 @@ const TaskDetail = ({ route }) => {
       await axiosClient.patch(
         `/MaintenanceTaskSparePartInfoes/PatchStatus?id=${sparepartId}&status=DONE`
       );
-      Alert.alert('Spare Part Completed', 'The spare part status has been updated to DONE.');
+      Alert.alert('Đã xong công việc.');
     } catch (error) {
-      Alert.alert('Error', 'There was an error completing the spare part.');
+      Alert.alert('Lỗi không thể hoàn thành');
       console.error('Error completing spare part:', error);
     }
   };
@@ -38,10 +46,10 @@ const TaskDetail = ({ route }) => {
       <Image source={{ uri: item.image }} style={styles.image} />
       <View style={styles.textContainer}>
         <Text style={styles.name}>{item.name}</Text>
-        <Text style={styles.status}>Status: {item.status}</Text>
+        <Text style={styles.status}>Trạng Thái: {translateStatus(item.status)}</Text>
         {item.status !== 'DONE' && (
           <Button
-            title="Complete Service"
+            title="Hoàn tất công việc"
             onPress={() => handleCompleteService(item?.maintenanceTaskServiceInfoId)}
           />
         )}
@@ -54,10 +62,10 @@ const TaskDetail = ({ route }) => {
       <Image source={{ uri: item.image }} style={styles.image} />
       <View style={styles.textContainer}>
         <Text style={styles.name}>{item.name}</Text>
-        <Text style={styles.status}>Status: {item.status}</Text>
+        <Text style={styles.status}>Trạng Thái: {translateStatus(item.status)}</Text>
         {item.status !== 'DONE' && (
           <Button
-            title="Complete Spare Part"
+            title="Hoàn tất công việc"
             onPress={() => handleCompleteSparepart(item?.maintenanceTaskSparePartInfoId)}
           />
         )}
@@ -68,16 +76,16 @@ const TaskDetail = ({ route }) => {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>{task.maintenanceTaskName}</Text>
-      <Text style={styles.detail}>Created Date: {new Date(task.createdDate).toLocaleString()}</Text>
-      <Text style={styles.detail}>Status: {task.status}</Text>
-      <Text style={styles.sectionTitle}>Services</Text>
+      <Text style={styles.detail}>Ngày được giao: {new Date(task.createdDate).toLocaleString()}</Text>
+      <Text style={styles.detail}>Trạng thái: {translateStatus(task.status)}</Text>
+      <Text style={styles.sectionTitle}>Dịch Vụ</Text>
       <FlatList
         data={task.responseMainTaskServices}
         renderItem={renderService}
         keyExtractor={(item) => item.maintenanceTaskServiceInfoId}
       />
 
-      <Text style={styles.sectionTitle}>Spare Parts</Text>
+      <Text style={styles.sectionTitle}>Phụ Tùng</Text>
       <FlatList
         data={task.responseMainTaskSpareParts}
         renderItem={renderSparePart}

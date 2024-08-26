@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { ScrollView, View, Text, Button, StyleSheet, Pressable } from 'react-native';
+import { ScrollView, View, Text, Button, StyleSheet, Pressable, TextInput } from 'react-native';
 import { Card } from 'react-native-paper';
 import { MaterialIcons } from '@expo/vector-icons';
 import Moment from 'moment';
@@ -13,6 +13,7 @@ import StaffListComponent from '../BookingComponent/StaffListComponent';
 import { fetchStaffByCenter, setIsTaskAssigned } from '../../app/CusCare/requestDetailSlice';
 import { useNavigation } from '@react-navigation/native';
 import axiosClient from '../../services/axiosClient';
+import { fetchRequestDetail } from '../../app/CusCare/requestDetailSlice';
 const RequestInfoTab = ({ request, updateStatus, error, profile, assignTask}) => {
   const navigation = useNavigation();
   const dispatch = useDispatch();
@@ -27,7 +28,8 @@ const RequestInfoTab = ({ request, updateStatus, error, profile, assignTask}) =>
   const [availableServices, setAvailableServices] = useState([]);
   const [isInvoiceModalVisible, setInvoiceModalVisible] = useState(false);
   const [invoiceData, setInvoiceData] = useState(null);
-
+  const [isOdooModalVisible, setOdooModalVisible] = useState(false);
+  const [odooNumber, setOdooNumber] = useState("");
   //useEffect(() => {
     //if (request?.responseMaintenanceInformation.responseMaintenanceServiceInfos.length === 0 && request?.responseMaintenanceInformation.responseMaintenanceSparePartInfos.length === 0) {
    //   alert(
@@ -239,7 +241,7 @@ const RequestInfoTab = ({ request, updateStatus, error, profile, assignTask}) =>
       fetchInvoiceData();
   
       if (!invoiceData) {
-        const description = "Payment for maintenance"; 
+        const description = "Hóa Đơn Xe" + request.responseVehicles.licensePlate; 
         await axiosClient.post(
           'Receipts/Post',
           { informationMaintenanceId: infoId, description },
@@ -274,7 +276,8 @@ const RequestInfoTab = ({ request, updateStatus, error, profile, assignTask}) =>
             'Content-Type': 'text/plain',
           },
         }
-      );   
+      );  
+      dispatch(fetchRequestDetail(request.bookingId));
     } catch (error) {
       console.error('Error during checkin:', error);
       alert('Có lỗi xảy ra khi check in xe. Vui lòng thử lại.');
@@ -288,6 +291,40 @@ const handleAssignTask = async () => {
   }
   console.log(`RequestInfoTab: ${mInfoId}, ${selectedStaff.technicianId}`);
   assignTask(mInfoId, selectedStaff.technicianId);
+  dispatch(fetchRequestDetail(request.bookingId));
+
+};
+const toggleOdooModal = () => {
+  setOdooModalVisible(!isOdooModalVisible);
+};
+
+const handleOdooUpdate = async () => {
+  if (odooNumber.trim() === "" || isNaN(odooNumber)) {
+    alert("Lỗi", "Vui lòng nhập số Odoo hợp lệ.");
+    return;
+  }
+
+  try {
+    const response = await axiosClient.post("/OdoHistories/Post", {
+      odo: odooNumber,
+      description: "Chỉ số odoo tại hãng",
+      vehiclesId: request.responseVehicles.vehiclesId,
+      maintenanceInformationId: request.responseMaintenanceInformation.informationMaintenanceId
+    });
+
+    if (response.status === 200) {
+      alert("Thành công", "Cập nhật số Odoo thành công.");
+      toggleOdooModal();
+      setOdooNumber("");
+      dispatch(fetchRequestDetail(request.bookingId));
+
+    } else {
+      alert("Lỗi", "Cập nhật không thành công. Vui lòng thử lại.");
+    }
+  } catch (error) {
+    console.error(error);
+    alert("Lỗi", "Đã xảy ra lỗi khi cập nhật số Odoo.");
+  }
 };
 
 const getLastStatus = () => {
@@ -304,6 +341,41 @@ useEffect(() => {
   }
   
 }, [request, dispatch]);
+const translateStatus = (status) => {
+  const statusMapping = {
+    WAITING: "Đang chờ",
+    ACCEPTED: "Đã chấp nhận",
+    CANCELLED: "Đã hủy",
+    DENIED: "Đã từ chối",
+    FINISHED: "Đã hoàn thành",
+    WAITINGBYCAR: "Đang chờ xe",
+    CREATEDBYCLIENT: "Yêu cầu bởi khách hàng",
+    CREATEDBYClIENT: "Yêu cầu bởi khách hàng",
+
+    CHECKIN: "Khách hàng đã đến",
+    REPAIRING: "Đang sửa chữa",
+    PAYMENT: "Thanh toán",
+    PAID: "Đã thanh toán",
+    YETPAID: "Chưa thanh toán"
+  };
+  return statusMapping[status] || status;
+};
+const getStatusColor = (status) => {
+  switch (status) {
+    case "CHECKIN":
+      return "blue";
+    case "CREATEDBYClIENT":
+      return "orange";
+    case "PAYMENT":
+      return "purple";
+    case "PAID":
+      return "green";
+    case "YETPAID":
+      return "red";
+    default:
+      return "black";
+  }
+};
   return error ? (
     <ErrorComponent message={error} />
   ) : (
@@ -320,8 +392,8 @@ useEffect(() => {
           <Text style={styles.label}>
             <MaterialIcons name="event" size={24} color="black" /> Ngày đặt lịch: {Moment(request?.bookingDate).format('DD/MM/YYYY HH:mm')}
           </Text>
-          <Text style={styles.label}>
-            <MaterialIcons name="info" size={24} color="black" /> Trạng thái: {request?.status}
+          <Text style={[styles.label, {color: getStatusColor(request?.responseMaintenanceInformation?.status)}]}>
+            <MaterialIcons name="info" size={24} color="black" /> Trạng thái: {translateStatus(request?.responseMaintenanceInformation?.status)}
           </Text>
           <Text style={styles.label}>
             <MaterialIcons name="person" size={24} color="black" /> Tên khách hàng: {request?.clientName}
@@ -332,22 +404,59 @@ useEffect(() => {
           <Text style={styles.label}>
             <MaterialIcons name="store" size={24} color="black" /> Tên trung tâm bảo dưỡng: {request?.maintenanceCenterName || 'Không có thông tin'}
           </Text>
+          <Text style={styles.label}>
+            <MaterialIcons name="directions-car" size={24} color="black" /> Số km hiện tại: {request?.responseVehicles?.odo}
+          </Text>
+          <Modal
+          visible={isOdooModalVisible}
+          animationType="slide"
+          transparent={true}
+          onRequestClose={toggleOdooModal}
+        >
+          <View style={{ flex: 1, justifyContent: "center", alignItems: "center", backgroundColor: "rgba(0, 0, 0, 0.5)" }}>
+            <View style={{ width: 300, padding: 20, backgroundColor: "white", borderRadius: 10 }}>
+              <TextInput
+                placeholder="Nhập số Odoo"
+                keyboardType="numeric"
+                value={odooNumber}
+                onChangeText={setOdooNumber}
+                style={{ borderBottomWidth: 1, marginBottom: 20, fontSize: 18 }}
+              />
+              <Button title="Cập Nhật" onPress={handleOdooUpdate} />
+              <Button title="Hủy" onPress={toggleOdooModal} />
+            </View>
+          </View>
+        </Modal>
           {request?.status === 'WAITING' ? (
   <View style={styles.buttonContainer}>
     <Button title="Chấp nhận" onPress={() => updateStatus('ACCEPTED')} color="green" />
-    <Button title="Từ chối" onPress={() => updateStatus('DENIED')} color="red" />
+    <Button title="Từ chối" onPress={() => updateStatus('CANCELLED')} color="red" />
   </View>
 ) : (
   request?.status === 'ACCEPTED' ? (
     <View style={styles.buttonContainer}>
       {lastStatus === 'WAITINGBYCAR' && (
-        <Button title="Check In" onPress={handleCheckin} />
+      <View style={styles.buttonContainer}>
+        <Button title="Khách hàng đã tới" onPress={handleCheckin} />
+        {(currentTime.isAfter(moment(request.bookingDate))) && (
+              <Button 
+                title="Từ chối" 
+                onPress={() => updateStatus('CANCELLED')} 
+                color="red" 
+              />
+            )}
+      </View>   
       )}
       {lastStatus === 'REPAIRING' && (
         <>
           <Button title="Thêm Phụ Tùng" onPress={() => toggleModal('SPARE_PART')} />
           <Button title="Thêm Dịch Vụ" onPress={() => toggleModal('SERVICE')} />
         </>
+      )}
+       {lastStatus === "REPAIRING" || lastStatus === "CHECKIN" &&(
+          <>
+            <Button title="Cập Nhật Số Odoo" onPress={toggleOdooModal} />
+          </>
       )}
       {lastStatus === 'PAYMENT' && (
         <>

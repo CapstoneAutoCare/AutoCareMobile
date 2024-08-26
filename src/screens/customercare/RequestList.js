@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from "react";
-import { ScrollView, Text, View, Pressable, ActivityIndicator, TouchableOpacity , TextInput} from "react-native";
+import { ScrollView, Text, View, Pressable, ActivityIndicator, TouchableOpacity, TextInput } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import moment from "moment";
 import { MaterialIcons, Feather } from "@expo/vector-icons";
 import { fetchRequests } from "../../app/CusCare/requestsSlice";
 import { useNavigation } from '@react-navigation/native';
 import { getProfile } from "../../features/userSlice";
+import DateTimePicker from '@react-native-community/datetimepicker'; // Chọn thư viện DateTimePicker phù hợp với bạn
 import RNPickerSelect from "react-native-picker-select";
 
 const RequestList = () => {
@@ -13,9 +14,13 @@ const RequestList = () => {
   const navigation = useNavigation();
   const { loading, error, requests } = useSelector(state => state.requests || {});
   const { profile } = useSelector((state) => state.user || {});
-  const [searchQuery, setSearchQuery] = useState(""); 
+  const [searchQuery, setSearchQuery] = useState("");
   const [filterStatus, setFilterStatus] = useState(null);
   const [sortOrder, setSortOrder] = useState(null);
+  const [startDate, setStartDate] = useState(null);
+  const [endDate, setEndDate] = useState(null);
+  const [showDatePicker, setShowDatePicker] = useState(false);
+  const [dateType, setDateType] = useState(null); // 'start' or 'end'
 
   useEffect(() => {
     dispatch(fetchRequests(profile.CentreId));
@@ -42,10 +47,25 @@ const RequestList = () => {
     setSortOrder(sortOrder === 'newest' ? 'oldest' : 'newest');
   };
 
+  const handleDateChange = (event, selectedDate) => {
+    const currentDate = selectedDate || (dateType === 'start' ? startDate : endDate);
+    setShowDatePicker(false);
+
+    if (dateType === 'start') {
+      setStartDate(currentDate);
+    } else {
+      setEndDate(currentDate);
+    }
+  };
+
   const filteredRequests = (requests || []).filter(
-    (request) =>(filterStatus ? request.status === filterStatus : true) &&
-    (searchQuery ? request.vehicleNumber.toLowerCase().includes(searchQuery.toLowerCase()) : true)
+    (request) => 
+      (filterStatus ? request.status === filterStatus : true) &&
+      (searchQuery ? request.vehicleNumber.toLowerCase().includes(searchQuery.toLowerCase()) : true) &&
+      (!startDate || moment(request.bookingDate).isSameOrAfter(startDate, 'day')) &&
+      (!endDate || moment(request.bookingDate).isSameOrBefore(endDate, 'day'))
   );
+
   const translateStatus = (status) => {
     const statusMapping = {
       WAITING: "Đang chờ",
@@ -56,12 +76,13 @@ const RequestList = () => {
     };
     return statusMapping[status] || status;
   };
+
   const sortedRequests = filteredRequests.sort((a, b) => {
     if (!sortOrder) return 0;
     if (sortOrder === 'newest') {
-      return new Date(b.createdDate) - new Date(a.createdDate);
+      return new Date(b.bookingDate) - new Date(a.bookingDate);
     } else if (sortOrder === 'oldest') {
-      return new Date(a.createdDate) - new Date(b.createdDate);
+      return new Date(a.bookingDate) - new Date(b.bookingDate);
     }
     return 0;
   });
@@ -76,31 +97,36 @@ const RequestList = () => {
     <ScrollView style={{ marginTop: 50 }}>
       <View style={{ padding: 12, backgroundColor: "#DDD" }}>
         <View style={{ flexDirection: "row", justifyContent: "flex-end", alignItems: "center", marginBottom: 10 }}>
-        <TextInput
-            style={{
-              height: 40,
-              borderColor: 'gray',
-              borderWidth: 1,
-              borderRadius: 8,
-              paddingHorizontal: 10,
-              marginRight: 10,
-              width: 150,
-              backgroundColor: 'white',
-            }}
-            placeholder="Tìm kiếm theo biển số"
-            value={searchQuery}
-            onChangeText={setSearchQuery}
-          />
+          
+
+          <TouchableOpacity onPress={() => { setShowDatePicker(true); setDateType('start'); }} style={{ marginHorizontal: 8 }}>
+            <Feather name="calendar" size={24} color="black" />
+            <Text>{startDate ? moment(startDate).format('DD/MM/YYYY') : "Ngày bắt đầu"}</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity onPress={() => { setShowDatePicker(true); setDateType('end'); }} style={{ marginHorizontal: 8 }}>
+            <Feather name="calendar" size={24} color="black" />
+            <Text>{endDate ? moment(endDate).format('DD/MM/YYYY') : "Ngày kết thúc"}</Text>
+          </TouchableOpacity>
+
+          {showDatePicker && (
+            <DateTimePicker
+              value={new Date()}
+              mode="date"
+              display="default"
+              onChange={handleDateChange}
+            />
+          )}
+
           <View style={{ marginRight: 10 }}>
-            <RNPickerSelect
+          <RNPickerSelect
               onValueChange={(value) => setFilterStatus(value)}
               placeholder={{ label: "Chọn trạng thái", value: null }}
               items={[
                 { label: "Đang chờ", value: "WAITING" },
                 { label: "Đã chấp nhận", value: "ACCEPTED" },
                 { label: "Đã hủy", value: "CANCELLED" },
-                { label: "Đã từ chối", value: "DENIED" },
-                { label: "Đã hoàn thành", value: "FINISHED" }
+                
               ]}
               style={{
                 inputAndroid: {
@@ -118,7 +144,7 @@ const RequestList = () => {
                   right: 12,
                 },
               }}
-              Icon={() => <Feather name="filter" size={20} color="black" />}
+              Icon={() => <Feather name="filter" size={24} color="black" />}
             />
           </View>
           <TouchableOpacity onPress={handleSort} style={{ marginHorizontal: 10 }}>
@@ -127,6 +153,23 @@ const RequestList = () => {
           <TouchableOpacity onPress={handleRefresh}>
             <MaterialIcons name="refresh" size={24} color="black" />
           </TouchableOpacity>
+        </View>
+        <View>
+        <TextInput
+            style={{
+              height: 40,
+              borderColor: 'gray',
+              borderWidth: 1,
+              borderRadius: 8,
+              paddingHorizontal: 10,
+              marginRight: 10,
+              width: 150,
+              backgroundColor: 'white',
+            }}
+            placeholder="Tìm kiếm theo biển số"
+            value={searchQuery}
+            onChangeText={setSearchQuery}
+          />
         </View>
         <View>
           {sortedRequests.length > 0 ? (
@@ -191,7 +234,7 @@ const RequestList = () => {
                       }}
                     >
                       {translateStatus(item.status)}
-                      </Text>
+                    </Text>
                   </View>
                 </View>
 
@@ -213,7 +256,7 @@ const RequestList = () => {
                         width: 200,
                       }}
                     >
-                      Thời gian yêu cầu: {moment(item.createdDate).format('DD/MM/YYYY HH:mm')}
+                      Thời gian yêu cầu: {moment(item.bookingDate).format('DD/MM/YYYY HH:mm')}
                     </Text>
                     <Text
                       style={{

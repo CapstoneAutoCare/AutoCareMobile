@@ -11,12 +11,12 @@ const StaffListComponent = ({ staffList, selectedStaff, setSelectedStaff }) => {
           onPress={() => setSelectedStaff(staff)}
         >
           {staff?.logo && (
-                        <Image 
-                            source={{ uri: staff?.logo }} 
-                            style={styles.staffLogo} 
-                            resizeMode="contain"
-                        />
-                    )}
+            <Image
+              source={{ uri: staff?.logo }}
+              style={styles.staffLogo}
+              resizeMode="contain"
+            />
+          )}
           <Text>{staff.firstName} {staff.lastName}</Text>
         </TouchableOpacity>
       ))}
@@ -28,6 +28,7 @@ const styles = StyleSheet.create({
   container: {
     maxHeight: 400,
     padding: 16,
+    color: "white",
   },
   staffItem: {
     flexDirection: 'row',
@@ -38,13 +39,14 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#ddd',
     borderRadius: 8,
+    backgroundColor: "white"
   },
   selectedStaffItem: {
     backgroundColor: '#d0e7ff',
   },
-  staffLogo:{
+  staffLogo: {
     width: 50,
-        height: 50,
+    height: 50,
   }
 });
 

@@ -11,16 +11,7 @@ const RequestDetailNavigator = ({ authenticated }) => {
         component={RequestDetailScreen}
         options={{ headerShown: false }}
       />
-      <Stack.Screen
-        name={"REQUEST_DETAIL_POST"}
-        component={RequestDetailPost}
-        options={{ headerShown: false }}
-      />
-      <Stack.Screen
-        name={"REQUEST_DETAIL_DETAIL"}
-        component={RequestDetailDetail}
-        options={{ headerShown: false }}
-      />
+      
     </Stack.Navigator>
   );
 };  

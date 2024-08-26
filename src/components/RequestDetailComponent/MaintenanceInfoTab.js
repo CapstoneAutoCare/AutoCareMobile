@@ -35,7 +35,26 @@ const MaintenanceInfoTab = ({ request, error }) => {
       );
     }
   }, [request]);
-
+  const translateStatus = (status) => {
+    const statusMapping = {
+      WAITING: "Đang chờ",
+      ACCEPTED: "Đã chấp nhận",
+      CANCELLED: "Đã hủy",
+      DENIED: "Đã từ chối",
+      FINISHED: "Đã hoàn thành",
+      WAITINGBYCAR: "Đang chờ xe",
+      CREATEDBYCLIENT: "Yêu cầu bởi khách hàng",
+      CREATEDBYClIENT: "Yêu cầu bởi khách hàng",
+      CHECKIN: "Khách hàng đã đến",
+      REPAIRING: "Đang sửa chữa",
+      PAYMENT: "Thanh toán"
+  
+    };
+    return statusMapping[status] || status;
+  };
+  const formatCurrency = (value) => {
+    return value.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' });
+  };
   if (error) return <ErrorComponent message={error} />;
   return (
     <ScrollView style={styles.container}>
@@ -44,8 +63,14 @@ const MaintenanceInfoTab = ({ request, error }) => {
         <Card.Content>
           <Text style={styles.label}>Tên bảo dưỡng: {request.responseMaintenanceInformation?.informationMaintenanceName}</Text>
           <Text style={styles.label}>Ngày tạo bảo dưỡng: {Moment(request.responseMaintenanceInformation?.createdDate).format('DD/MM/YYYY HH:mm')}</Text>
-          <Text style={styles.label}>Ngày hoàn thành: {Moment(request.responseMaintenanceInformation?.finishedDate).format('DD/MM/YYYY HH:mm')}</Text>
-          <Text style={styles.label}>Tổng giá: {request.responseMaintenanceInformation?.totalPrice}</Text>
+          <Text style={styles.label}>
+  Ngày hoàn thành: 
+  {request.responseMaintenanceInformation?.finishedDate === "0001-01-01T00:00:00" || !request.responseMaintenanceInformation?.finishedDate
+    ? " Chưa hoàn thành"
+    : Moment(request.responseMaintenanceInformation.finishedDate).format('DD/MM/YYYY HH:mm')}
+</Text>
+
+          <Text style={styles.label}>Tổng giá: {formatCurrency(request.responseMaintenanceInformation?.totalPrice)}</Text>
           <Text style={styles.label}>Ghi chú bảo dưỡng: {request.responseMaintenanceInformation?.note}</Text>
         </Card.Content>
       </Card>
@@ -55,12 +80,11 @@ const MaintenanceInfoTab = ({ request, error }) => {
           {request.responseMaintenanceInformation?.responseMaintenanceServiceInfos.map((serviceInfo) => (
             <View key={serviceInfo.maintenanceServiceInfoId} style={styles.item}>
               <Text>Tên dịch vụ: {serviceInfo.maintenanceServiceInfoName}</Text>
-              <Text>Số lượng: {serviceInfo.quantity}</Text>
+              <Text>Số lượng: {serviceInfo.quantity} lần</Text>
               <Text>Giảm giá: {serviceInfo.discount}</Text>
-              <Text>Chi phí thực tế: {serviceInfo.actualCost}</Text>
-              <Text>Tổng chi phí: {serviceInfo.totalCost}</Text>
+              <Text>Chi phí thực tế: {formatCurrency(serviceInfo.actualCost)}</Text>
+              <Text>Tổng chi phí: {formatCurrency(serviceInfo.totalCost)}</Text>
               <Text>Ngày tạo: {Moment(serviceInfo.createdDate).format('DD/MM/YYYY HH:mm')}</Text>
-              <Text>Trạng thái: {serviceInfo.status}</Text>
               <Text>Ghi chú dịch vụ: {serviceInfo.note}</Text>
             </View>
           ))}
@@ -72,12 +96,11 @@ const MaintenanceInfoTab = ({ request, error }) => {
           {request.responseMaintenanceInformation?.responseMaintenanceSparePartInfos.map((sparePartInfo) => (
             <View key={sparePartInfo.maintenanceSparePartInfoId} style={styles.item}>
               <Text>Tên phụ tùng: {sparePartInfo.maintenanceSparePartInfoName}</Text>
-              <Text>Số lượng: {sparePartInfo.quantity}</Text>
+              <Text>Số lượng: {sparePartInfo.quantity} cái</Text>
               <Text>Giảm giá: {sparePartInfo.discount}</Text>
-              <Text>Chi phí thực tế: {sparePartInfo.actualCost}</Text>
-              <Text>Tổng chi phí: {sparePartInfo.totalCost}</Text>
+              <Text>Chi phí thực tế: {formatCurrency(sparePartInfo.actualCost)}</Text>
+              <Text>Tổng chi phí: {formatCurrency(sparePartInfo.totalCost)}</Text>
               <Text>Ngày tạo: {Moment(sparePartInfo.createdDate).format('DD/MM/YYYY HH:mm')}</Text>
-              <Text>Trạng thái: {sparePartInfo.status}</Text>
               <Text>Ghi chú phụ tùng: {sparePartInfo.note}</Text>
             </View>
           ))}
@@ -88,9 +111,9 @@ const MaintenanceInfoTab = ({ request, error }) => {
         <Card.Content>
           {request.responseMaintenanceInformation?.responseMaintenanceHistoryStatuses.map((historyStatus) => (
             <View key={historyStatus.maintenanceHistoryStatusId} style={styles.item}>
-              <Text>Trạng thái: {historyStatus.status}</Text>
+              <Text>Trạng thái: {translateStatus(historyStatus.status)}</Text>
               <Text>Ngày giờ: {Moment(historyStatus.dateTime).format('DD/MM/YYYY HH:mm')}</Text>
-              <Text>Ghi chú: {historyStatus.note}</Text>
+              <Text>Ghi chú: {translateStatus(historyStatus.note)}</Text>
             </View>
           ))}
         </Card.Content>

@@ -6,6 +6,7 @@ import Modal from 'react-native-modal';
 import StaffListComponent from '../BookingComponent/StaffListComponent';
 import { fetchStaffByCenter } from '../../app/CusCare/requestDetailSlice';
 import { useDispatch, useSelector } from 'react-redux';
+import moment from 'moment';
 const MaintenanceTaskTab = ({ maintenanceTasks, request, assignTask }) => {
     const [technicianDetails, setTechnicianDetails] = useState({});
     const mInfoId = request.responseMaintenanceInformation.informationMaintenanceId;
@@ -37,7 +38,7 @@ const MaintenanceTaskTab = ({ maintenanceTasks, request, assignTask }) => {
     
     const handleAssignTask = async () => {
         if (!selectedStaff) {
-            alert('Please select a staff member');
+            alert('Vui lòng chọn một nhân viên để giao xe');
             return;
         }
         console.log(` MaintenanceTaskTab: ${mInfoId}, ${selectedStaff.technicianId}`);
@@ -63,23 +64,33 @@ const MaintenanceTaskTab = ({ maintenanceTasks, request, assignTask }) => {
 
         fetchTechnicianDetails();
     }, [maintenanceTasks]);
-
+    const translateStatus = (status) => {
+        const statusMapping = {
+          WAITING: "Đang chờ",
+          ACCEPTED: "Đã chấp nhận",
+          CANCELLED: "Đã hủy",
+          DONE: "Đã hoàn thành",
+    
+      
+        };
+        return statusMapping[status] || status;
+      };
     const renderTaskItem = ({ item }) => {
         const technician = technicianDetails[item.technicianId];
         return (
             <View style={styles.taskContainer}>
-                <Text style={styles.taskTitle}>Task Name: {item.maintenanceTaskName}</Text>
-                <Text style={styles.taskDetail}>Created Date: {item.createdDate}</Text>
-                <Text style={styles.taskDetail}>Status: {item.status}</Text>
+                <Text style={styles.taskTitle}>Tên công việc: {item.maintenanceTaskName}</Text>
+                <Text style={styles.taskDetail}>Ngày giao: {moment(item?.createdDate).format("DD/MM/YYYY HH:mm")}</Text>
+                <Text style={styles.taskDetail}>Tình trạng công việc: {translateStatus(item.status)}</Text>
                 {technician ? (
                     <View style={styles.technicianContainer}>
-                        <Text style={styles.technicianTitle}>Technician Details:</Text>
+                        <Text style={styles.technicianTitle}>Nhân viên nhận xe</Text>
                         <Image
                             source={{ uri: technician.logo }}
                             style={styles.technicianImage}
                         />
                         <Text style={styles.technicianDetail}>
-                            Name: {technician.firstName} {technician.lastName}
+                            Tên: {technician.firstName} {technician.lastName}
                         </Text>
                     </View>
                 ) : (
@@ -97,7 +108,7 @@ const MaintenanceTaskTab = ({ maintenanceTasks, request, assignTask }) => {
                 keyExtractor={(item) => item.maintenanceTaskId.toString()}
                 contentContainerStyle={styles.listContainer}
             />
-            <Button title="Giao việc" onPress={toggleAssignModal} />
+            <Button title="Giao xe cho nhân viên" onPress={toggleAssignModal} />
             <Modal isVisible={isAssignModalVisible}>
                 <View style={styles.modalContent}>
                     <StaffListComponent
@@ -105,7 +116,7 @@ const MaintenanceTaskTab = ({ maintenanceTasks, request, assignTask }) => {
                         selectedStaff={selectedStaff}
                         setSelectedStaff={setSelectedStaff}
                     />
-                    <Button title="Giao việc" onPress={handleAssignTask} />
+                    <Button title="Xác nhận" onPress={handleAssignTask} />
                     <Button title="Hủy" onPress={toggleAssignModal} />
                 </View>
             </Modal>

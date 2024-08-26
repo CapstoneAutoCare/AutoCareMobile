@@ -17,7 +17,7 @@ const TaskNavigator = (authenticated) => {
       <Stack.Screen
         name="TaskDetail"
         component={TaskDetail}
-        options={{ headerTitle: 'Task Detail' }} 
+        options={{ headerTitle: 'Chi tiết công việc' }} 
       />
     </Stack.Navigator>
   );

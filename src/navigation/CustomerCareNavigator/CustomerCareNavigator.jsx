@@ -56,6 +56,7 @@ const CustomerCareNavigator = ({ authenticated }) => {
         name="HOMESCREENNAVIGATOR"
         children={() => <HomeScreenNavigator authenticated={authenticated} />}
         options={{
+          headerShown: false,
           title: "Lịch hẹn",
           drawerIcon: ({ size, color }) => {
             return <FontAwesome name="list" size={28} color={color} />;

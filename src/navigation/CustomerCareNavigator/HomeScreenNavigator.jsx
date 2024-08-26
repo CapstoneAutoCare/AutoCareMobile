@@ -18,17 +18,17 @@ const HomeScreenNavigator = ({ authenticated }) => {
       <Stack.Screen
         name="REQUESTLIST"
         component={RequestList}
-        options={{ headerShown: false }}
+        options={{ title: "Lịch đặt" }}
       />
       <Stack.Screen
         name="FEEDBACK"
         component={FeedbackList}
-        options={{ headerShown: false }}
+        options={{ title: "Phản hồi" }}
       />
        <Stack.Screen
         name="REQUEST_DETAIL"
         component={RequestDetailScreen}
-        options={{ headerShown: false }}
+        options={{ title: "Thông tin chi tiết lịch hẹn" }}
       />
        <Stack.Screen
         name={"CREATE_BOOKING_INFO"}
@@ -43,7 +43,7 @@ const HomeScreenNavigator = ({ authenticated }) => {
        <Stack.Screen
         name={"MAINTENANCEINFO"}
         component={MaintenanceCenterInfoScreen}
-        options={{ headerShown: false }}
+        options={{ title: "Thông tin dịch vụ" }}
       />
     </Stack.Navigator>
   );

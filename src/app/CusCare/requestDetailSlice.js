@@ -56,7 +56,7 @@ export const assignTask = createAsyncThunk(
         {
           informationMaintenanceId: id,
           technicianId: technicianId,
-          maintenanceTaskName: `Assignment task for tech`
+          maintenanceTaskName: `Bàn giao xe cho nhân viên`
         },
         {
           headers: {

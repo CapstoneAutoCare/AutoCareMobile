@@ -38,7 +38,14 @@ const TaskList = () => {
   if (error) {
     return <Text>Error: {error}</Text>;
   }
-
+  const translateStatus = (status) => {
+    const statusMapping = {
+      DONE: "Hoàn Tất",
+      ACCEPTED: "Đang Thực Hiện",
+      
+    };
+    return statusMapping[status] || status;
+  };
   const renderItem = ({ item }) => (
     <TouchableOpacity 
       style={styles.itemContainer} 
@@ -47,7 +54,7 @@ const TaskList = () => {
       <Text style={styles.taskName}>{item.maintenanceTaskName}</Text>
       <View style={styles.infoContainer}>
         <Text style={styles.date}>📅 {new Date(item.createdDate).toLocaleString()}</Text>
-        <Text style={styles.status}>🔍 {item.status}</Text>
+        <Text style={styles.status}>🔍 {translateStatus(item.status)}</Text>
       </View>
     </TouchableOpacity>
   );
@@ -55,7 +62,7 @@ const TaskList = () => {
   return (
     <View style={styles.container}>
       <View style={styles.filterContainer}>
-        {['ALL', 'DONE', 'CANCELLED', 'WAITING'].map((status) => (
+        {['ALL', 'DONE', 'ACCEPTED'].map((status) => (
           <TouchableOpacity
             key={status}
             style={[

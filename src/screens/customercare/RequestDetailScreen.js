@@ -88,14 +88,14 @@ const RequestDetailScreen = () => {
     <View style={{ flex: 1 }}>
       {request && (
         <Tab.Navigator>
-          <Tab.Screen name="Request Info">
+          <Tab.Screen name="Thông tin lịch hẹn">
             {() => <RequestInfoTab request={request} updateStatus={handleUpdateStatus}  assignTask={handleAssignTask} />}
           </Tab.Screen>
-          <Tab.Screen name="Maintenance Info">
+          <Tab.Screen name="Chi tiết dịch vụ">
             {() => <MaintenanceInfoTab request={request} />}
           </Tab.Screen>
           {isTaskAssigned && (
-            <Tab.Screen name="Maintenance Task">
+            <Tab.Screen name="Công việc">
               {() => <MaintenanceTaskTab request={request} maintenanceTasks={filteredMaintenanceTasks}  assignTask={handleAssignTask}/>}
             </Tab.Screen>
           )}
