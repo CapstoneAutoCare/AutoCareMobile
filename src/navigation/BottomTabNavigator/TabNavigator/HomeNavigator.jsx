@@ -6,25 +6,70 @@ import AuthTabNavigator from "../../AuthTabNavigator/AuthTabNavigator";
 import home from "../../../Login/home";
 import MaintenanceInformations from "../../../screens/client/maintenanceInformations/maintenanceInformations";
 import InforDetail from "../../../screens/client/maintenanceInformations/inforDetail";
-import Receipts from "../../../screens/client/maintenanceInformations/receipts";
+import Receipts from "../../../screens/client/maintenanceInformations/receipts"
+import MainScreen from "../../../screens/client/mainScreen";
+import BookingNavigator from "./BookingNavigator";
+import VehicleNavigator from "./VehicleNavigator";
+import CentersNavigator from "./CentersNavigator";
+
 const Stack = createNativeStackNavigator();
 const HomeNavigator = ({ authenticated }) => {
   return (
     <Stack.Navigator>
       <Stack.Screen
         name={ROUTES.HOME}
-        component={MaintenanceInformations}
+        component={MainScreen}
         // options={{ headerShown: false }}
       />
       <Stack.Screen
-        name="InforDetail"
-        component={InforDetail}
-        options={{ headerShown: false }}
+        name={ROUTES.BOOKING_NAVIGATOR}
+        children={() => <BookingNavigator authenticated={authenticated} />}
+        options={{
+          // headerShown: false,
+          title: "Lịch đặt",
+          tabBarIcon: ({ size, color }) => {
+            return <Entypo name="calendar" size={28} color={color} />;
+          },
+        }}
+      />
+       <Stack.Screen
+        name={"MaintenanceInformations"}
+        children={() => <MaintenanceInformations authenticated={authenticated} />}
+        options={{
+          // headerShown: false,
+          title: "Thông Tin Bảo Trì Sửa Chữa",
+          tabBarIcon: ({ size, color }) => {
+            return <Entypo name="calendar" size={28} color={color} />;
+          },
+        }}
+      /> 
+      <Stack.Screen
+        name="VEHICLE_NAVIGATOR"
+        children={() => <VehicleNavigator authenticated={authenticated} />}
+        options={{
+          headerShown: false,
+          title: "Xe",
+          tabBarIcon: ({ size, color }) => {
+            return <FontAwesome name="car" size={28} color={color} />;
+          },
+        }}
       />
       <Stack.Screen
-        name="Receipts"
-        component={Receipts}
-        options={{ headerShown: false }}
+        name={"MAINTENANCE_CENTER"}
+        children={() => <CentersNavigator authenticated={authenticated} />}
+        options={{
+          // headerShown: false,
+          title: "Trung tâm",
+          tabBarIcon: ({ size, color }) => {
+            return (
+              <MaterialCommunityIcons
+                name="home-map-marker"
+                size={32}
+                color={color}
+              />
+            );
+          },
+        }}
       />
       {!authenticated && (
         <Stack.Screen

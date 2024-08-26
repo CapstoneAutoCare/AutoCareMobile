@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { ScrollView, Text, View, Pressable, ActivityIndicator, TouchableOpacity } from "react-native";
+import { ScrollView, Text, View, Pressable, ActivityIndicator, TouchableOpacity , TextInput} from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import moment from "moment";
 import { MaterialIcons, Feather } from "@expo/vector-icons";
@@ -13,7 +13,7 @@ const RequestList = () => {
   const navigation = useNavigation();
   const { loading, error, requests } = useSelector(state => state.requests || {});
   const { profile } = useSelector((state) => state.user || {});
-  
+  const [searchQuery, setSearchQuery] = useState(""); 
   const [filterStatus, setFilterStatus] = useState(null);
   const [sortOrder, setSortOrder] = useState(null);
 
@@ -43,9 +43,19 @@ const RequestList = () => {
   };
 
   const filteredRequests = (requests || []).filter(
-    (request) =>(filterStatus ? request.status === filterStatus : true)
+    (request) =>(filterStatus ? request.status === filterStatus : true) &&
+    (searchQuery ? request.vehicleNumber.toLowerCase().includes(searchQuery.toLowerCase()) : true)
   );
-
+  const translateStatus = (status) => {
+    const statusMapping = {
+      WAITING: "Đang chờ",
+      ACCEPTED: "Đã chấp nhận",
+      CANCELLED: "Đã hủy",
+      DENIED: "Đã từ chối",
+      FINISHED: "Đã hoàn thành"
+    };
+    return statusMapping[status] || status;
+  };
   const sortedRequests = filteredRequests.sort((a, b) => {
     if (!sortOrder) return 0;
     if (sortOrder === 'newest') {
@@ -66,16 +76,31 @@ const RequestList = () => {
     <ScrollView style={{ marginTop: 50 }}>
       <View style={{ padding: 12, backgroundColor: "#DDD" }}>
         <View style={{ flexDirection: "row", justifyContent: "flex-end", alignItems: "center", marginBottom: 10 }}>
+        <TextInput
+            style={{
+              height: 40,
+              borderColor: 'gray',
+              borderWidth: 1,
+              borderRadius: 8,
+              paddingHorizontal: 10,
+              marginRight: 10,
+              width: 150,
+              backgroundColor: 'white',
+            }}
+            placeholder="Tìm kiếm theo biển số"
+            value={searchQuery}
+            onChangeText={setSearchQuery}
+          />
           <View style={{ marginRight: 10 }}>
             <RNPickerSelect
               onValueChange={(value) => setFilterStatus(value)}
               placeholder={{ label: "Chọn trạng thái", value: null }}
               items={[
-                { label: "WAITING", value: "WAITING" },
-                { label: "ACCEPTED", value: "ACCEPTED" },
-                { label: "CANCELLED", value: "CANCELLED" },
-                { label: "DENIED", value: "DENIED" },
-                { label: "FINISHED", value: "FINISHED" }
+                { label: "Đang chờ", value: "WAITING" },
+                { label: "Đã chấp nhận", value: "ACCEPTED" },
+                { label: "Đã hủy", value: "CANCELLED" },
+                { label: "Đã từ chối", value: "DENIED" },
+                { label: "Đã hoàn thành", value: "FINISHED" }
               ]}
               style={{
                 inputAndroid: {
@@ -165,8 +190,8 @@ const RequestList = () => {
                         marginTop: 4,
                       }}
                     >
-                      {item.status}
-                    </Text>
+                      {translateStatus(item.status)}
+                      </Text>
                   </View>
                 </View>
 

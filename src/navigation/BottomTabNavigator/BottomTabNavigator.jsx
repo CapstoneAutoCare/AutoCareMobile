@@ -60,7 +60,7 @@ const BottomTabNavigator = ({ authenticated }) => {
           },
         }}
       />
-      {/* <Stack.Screen
+       <Stack.Screen
         name={"MaintenanceInformations"}
         children={() => <MaintenanceInformations authenticated={authenticated} />}
         options={{
@@ -70,7 +70,7 @@ const BottomTabNavigator = ({ authenticated }) => {
             return <Entypo name="calendar" size={28} color={color} />;
           },
         }}
-      /> */}
+      /> 
       <Stack.Screen
         name="VEHICLE_NAVIGATOR"
         children={() => <VehicleNavigator authenticated={authenticated} />}

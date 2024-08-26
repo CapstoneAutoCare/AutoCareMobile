@@ -26,3 +26,27 @@ export const getListVehicleModel = createAsyncThunk(
     }
   }
 );
+export const getListVehicleModelByBrandId = createAsyncThunk(
+  "vehicle/getListVehicleModelByBrandId",
+  async (id, { rejectWithValue }) => {
+    try {
+      const response = await vehicleService.getListVehicleModelByBrandId(id);
+      return response.data;
+    } catch (error) {
+      console.log(error);
+      return rejectWithValue(error);
+    }
+  }
+);
+export const getListVehicleBrand = createAsyncThunk(
+  "vehicle/getListVehicleBrand",
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await vehicleService.getListVehicleBrand();
+      return response.data;
+    } catch (error) {
+      console.log(error);
+      return rejectWithValue(error);
+    }
+  }
+);

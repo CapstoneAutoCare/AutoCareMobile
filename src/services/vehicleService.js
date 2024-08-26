@@ -9,4 +9,12 @@ export const vehicleService = {
     const url = `/VehicleModel/GetAll`;
     return axiosClient.get(url);
   },
+  getListVehicleBrand: () => {
+    const url = `/VehicleBrand/GetAllActive`;
+    return axiosClient.get(url);
+  },
+  getListVehicleModelByBrandId: (id) => {
+    const url = `/VehicleModel/GetListActiveByBrandId?id=${id}`;
+    return axiosClient.get(url);
+  },
 };

@@ -14,25 +14,29 @@ import axios from "axios";
 import { useNavigation } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useDispatch, useSelector } from "react-redux";
-import { getListVehicleModel } from "../../../app/Vehicle/actions";
+import { getListVehicleBrand, getListVehicleModelByBrandId } from "../../../app/Vehicle/actions";
 import { BASE_URL } from "../../../../env";
 const VehiclePost = () => {
   const dispatch = useDispatch();
   const navigation = useNavigation();
   const [load, setLoad] = useState(false);
   const [vehicleModelId, setVehicleModelId] = useState("");
+  const [vehiclesBrandId, setVehicleBrandId] = useState(""); 
   const [licensePlate, setLicensePlate] = useState("");
   const [odo, setOdo] = useState("");
   const [color, setColor] = useState("");
   const [description, setDescription] = useState("");
-  const { vehicleModel } = useSelector((state) => state.vehicle);
+  const { vehicleModelByBrandId, vehicleBrand } = useSelector((state) => state.vehicle);
 
-  const fetchGetListVehicleModel = async () => {
-    await dispatch(getListVehicleModel());
+  const fetchGetListVehicleBrand = async () => {
+    await dispatch(getListVehicleBrand());
+  };
+  const fetchGetListVehicleModelByBrandId = async (brandId) => {
+    await dispatch(getListVehicleModelByBrandId(brandId));
   };
   useEffect(() => {
     const fetch = async () => {
-      await fetchGetListVehicleModel();
+      await fetchGetListVehicleBrand();
     };
     fetch();
   }, [load]);
@@ -90,12 +94,32 @@ const VehiclePost = () => {
       <View style={styles.form}>
         <View style={styles.inputContainer}>
           <Picker
+            selectedValue={vehiclesBrandId}
+            onValueChange={(itemValue) => {
+              setVehicleBrandId(itemValue);
+              fetchGetListVehicleModelByBrandId(itemValue); // Fetch vehicle models when a brand is selected
+            }}
+            style={styles.picker}
+          >
+            <Picker.Item label="Chọn hãng xe" value="" />
+            {vehicleBrand.map((brand) => (
+              <Picker.Item
+                key={brand?.vehiclesBrandId}
+                label={brand.vehiclesBrandName}
+                value={brand?.vehiclesBrandId}
+              />
+            ))}
+          </Picker>
+        </View>
+
+        <View style={styles.inputContainer}>
+          <Picker
             selectedValue={vehicleModelId}
             onValueChange={(itemValue) => setVehicleModelId(itemValue)}
             style={styles.picker}
           >
             <Picker.Item label="Chọn mẩu xe" value="" />
-            {vehicleModel.map((vehicle) => (
+            {vehicleModelByBrandId.map((vehicle) => (
               <Picker.Item
                 key={vehicle.vehicleModelId}
                 label={

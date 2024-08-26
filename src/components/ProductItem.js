@@ -33,9 +33,7 @@ const ProductItem = ({ item }) => {
             : "trống"}{" "}
           VND
         </Text>
-        <Text style={{ color: "#0066b2", fontWeight: "bold" }}>
-          status: {item?.status}
-        </Text>
+       
       </View>
       {item?.sparePartsItemId && (
         <View
