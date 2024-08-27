@@ -500,7 +500,7 @@ const CreateBookingHaveItem = ({
                         <CustomSearchableDropdown
                           items={filteredServices.map((service) => ({
                             id: service.maintenanceServiceCostId,
-                            name: `${service.maintananceScheduleName} ${service.maintenanceServiceName} - ${service.acturalCost} VND`,
+                            name: `${service.maintenanceServiceName} - ${service.acturalCost} VND`,
                             cost: service.acturalCost,
                             maintenanceServiceName:
                               service.maintenanceServiceName,

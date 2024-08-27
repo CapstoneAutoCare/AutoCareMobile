@@ -30,6 +30,8 @@ const RequestInfoTab = ({ request, updateStatus, error, profile, assignTask}) =>
   const [invoiceData, setInvoiceData] = useState(null);
   const [isOdooModalVisible, setOdooModalVisible] = useState(false);
   const [odooNumber, setOdooNumber] = useState("");
+  const [odooDetails, setOdooDetails] = useState(null);
+
   //useEffect(() => {
     //if (request?.responseMaintenanceInformation.responseMaintenanceServiceInfos.length === 0 && request?.responseMaintenanceInformation.responseMaintenanceSparePartInfos.length === 0) {
    //   alert(
@@ -99,6 +101,7 @@ const RequestInfoTab = ({ request, updateStatus, error, profile, assignTask}) =>
   
     fetchSpareParts();
     fetchServices();
+    fetchOdooHistories();
   }, []);
   
    
@@ -312,8 +315,9 @@ const handleOdooUpdate = async () => {
       alert("Thành công", "Cập nhật số Odoo thành công.");
       toggleOdooModal();
       setOdooNumber("");
-      dispatch(fetchRequestDetail(request.bookingId));
 
+      // Fetch Odoo data after successful update
+      dispatch(fetchRequestDetail(request.bookingId));
     } else {
       alert("Lỗi", "Cập nhật không thành công. Vui lòng thử lại.");
     }
@@ -322,12 +326,26 @@ const handleOdooUpdate = async () => {
     alert("Lỗi", "Đã xảy ra lỗi khi cập nhật số Odoo.");
   }
 };
+const fetchOdooHistories = async () =>{
+  const odoDataResponse = await axiosClient.get(`/OdoHistories/GetOdoByInforId?id=${mInfoId}`);
+      if (odoDataResponse.status === 200) {
+        const odoData = odoDataResponse.data;
+        // Set Odoo data to state or context to display in the UI
+        setOdooDetails({
+          odoHistoryName: odoData.odoHistoryName,
+          odo: odoData.odo,
+          createdDate: odoData.createdDate,
+          description: odoData.description,
+        });
+      } else {
+        alert("Lỗi", "Không thể lấy dữ liệu Odoo. Vui lòng thử lại.");
+      }
+    }
 
 const getLastStatus = () => {
   const statuses = request?.responseMaintenanceInformation?.status;
   return statuses
 };
-
 const lastStatus = getLastStatus();
 useEffect(() => {
   if (!['CHECKIN', 'REPAIRING', 'PAYMENT'].includes(lastStatus)) {
@@ -371,6 +389,30 @@ const getStatusColor = (status) => {
     default:
       return "black";
   }
+};
+const OdooCard = ({ odoHistoryName, odo, createdDate, description }) => {
+  return (
+    <Card style={styles.card}>
+      <Card.Title
+        title="Thông tin Odoo"
+        left={(props) => <MaterialIcons {...props} name="history" />}
+      />
+      <Card.Content>
+        <Text style={styles.label}>
+          <MaterialIcons name="label" size={24} color="black" /> Tên lịch sử Odoo: {odoHistoryName}
+        </Text>
+        <Text style={styles.label}>
+          <MaterialIcons name="directions-car" size={24} color="black" /> Odo: {odo}
+        </Text>
+        <Text style={styles.label}>
+          <MaterialIcons name="schedule" size={24} color="black" /> Ngày tạo: {moment(createdDate).format('DD/MM/YYYY HH:mm')}
+        </Text>
+        <Text style={styles.label}>
+          <MaterialIcons name="description" size={24} color="black" /> Mô tả: {description}
+        </Text>
+      </Card.Content>
+    </Card>
+  );
 };
   return error ? (
     <ErrorComponent message={error} />
@@ -466,6 +508,14 @@ const getStatusColor = (status) => {
 
         </Card.Content>
       </Card>
+      {odooDetails && (
+        <OdooCard
+          odoHistoryName={odooDetails.odoHistoryName}
+          odo={odooDetails.odo}
+          createdDate={odooDetails.createdDate}
+          description={odooDetails.description}
+        />
+      )}
       {error && <Text style={styles.error}>{error}</Text>}
       
       <Modal isVisible={isModalVisible}>

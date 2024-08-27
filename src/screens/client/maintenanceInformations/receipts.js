@@ -35,7 +35,24 @@ const Receipts = ({ route }) => {
   const handleNavigateBack = () => {
     navigation.goBack();
   };
-
+  const statusLabels = {
+    
+    PAYMENT: "Thanh toán",
+    PAID: "Đã thanh toán",
+    YETPAID: "Chưa thanh toán",
+  };
+  const getStatusColor = (status) => {
+    switch (status) {
+      case "PAYMENT":
+        return "purple";
+      case "PAID":
+        return "green";
+      case "YETPAID":
+        return "red";
+      default:
+        return "black";
+    }
+  };
   const handlePayment = async () => {
     const requestBody = {
       receiptId: receiptById.receiptId,
@@ -96,7 +113,7 @@ const Receipts = ({ route }) => {
             <Text style={styles.status}>
               Lưu ý: {receiptById?.responseMaintenanceInformation?.note}
             </Text>
-            <Text style={styles.status}>Trạng thái: {receiptById.status}</Text>
+            <Text style={[styles.status, { color: getStatusColor(receiptById.status)}]}>Trạng thái: {statusLabels[receiptById.status]}</Text>
             <Text style={styles.centerName}>
               Ngày bảo trì:{" "}
               {moment(
@@ -114,6 +131,7 @@ const Receipts = ({ route }) => {
             </Text>
           </View>
           
+          {receiptById.status === "YETPAID" && (
           <Pressable
             onPress={handlePayment}
             style={{
@@ -128,6 +146,7 @@ const Receipts = ({ route }) => {
           >
             <Text style={{ color: "white" }}>Thanh toán</Text>
           </Pressable>
+          )}
         </View>
       )}
     </ScrollView>

@@ -201,7 +201,7 @@ const RequestList = () => {
                         fontWeight: "500",
                       }}
                     >
-                      Tên khách hàng
+                      THÔNG TIN XE
                     </Text>
                     <Text
                       style={{
@@ -211,7 +211,8 @@ const RequestList = () => {
                         marginTop: 3,
                       }}
                     >
-                      {item.clientName}
+                       {item?.responseVehicles.vehiclesBrandName}
+                     {item?.responseVehicles.vehicleModelName} - {item?.responseVehicles.licensePlate}
                     </Text>
                   </View>
 
@@ -223,7 +224,7 @@ const RequestList = () => {
                         fontWeight: "500",
                       }}
                     >
-                      Trạng thái
+                      TRẠNG THÁI
                     </Text>
                     <Text
                       style={{
@@ -233,7 +234,7 @@ const RequestList = () => {
                         marginTop: 4,
                       }}
                     >
-                      {translateStatus(item.status)}
+                      {translateStatus(item?.status)}
                     </Text>
                   </View>
                 </View>
@@ -253,10 +254,9 @@ const RequestList = () => {
                         fontSize: 14,
                         fontWeight: "500",
                         color: "gray",
-                        width: 200,
                       }}
                     >
-                      Thời gian yêu cầu: {moment(item.bookingDate).format('DD/MM/YYYY HH:mm')}
+                      Note : {item?.note}
                     </Text>
                     <Text
                       style={{
@@ -264,20 +264,28 @@ const RequestList = () => {
                         fontSize: 14,
                         fontWeight: "500",
                         color: "gray",
-                        width: 200,
                       }}
                     >
-                      Biển số xe: {item.vehicleNumber}
+                      Ngày đặt :{" "}
+                      {moment(item?.bookingDate).format("DD/MM/YYYY HH:mm")}
                     </Text>
                     <View style={{ marginTop: 10 }}>
                       <Text style={{ fontSize: 13, fontWeight: "600" }}>
                         Tên trung tâm
                       </Text>
                       <Text style={{ fontSize: 15, marginTop: 4 }}>
-                        {item.maintenanceCenterName}
+                        {item?.responseCenter.maintenanceCenterName}
                       </Text>
                     </View>
-                    
+                    <View style={{ marginTop: 10 }}>
+                      <Text style={{ fontSize: 13, fontWeight: "600" }}>
+                        Tên khách hàng
+                      </Text>
+                      <Text style={{ fontSize: 15, marginTop: 4 }}>
+                        {item?.responseClient.firstName}{" "}
+                        {item?.responseClient.lastName}
+                      </Text>
+                    </View>
                     <View style={{ marginBottom: 20 }} />
                   </View>
 

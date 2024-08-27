@@ -8,7 +8,8 @@ import {
   fetchStaffByCenterId,
 } from '../../api/requestDetailService';
 import axiosClient from '../../services/axiosClient';
-// Async thunk để fetch request detail
+
+// Async thunk to fetch request detail
 export const fetchRequestDetail = createAsyncThunk(
   'requestDetail/fetchRequestDetail',
   async (requestId, thunkAPI) => {
@@ -29,7 +30,7 @@ export const fetchRequestDetail = createAsyncThunk(
   }
 );
 
-// Async thunk để update status
+// Async thunk to update status
 export const updateStatus = createAsyncThunk(
   'requestDetail/updateStatus',
   async ({ requestId, newStatus }, thunkAPI) => {
@@ -42,11 +43,15 @@ export const updateStatus = createAsyncThunk(
   }
 );
 
-// Async thunk để fetch staff by center
-export const fetchStaffByCenter = createAsyncThunk('requestDetail/fetchStaffByCenter', async (centreId) => {
-  const response = await fetchStaffByCenterId(centreId);
-  return response;
-});
+// Async thunk to fetch staff by center
+export const fetchStaffByCenter = createAsyncThunk(
+  'requestDetail/fetchStaffByCenter', 
+  async (centreId) => {
+    const response = await fetchStaffByCenterId(centreId);
+    return response;
+  }
+);
+
 export const assignTask = createAsyncThunk(
   'requestDetail/assignTask',
   async ({ id, technicianId }, { rejectWithValue }) => {
@@ -90,7 +95,8 @@ export const fetchMaintenanceTasks = createAsyncThunk(
     }
   }
 );
-// Tạo slice requestDetail
+
+// Creating the requestDetail slice
 const requestDetailSlice = createSlice({
   name: 'requestDetail',
   initialState: {
@@ -100,15 +106,18 @@ const requestDetailSlice = createSlice({
     error: null,
     isTaskAssigned: false,
     maintenanceTasks: [], 
-},
+  },
   reducers: {
     setIsTaskAssigned: (state, action) => {
       state.isTaskAssigned = action.payload;
     },
+    clearStaffList: (state) => {
+      state.staffList = [];
+    },
   },
   extraReducers: (builder) => {
     builder
-      // Case cho fetchRequestDetail
+      // Case for fetchRequestDetail
       .addCase(fetchRequestDetail.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -121,7 +130,7 @@ const requestDetailSlice = createSlice({
         state.loading = false;
         state.error = action.payload;
       })
-      // Case cho fetchStaffByCenter
+      // Case for fetchStaffByCenter
       .addCase(fetchStaffByCenter.pending, (state) => {
         state.loading = true;
       })
@@ -140,12 +149,10 @@ const requestDetailSlice = createSlice({
       .addCase(assignTask.fulfilled, (state) => {
         state.loading = false;
         state.isTaskAssigned = true;
-
       })
       .addCase(assignTask.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
-
       })
       // Cases for fetchMaintenanceTasks
       .addCase(fetchMaintenanceTasks.pending, (state) => {
@@ -161,6 +168,7 @@ const requestDetailSlice = createSlice({
       });
   },
 });
-export const { setIsTaskAssigned } = requestDetailSlice.actions;
+
+export const { setIsTaskAssigned, clearStaffList } = requestDetailSlice.actions;
 
 export default requestDetailSlice.reducer;

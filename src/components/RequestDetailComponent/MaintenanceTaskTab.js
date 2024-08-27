@@ -4,7 +4,7 @@ import { getTechnicianDetail } from '../../api/requestDetailService';
 import { useNavigation } from '@react-navigation/native';
 import Modal from 'react-native-modal';
 import StaffListComponent from '../BookingComponent/StaffListComponent';
-import { fetchStaffByCenter } from '../../app/CusCare/requestDetailSlice';
+import {  fetchStaffByCenter } from '../../app/CusCare/requestDetailSlice';
 import { useDispatch, useSelector } from 'react-redux';
 import moment from 'moment';
 const MaintenanceTaskTab = ({ maintenanceTasks, request, assignTask }) => {

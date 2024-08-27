@@ -4,15 +4,17 @@ import Moment from 'moment';
 
 const InvoiceComponent = ({ request, invoiceData }) => {
 
-  
+  const formatCurrency = (value) => {
+    return value.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' });
+  };
 
   const renderServiceInfos = () => {
     return request.responseMaintenanceInformation.responseMaintenanceServiceInfos.map(info => (
       <View key={info.maintenanceServiceInfoId} style={styles.tableRow}>
         <Text style={styles.tableCell}>{info.maintenanceServiceInfoName}</Text>
         <Text style={styles.tableCell}>{info.quantity}</Text>
-        <Text style={styles.tableCell}>{info.actualCost}</Text>
-        <Text style={styles.tableCell}>{info.totalCost}</Text>
+        <Text style={styles.tableCell}>{formatCurrency(info.actualCost)}</Text>
+        <Text style={styles.tableCell}>{formatCurrency(info.totalCost)}</Text>
       </View>
     ));
   };
@@ -22,8 +24,8 @@ const InvoiceComponent = ({ request, invoiceData }) => {
       <View key={info.maintenanceSparePartInfoId} style={styles.tableRow}>
         <Text style={styles.tableCell}>{info.maintenanceSparePartInfoName}</Text>
         <Text style={styles.tableCell}>{info.quantity}</Text>
-        <Text style={styles.tableCell}>{info.actualCost}</Text>
-        <Text style={styles.tableCell}>{info.totalCost}</Text>
+        <Text style={styles.tableCell}>{formatCurrency(info.actualCost)}</Text>
+        <Text style={styles.tableCell}>{formatCurrency(info.totalCost)}</Text>
       </View>
     ));
   };
@@ -62,9 +64,9 @@ const InvoiceComponent = ({ request, invoiceData }) => {
           {renderServiceInfos()}
           {renderSparePartInfos()}
         </View>
-        <Text style={styles.totalPrice}>Thành Tiền: {invoiceData?.subTotal} VND</Text>
+        <Text style={styles.totalPrice}>Tổng: {formatCurrency(invoiceData?.subTotal)}</Text>
         <Text style={styles.totalPrice}>VAT: {invoiceData?.vat}%</Text>
-        <Text style={styles.totalPrice}>Tổng Cộng:  {invoiceData?.totalAmount}VND</Text>
+        <Text style={styles.totalPrice}>Tổng Giá Trị Thanh Toán:  {formatCurrency(invoiceData?.totalAmount)}</Text>
       </View>
     </ScrollView>
   );

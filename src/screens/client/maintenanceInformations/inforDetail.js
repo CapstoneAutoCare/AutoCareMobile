@@ -14,8 +14,6 @@ import moment from "moment";
 import { getReceiptById } from "../../../app/Center/actions";
 import { Rating } from "react-native-ratings";
 import Modal from "react-native-modal";
-import ServiceItem from "../../../components/ServiceItem";
-import ProductItem from "../../../components/ProductItem";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
 import { BASE_URL } from "../../../../env";
@@ -27,21 +25,39 @@ const InforDetail = ({ route }) => {
   const { receiptById } = useSelector((state) => state.center);
   const [isModalVisible, setModalVisible] = useState(false);
   const [rating, setRating] = useState(0);
+  const [isFeedbackModalVisible, setFeedbackModalVisible] = useState(false); 
   const [comment, setComment] = useState("");
+  const [feedback, setFeedback] = useState(null);
 
   useEffect(() => {
-    const fetchGetListSparePart = async () => {
+    const fetchReceiptData = async () => {
       await dispatch(getReceiptById(info?.informationMaintenanceId));
+      // Fetch feedback if available
+      await fetchFeedback();
     };
-    fetchGetListSparePart();
+    fetchReceiptData();
   }, [info]);
 
-  const handleNavigateBack = () => {
-    navigation.goBack();
-  };
-
-  const toggleModal = () => {
-    setModalVisible(!isModalVisible);
+  const fetchFeedback = async () => {
+    try {
+      const accessToken = await AsyncStorage.getItem("ACCESS_TOKEN");
+      const response = await axios.get(
+        `${BASE_URL}/Feedback/GetByReceiptId?id=${receiptById?.receiptId}`,
+        {
+          headers: {
+            "content-type": "application/json",
+            Authorization: `Bearer ${accessToken}`,
+          },
+        }
+      );
+      if (response.data) {
+        setFeedback(response.data);
+        setComment(response.data.comment); 
+        setRating(response.data.vote); 
+      }
+    } catch (error) {
+      console.error("Error fetching feedback:", error);
+    }
   };
 
   const handleRatingSubmit = async () => {
@@ -68,31 +84,24 @@ const InforDetail = ({ route }) => {
         }
       );
       if (response.status === 200) {
+        await fetchFeedback(); // Fetch the feedback after submitting
         toggleModal();
         alert("đánh giá thành công!");
       } else {
         alert("đánh giá không thành công. Vui lòng thử lại.");
       }
     } catch (error) {
-      console.error("Error during:", error);
-      if (error.response) {
-        console.error("Server responded with:", error.response.data);
-        console.error("Status code:", error.response.status);
-        alert(
-          "Server responded with an error. Please check the console for details."
-        );
-      } else if (error.request) {
-        console.error("No response received:", error.request);
-        alert(
-          "No response received from the server. Please check your network connection."
-        );
-      } else {
-        console.error("Error setting up the request:", error.message);
-        alert(
-          "An error occurred during the request setup. Please check the console for details."
-        );
-      }
+      console.error("Error during rating submission:", error);
+      alert("An error occurred. Please try again.");
     }
+  };
+
+  const handleNavigateBack = () => {
+    navigation.goBack();
+  };
+
+  const toggleModal = () => {
+    setModalVisible(!isModalVisible);
   };
 
   const getStatusColor = (status) => {
@@ -119,7 +128,9 @@ const InforDetail = ({ route }) => {
     PAID: "Đã thanh toán",
     YETPAID: "Chưa thanh toán",
   };
-
+  const toggleFeedbackModal = () => {
+    setFeedbackModalVisible(!isFeedbackModalVisible);
+  };
   return (
     <ScrollView style={styles.container}>
       <View style={styles.header}>
@@ -160,9 +171,11 @@ const InforDetail = ({ route }) => {
               {moment(info?.finishedDate).format("DD/MM/YYYY HH:mm")}
             </Text>
             <Text style={styles.centerName}>Thông tin: {info.note}</Text>
-           
+            <Text style={styles.centerName}>
+              Tổng tiền: {info.totalPrice} Đồng
+            </Text>
           </View>
-          {info.status === "YETPAID" && (
+          {(info.status === "YETPAID" || info.status === "PAID") && (
             <Pressable
               onPress={() =>
                 navigation.navigate("Receipts", {
@@ -175,9 +188,20 @@ const InforDetail = ({ route }) => {
             </Pressable>
           )}
           {info.status === "PAID" && (
-            <Pressable onPress={toggleModal} style={styles.button}>
-              <Text style={{ color: "white" }}>Đánh giá</Text>
-            </Pressable>
+            <>
+               {feedback ? (
+                <Pressable
+                  onPress={toggleFeedbackModal}
+                  style={styles.button}
+                >
+                  <Text style={{ color: "white" }}>Xem lại đánh giá</Text>
+                </Pressable>
+              ) : (
+                <Pressable onPress={toggleModal} style={styles.button}>
+                  <Text style={{ color: "white" }}>Đánh giá</Text>
+                </Pressable>
+              )}
+            </>
           )}
         </View>
       )}
@@ -187,27 +211,15 @@ const InforDetail = ({ route }) => {
       </Text>
       <View style={styles.tableContainer}>
         <View style={styles.tableHeader}>
-          <Text style={[styles.tableHeaderText, styles.tableCol1]}>
-            Loại
-          </Text>
-          <Text style={[styles.tableHeaderText, styles.tableCol2]}>
-            Tên
-          </Text>
-          <Text style={[styles.tableHeaderText, styles.tableCol3]}>
-            Đơn Giá
-          </Text>
-          <Text style={[styles.tableHeaderText, styles.tableCol4]}>
-            Số lượng
-          </Text>
-          <Text style={[styles.tableHeaderText, styles.tableCol5]}>
-            Tổng Tiền
-          </Text>
+          <Text style={[styles.tableHeaderText, styles.tableCol1]}>Loại</Text>
+          <Text style={[styles.tableHeaderText, styles.tableCol2]}>Tên</Text>
+          <Text style={[styles.tableHeaderText, styles.tableCol3]}>Đơn Giá</Text>
+          <Text style={[styles.tableHeaderText, styles.tableCol4]}>Số lượng</Text>
+          <Text style={[styles.tableHeaderText, styles.tableCol5]}>Tổng Tiền</Text>
         </View>
         {info?.responseMaintenanceServiceInfos.map((item, index) => (
           <View key={index} style={styles.tableRow}>
-            <Text style={[styles.tableText, styles.tableCol1]}>
-              Dịch vụ
-            </Text>
+            <Text style={[styles.tableText, styles.tableCol1]}>Dịch vụ</Text>
             <Text style={[styles.tableText, styles.tableCol2]}>
               {item.maintenanceServiceInfoName}
             </Text>
@@ -224,25 +236,47 @@ const InforDetail = ({ route }) => {
         ))}
         {info?.responseMaintenanceSparePartInfos.map((item, index) => (
           <View key={index} style={styles.tableRow}>
-            <Text style={[styles.tableText, styles.tableCol1]}>
-              Phụ tùng
-            </Text>
+            <Text style={[styles.tableText, styles.tableCol1]}>Phụ tùng</Text>
             <Text style={[styles.tableText, styles.tableCol2]}>
               {item.maintenanceSparePartInfoName}
             </Text>
             <Text style={[styles.tableText, styles.tableCol3]}>
               {item.actualCost} đồng
             </Text>
-            <Text style={[styles.tableText, styles.tableCol3]}>
+            <Text style={[styles.tableText, styles.tableCol4]}>
               {item.quantity} cái
             </Text>
-            <Text style={[styles.tableText, styles.tableCol3]}>
+            <Text style={[styles.tableText, styles.tableCol5]}>
               {item.totalCost} đồng
             </Text>
           </View>
         ))}
       </View>
 
+ {/* Feedback Modal */}
+ <Modal isVisible={isFeedbackModalVisible}>
+        <View style={styles.modalContent}>
+          <Text style={styles.modalTitle}>Đánh giá của bạn</Text>
+          <Rating
+            startingValue={rating}
+            imageSize={30}
+            readonly
+            style={styles.rating}
+          />
+          <TextInput
+            style={styles.commentInput}
+            placeholder="Nhập nhận xét của bạn"
+            value={comment}
+            editable={false} // Make the input field read-only
+          />
+          <Pressable
+            onPress={toggleFeedbackModal}
+            style={[styles.button, styles.cancelButton]}
+          >
+            <Text style={styles.cancelButtonText}>Đóng</Text>
+          </Pressable>
+        </View>
+      </Modal>
       <Modal isVisible={isModalVisible}>
         <View style={styles.modalContent}>
           <Text style={styles.modalTitle}>Đánh giá</Text>
@@ -420,6 +454,9 @@ const styles = StyleSheet.create({
     padding: 10,
     marginTop: 10,
     marginBottom: 20,
+    fontSize: 15,
+    fontWeight: "bold",
+    color: 'black'
   },
   modalButtons: {
     flexDirection: "row",

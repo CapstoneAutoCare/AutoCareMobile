@@ -36,6 +36,8 @@ const MaintenanceCenterInfoScreen = ({ }) => {
     const [selectedModel, setSelectedModel] = useState(null);
     const [odometerReading, setOdometerReading] = useState('');
     const [isModelFilterEnabled, setIsModelFilterEnabled] = useState(false);
+    const [vehicleBrands, setVehicleBrands] = useState([]);
+    const [selectedBrand, setSelectedBrand] = useState(null);
     // State debounce
     const debouncedModel = useDebounce(selectedModel, 300); // Trì hoãn 300ms
     const selectedPackageData = detailPackageModalVisible === 'servicePackage' ? selectedData : null;
@@ -46,11 +48,13 @@ const MaintenanceCenterInfoScreen = ({ }) => {
         await dispatch(getProfile());
     };
     useEffect(() => {
-        if (debouncedModel) {
-            const filteredData = vehicleModels.filter(model => model.vehicleModelName.includes(debouncedModel));
+        if (debouncedModel && selectedBrand) {
+            const filteredData = vehicleModels.filter(
+                model => model.vehicleModelName.includes(debouncedModel) && model.vehiclesBrandId === selectedBrand.vehiclesBrandId
+            );
             setVehicleModels(filteredData);
         }
-    }, [debouncedModel]);
+    }, [debouncedModel, selectedBrand]);
     useEffect(() => {
         const unsubscribe = navigation.addListener("focus", () => {
             getProfileInfo();
@@ -94,10 +98,10 @@ const MaintenanceCenterInfoScreen = ({ }) => {
     const fetchServicePackages = async () => {
         try {
             const response = await axiosClient.get(
-                `MaintenanceServices/GetListByCenterId?id=${profile.CentreId}`,
+                `MaintenanceServices/GetListPackageAndOdoTRUEByCenterId?id=${profile.CentreId}`,
                 {
                     headers: {
-                        'Content-Type': 'application/json',
+                        'Content-Type': 'text/plain',
                     },
                 }
             );
@@ -115,17 +119,30 @@ const MaintenanceCenterInfoScreen = ({ }) => {
         fetchVehicleModels();
 
     }, []);
-    const fetchVehicleModels = async () => {
+    const fetchVehicleModels = async (selectedBrandId) => {
         try {
-            const response = await axiosClient.get(
-                'VehicleModel/GetAll',
+            const brandsResponse = await axiosClient.get(
+                'VehicleBrand/GetAllActive',
                 {
                     headers: {
                         'Content-Type': 'application/json',
                     },
                 }
             );
-            setVehicleModels(response.data);
+            const brands = brandsResponse.data;
+            const selectedBrand = brands.find(brand => brand.vehiclesBrandId === selectedBrandId);
+    
+            if (selectedBrand) {
+                const modelsResponse = await axiosClient.get(
+                    `VehicleModel/GetListActiveByBrandId?id=${selectedBrand.vehiclesBrandId}`,
+                    {
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                    }
+                );
+                setVehicleModels(modelsResponse.data);
+            }
         } catch (error) {
             console.error('Error fetching vehicle models:', error);
         }
@@ -139,14 +156,23 @@ const MaintenanceCenterInfoScreen = ({ }) => {
     };
     const groupByMaintenanceSchedule = (servicePackages) => {
         return servicePackages.reduce((groups, item) => {
-            const scheduleName = item.maintananceScheduleName;
+            // Bỏ qua các object có status là INACTIVE
+            if (item?.responseMaintenanceServiceCosts?.status === 'INACTIVE') {
+                return groups;
+            }   
+            
+            const scheduleName = `${item.maintananceScheduleName}_${item.vehicleModelName}_${item.vehiclesBrandName}`;
+            
             if (!groups[scheduleName]) {
                 groups[scheduleName] = [];
             }
+            
             groups[scheduleName].push(item);
             return groups;
         }, {});
     };
+    
+    
 
     const openDetailModal = (item, type) => {
         setSelectedData(item);
@@ -172,42 +198,66 @@ const MaintenanceCenterInfoScreen = ({ }) => {
         setIsModelFilterEnabled,
         selectedModel,
         setSelectedModel,
-        vehicleModels = [],  // Default to empty array
+        vehicleModels = [],  
+        selectedBrand,
+        setSelectedBrand,
+        vehicleBrands = [],
         odometerReading,
         setOdometerReading
     }) => {
         return (
             <>
-                {/* Checkbox for Model Filter */}
-                <View style={styles.filterContainer}>
-                    <Text>Filter by Vehicle Model</Text>
-                    <TouchableOpacity onPress={() => setIsModelFilterEnabled(!isModelFilterEnabled)}>
-                        <Text style={styles.checkbox}>
-                            {isModelFilterEnabled ? '☑' : '☐'}
-                        </Text>
-                    </TouchableOpacity>
-                </View>
+            <View style={styles.filterContainer}>
+                <Text>Filter by Vehicle Brand</Text>
+                <FlatList
+                    data={vehicleBrands}
+                    keyExtractor={(item) => item.vehicleBrandId.toString()}
+                    renderItem={({ item }) => (
+                        <TouchableOpacity onPress={() => setSelectedBrand(item)}>
+                            <Text style={[
+                                styles.itemText,
+                                { fontWeight: selectedBrand?.vehicleBrandId === item.vehicleBrandId ? 'bold' : 'normal' }
+                            ]}>
+                                {item.vehicleBrandName}
+                            </Text>
+                        </TouchableOpacity>
+                    )}
+                    horizontal
+                />
+            </View>
 
-                {/* Vehicle Model Search Box */}
-                {isModelFilterEnabled && (
-                    <View style={styles.searchContainer}>
-                        <TextInput
-                            style={styles.searchInput}
-                            placeholder="Search Vehicle Model..."
-                            onChangeText={setSelectedModel} // Trực tiếp cập nhật selectedModel
-                            value={selectedModel}
-                        />
-                        <FlatList
-                            data={vehicleModels.filter(model => model.vehicleModelName.includes(selectedModel))}
-                            keyExtractor={(item) => item.vehicleModelId.toString()}
-                            renderItem={({ item }) => (
-                                <TouchableOpacity onPress={() => setSelectedModel(item)}>
-                                    <Text style={styles.itemText}>{item.vehicleModelName}</Text>
-                                </TouchableOpacity>
-                            )}
-                        />
+            {selectedBrand && (
+                <>
+                    <View style={styles.filterContainer}>
+                        <Text>Filter by Vehicle Model</Text>
+                        <TouchableOpacity onPress={() => setIsModelFilterEnabled(!isModelFilterEnabled)}>
+                            <Text style={styles.checkbox}>
+                                {isModelFilterEnabled ? '☑' : '☐'}
+                            </Text>
+                        </TouchableOpacity>
                     </View>
-                )}
+
+                    {isModelFilterEnabled && (
+                        <View style={styles.searchContainer}>
+                            <TextInput
+                                style={styles.searchInput}
+                                placeholder="Search Vehicle Model..."
+                                onChangeText={setSelectedModel}
+                                value={selectedModel}
+                            />
+                            <FlatList
+                                data={vehicleModels.filter(model => model.vehicleModelName.includes(selectedModel))}
+                                keyExtractor={(item) => item.vehicleModelId.toString()}
+                                renderItem={({ item }) => (
+                                    <TouchableOpacity onPress={() => setSelectedModel(item)}>
+                                        <Text style={styles.itemText}>{item.vehicleModelName}</Text>
+                                    </TouchableOpacity>
+                                )}
+                            />
+                        </View>
+                    )}
+                </>
+            )}
 
                 {/* Odometer Reading Input */}
                 <TextInput
@@ -248,6 +298,9 @@ const MaintenanceCenterInfoScreen = ({ }) => {
                                 selectedModel={selectedModel}
                                 setSelectedModel={setSelectedModel}
                                 vehicleModels={vehicleModels}
+                                selectedBrand={selectedBrand}
+                                setSelectedBrand={setSelectedBrand}
+                                vehicleBrands={vehicleBrands}
                                 odometerReading={odometerReading}
                                 setOdometerReading={setOdometerReading}
                             />
@@ -263,7 +316,7 @@ const MaintenanceCenterInfoScreen = ({ }) => {
                                 return (
                                     <TouchableOpacity key={firstItem.maintenanceServiceId.toString()} onPress={() => openPackageDetailModal(items)}>
                                         <Text style={styles.itemText}>
-                                            {"Gói dịch vụ tại mốc odoo " + scheduleName + " dành cho xe " + firstItem?.vehiclesBrandName + " " + firstItem.vehicleModelName}
+                                            {"Gói dịch vụ tại mốc odoo " + scheduleName }
                                         </Text>
                                     </TouchableOpacity>
                                 );
@@ -287,6 +340,9 @@ const MaintenanceCenterInfoScreen = ({ }) => {
                                 selectedModel={selectedModel}
                                 setSelectedModel={setSelectedModel}
                                 vehicleModels={vehicleModels}
+                                selectedBrand={selectedBrand}
+                                setSelectedBrand={setSelectedBrand}
+                                vehicleBrands={vehicleBrands}
                                 odometerReading={odometerReading}
                                 setOdometerReading={setOdometerReading}
                             />
@@ -320,6 +376,9 @@ const MaintenanceCenterInfoScreen = ({ }) => {
                                 selectedModel={selectedModel}
                                 setSelectedModel={setSelectedModel}
                                 vehicleModels={vehicleModels}
+                                selectedBrand={selectedBrand}
+                                setSelectedBrand={setSelectedBrand}
+                                vehicleBrands={vehicleBrands}
                                 odometerReading={odometerReading}
                                 setOdometerReading={setOdometerReading}
                             />
@@ -379,6 +438,8 @@ const MaintenanceCenterInfoScreen = ({ }) => {
                                 <Text style={styles.itemText}>Tên dịch vụ: {service?.maintenanceServiceName}</Text>
                                 <Text style={styles.itemText}>Giá tiền: {formatCurrency(service?.acturalCost)}</Text>
                                 <Text style={styles.itemText}>Lưu ý: {service?.note}</Text>
+                                <Text style={styles.itemText}>Lưu ý: {service?.status}</Text>
+
                             </View>
                             {service?.image && (
                                 <Image

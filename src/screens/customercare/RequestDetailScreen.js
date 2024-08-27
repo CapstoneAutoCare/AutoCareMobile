@@ -6,7 +6,7 @@ import { createMaterialTopTabNavigator } from '@react-navigation/material-top-ta
 import RequestInfoTab from '../../components/RequestDetailComponent/RequestInfoTab';
 import MaintenanceInfoTab from '../../components/RequestDetailComponent/MaintenanceInfoTab';
 import MaintenanceTaskTab from '../../components/RequestDetailComponent/MaintenanceTaskTab'; 
-
+import { clearStaffList } from '../../app/CusCare/requestDetailSlice';
 import ErrorComponent from '../../components/ErrorComponent';
 import {
   assignTask,
@@ -36,7 +36,9 @@ const RequestDetailScreen = () => {
       dispatch(fetchMaintenanceTasks());
     }
   }, [dispatch, request?.responseMaintenanceInformation?.informationMaintenanceId]);
-  
+  useEffect(() => {
+    dispatch(clearStaffList());
+}, []);
   const handleUpdateStatus = async (newStatus) => {
     try {
       console.log("Start updating status: " + requestId, newStatus);
