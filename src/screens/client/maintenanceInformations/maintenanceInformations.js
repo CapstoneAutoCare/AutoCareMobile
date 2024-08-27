@@ -7,7 +7,7 @@ import {
   Pressable,
   Modal,
   TouchableOpacity,
-  TextInput,
+  TextInput
 } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import { Ionicons } from "@expo/vector-icons";
@@ -15,6 +15,7 @@ import { useNavigation } from "@react-navigation/native";
 import { getListInformations } from "../../../app/Center/actions";
 import { getProfile } from "../../../features/userSlice";
 import moment from "moment";
+import { getListVehicleByClient } from "../../../app/Vehicle/actions";
 
 const MaintenanceInformations = () => {
   const navigation = useNavigation();
@@ -25,7 +26,12 @@ const MaintenanceInformations = () => {
   const [isModalVisible, setModalVisible] = useState(false);
   const [filterStatus, setFilterStatus] = useState("all");
   const [searchQuery, setSearchQuery] = useState("");
-
+  const { vehicleListByClient } = useSelector((state) => state.vehicle);
+  const [selectedVehicle, setSelectedVehicle] = useState(null);
+  const [isModalVehicle, setModalVehicle] = useState(false);
+  const handleVehicleSelect = (vehicle) => {
+    setSelectedVehicle(vehicle);
+  };
   const statusLabels = {
     CHECKIN: "Đã Check-in",
     CREATEDBYClIENT: "Tạo bởi khách hàng",
@@ -38,7 +44,17 @@ const MaintenanceInformations = () => {
     await dispatch(getProfile());
     await dispatch(getListInformations());
   };
+  const fetchGetVehicle = async () => {
+    await dispatch(getListVehicleByClient());
+  };
 
+  useEffect(() => {
+    const unsubscribe = navigation.addListener("focus", () => {
+      fetchGetVehicle();
+    });
+    fetchGetVehicle();
+    return unsubscribe;
+  }, [navigation]);
   useEffect(() => {
     const unsubscribe = navigation.addListener("focus", () => {
       fetchGetListBooking();
@@ -49,7 +65,7 @@ const MaintenanceInformations = () => {
 
   useEffect(() => {
     filterStores();
-  }, [informationsList, filterStatus, searchQuery]);
+  }, [informationsList, filterStatus, searchQuery, selectedVehicle]);
 
   const filterStores = () => {
     let filtered = [...informationsList];
@@ -63,9 +79,13 @@ const MaintenanceInformations = () => {
           .includes(searchQuery.toLowerCase())
       );
     }
+    if (selectedVehicle) {
+      filtered = filtered.filter(
+        (item) => item.responseVehicles?.licensePlate === selectedVehicle.licensePlate
+      );
+    }
     setFilteredStores(filtered);
   };
-
   const handleSortPress = () => {
     setModalVisible(true);
   };
@@ -89,12 +109,27 @@ const MaintenanceInformations = () => {
             justifyContent: "space-between",
           }}
         >
-          <TextInput
-            style={styles.searchInput}
-            placeholder="Tìm kiếm"
-            value={searchQuery}
-            onChangeText={handleSearch}
-          />
+          <TouchableOpacity
+            onPress={() => setModalVehicle(true)}
+            style={{
+              flexDirection: "row",
+              alignItems: "center",
+              borderWidth: 1,
+              borderColor: "#D0D0D0",
+              padding: 10,
+              borderRadius: 20,
+              width: 160,
+              justifyContent: "center",
+              marginBottom: 10,
+            }}
+          >
+            <Text style={{ marginRight: 6 }}>
+              {selectedVehicle
+                ? selectedVehicle.licensePlate
+                : "Chọn biển số xe"}
+            </Text>
+            <Ionicons name="car" size={20} color="black" />
+          </TouchableOpacity>
           <Pressable
             onPress={handleSortPress}
             style={{
@@ -330,6 +365,41 @@ const MaintenanceInformations = () => {
             <TouchableOpacity
               style={[styles.modalButton, { backgroundColor: "red" }]}
               onPress={() => setModalVisible(false)}
+            >
+              <Text style={styles.modalButtonText}>Đóng</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
+      {/* Modal for vehicle selection */}
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={isModalVehicle}
+        onRequestClose={() => {
+          setModalVehicle(!isModalVehicle);
+        }}
+      >
+        <View style={styles.modalContainer}>
+          <View style={styles.modalContent}>
+            <Text style={styles.modalTitle}>Chọn Xe</Text>
+            {vehicleListByClient.map((vehicle) => (
+              <TouchableOpacity
+                key={vehicle.liscenePlate}
+                style={styles.modalButton}
+                onPress={() => {
+                  handleVehicleSelect(vehicle);
+                  setModalVehicle(false);
+                }}
+              >
+                <Text style={styles.modalButtonText}>
+                  {vehicle.licensePlate}
+                </Text>
+              </TouchableOpacity>
+            ))}
+            <TouchableOpacity
+              style={[styles.modalButton, { backgroundColor: "red" }]}
+              onPress={() => setModalVehicle(false)}
             >
               <Text style={styles.modalButtonText}>Đóng</Text>
             </TouchableOpacity>

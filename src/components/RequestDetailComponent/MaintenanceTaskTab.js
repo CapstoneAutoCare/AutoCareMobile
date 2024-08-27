@@ -116,8 +116,10 @@ const MaintenanceTaskTab = ({ maintenanceTasks, request, assignTask }) => {
                         selectedStaff={selectedStaff}
                         setSelectedStaff={setSelectedStaff}
                     />
+                    <View style={styles.buttonContainer}>
                     <Button title="Xác nhận" onPress={handleAssignTask} />
                     <Button title="Hủy" onPress={toggleAssignModal} />
+                    </View>
                 </View>
             </Modal>
         </View>
@@ -173,6 +175,11 @@ const styles = StyleSheet.create({
         borderRadius: 50,
         marginBottom: 10,
     },
+    buttonContainer: {
+        flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginTop: 16,
+    }
 });
 
 export default MaintenanceTaskTab

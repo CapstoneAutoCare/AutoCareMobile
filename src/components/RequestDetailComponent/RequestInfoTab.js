@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { ScrollView, View, Text, Button, StyleSheet, Pressable, TextInput } from 'react-native';
 import { Card } from 'react-native-paper';
 import { MaterialIcons } from '@expo/vector-icons';
-import Moment from 'moment';
+import moment from 'moment';
 import ErrorComponent from '../ErrorComponent';
 import Modal from 'react-native-modal';
 import SparePartComponent from '../BookingComponent/SparePartComponent';
@@ -49,24 +49,20 @@ const RequestInfoTab = ({ request, updateStatus, error, profile, assignTask}) =>
     //}
   //}, [request]);
   const mInfoId = request.responseMaintenanceInformation?.informationMaintenanceId;
-  
-  const fetchStaffList = async () => {
-    if (request?.maintenanceCenterId && staffList.length === 0) {
-      await dispatch(fetchStaffByCenter(request.maintenanceCenterId));
-    }
-  };
+  const currentTime = moment();
+
 
   
   const toggleAssignModal = () => {
     setAssignModalVisible(!isAssignModalVisible);
-  };
+  };  
 
   
   useEffect(() => {
     const fetchSpareParts = async () => {
       try {
         const response = await axiosClient.get(
-          `SparePartsItemCosts/GetListByClient?centerId=${request.maintenanceCenterId}`,
+          `SparePartsItemCosts/GetListByDifSparePartAndInforId?centerId=${request.maintenanceCenterId}&inforId=${request.responseMaintenanceInformation.informationMaintenanceId}`,
           {
             headers: {
               'Content-Type': 'application/json',
@@ -85,7 +81,7 @@ const RequestInfoTab = ({ request, updateStatus, error, profile, assignTask}) =>
     const fetchServices = async () => {
       try {
         const response = await axiosClient.get(
-          `MaintenanceServiceCosts/GetListByDifMaintenanceServiceAndInforIdAndBooleanFalse?centerId=${request.maintenanceCenterId}`,
+          `MaintenanceServiceCosts/GetListByDifMaintenanceServiceAndInforIdAndBooleanFalse?centerId=${request.maintenanceCenterId}&inforId=${request.responseMaintenanceInformation.informationMaintenanceId}`,
           {
             headers: {
               'Content-Type': 'application/json',
@@ -103,7 +99,7 @@ const RequestInfoTab = ({ request, updateStatus, error, profile, assignTask}) =>
   
     fetchSpareParts();
     fetchServices();
-  }, [request.maintenanceCenterId, request?.responseVehicles.vehicleModelName]);
+  }, []);
   
    
   
@@ -328,8 +324,8 @@ const handleOdooUpdate = async () => {
 };
 
 const getLastStatus = () => {
-  const statuses = request?.responseMaintenanceInformation?.responseMaintenanceHistoryStatuses;
-  return statuses?.[statuses.length - 1]?.status;
+  const statuses = request?.responseMaintenanceInformation?.status;
+  return statuses
 };
 
 const lastStatus = getLastStatus();
@@ -387,10 +383,10 @@ const getStatusColor = (status) => {
             <MaterialIcons name="note" size={24} color="black" /> Ghi chú: {request?.note} 
           </Text>
           <Text style={styles.label}>
-            <MaterialIcons name="schedule" size={24} color="black" /> Ngày tạo: {Moment(request?.createdDate).format('DD/MM/YYYY HH:mm')}
+            <MaterialIcons name="schedule" size={24} color="black" /> Ngày tạo: {moment(request?.createdDate).format('DD/MM/YYYY HH:mm')}
           </Text>
           <Text style={styles.label}>
-            <MaterialIcons name="event" size={24} color="black" /> Ngày đặt lịch: {Moment(request?.bookingDate).format('DD/MM/YYYY HH:mm')}
+            <MaterialIcons name="event" size={24} color="black" /> Ngày đặt lịch: {moment(request?.bookingDate).format('DD/MM/YYYY HH:mm')}
           </Text>
           <Text style={[styles.label, {color: getStatusColor(request?.responseMaintenanceInformation?.status)}]}>
             <MaterialIcons name="info" size={24} color="black" /> Trạng thái: {translateStatus(request?.responseMaintenanceInformation?.status)}
@@ -445,6 +441,7 @@ const getStatusColor = (status) => {
                 color="red" 
               />
             )}
+
       </View>   
       )}
       {lastStatus === 'REPAIRING' && (

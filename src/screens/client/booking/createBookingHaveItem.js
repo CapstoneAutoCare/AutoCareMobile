@@ -226,7 +226,7 @@ const CreateBookingHaveItem = ({
       const vietnamTime = new Date(now.getTime() + 7 * 60 * 60 * 1000);
       const accessToken = await AsyncStorage.getItem("ACCESS_TOKEN");
       const response = await axios.post(
-        "https://capstoneautocareapi20240816003911.azurewebsites.net/api/Bookings/PostHaveItems",
+        `${BASE_URL}/Bookings/PostHaveItems`,
         {
           vehicleId: vehicle,
           maintenanceCenterId: maintenanceCenter,

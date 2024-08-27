@@ -59,7 +59,7 @@ const MainScreen = () => {
 
     return (
         <View style={styles.container}>
-            <View style={styles.notificationContainer}>
+             <View style={styles.notificationContainer}>
                 <Ionicons
                     name="notifications"
                     size={30}
@@ -83,15 +83,11 @@ const MainScreen = () => {
                                 </TouchableOpacity>
                             )}
                             showsVerticalScrollIndicator={true}
-                            style={{
-                                flex: 1, overflowY: "auto",
-                            }}
                         />
                     </View>
                 )}
-
-
             </View>
+
 
             <View style={styles.row}>
                 <TouchableOpacity onPress={() => navigation.navigate('BookingNavigator')}>
@@ -153,15 +149,16 @@ const styles = StyleSheet.create({
         right: 20,
         zIndex: 1,
     },
+    
     dropdown: {
-        position: 'absolute',
-        top: 40,
-        right: 0,
+        top: 50, 
+        right: 0, 
         backgroundColor: 'white',
         borderRadius: 5,
         width: 300,
-        height: 220,
+        maxHeight: 220,  
         elevation: 5,
+        
     },
     notificationItem: {
         padding: 10,

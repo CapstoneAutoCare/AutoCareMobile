@@ -20,7 +20,7 @@ import { getListCenter, getListCenterActive } from "../../../app/Center/actions"
 import { getProfile } from "../../../features/userSlice";
 import levenshtein from "fast-levenshtein";
 import { Ionicons } from "@expo/vector-icons";
-import  CustomPicker from "../../../components/CustomPicker";
+import CustomPicker from "../../../components/CustomPicker";
 import { citiesWithDistricts } from "./locationData";
 const MaintenanceCenters = () => {
   const navigation = useNavigation();
@@ -33,7 +33,7 @@ const MaintenanceCenters = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCity, setSelectedCity] = useState('');
   const [selectedDistrict, setSelectedDistrict] = useState('');
-  
+
 
 
   const fetchGetListBooking = async () => {
@@ -81,7 +81,7 @@ const MaintenanceCenters = () => {
     setSortOrder(order);
     setModalVisible(false);
   };
-  
+
   const handleSearch = (query) => {
     setSearchQuery(query);
     if (query) {
@@ -99,32 +99,32 @@ const MaintenanceCenters = () => {
   };
   const filterCenters = () => {
     let filteredCenters = centerList;
-  
+
     if (selectedCity) {
       filteredCenters = filteredCenters.filter(
         (store) => store.city.toLowerCase() === selectedCity.toLowerCase()
       );
     }
-  
+
     if (selectedDistrict) {
       filteredCenters = filteredCenters.filter(
         (store) => store.district.toLowerCase() === selectedDistrict.toLowerCase()
       );
     }
-  
+
     setSortedStores(filteredCenters);
   };
   useEffect(() => {
     filterCenters();
   }, [selectedCity, selectedDistrict]);
-  
+
   const handleCityChange = (city) => {
     setSelectedCity(city);
     setSelectedDistrict(""); // Reset district when city changes
   };
 
   const districts = selectedCity ? citiesWithDistricts[selectedCity] : [];
- 
+
   return (
     <ScrollView style={{ marginTop: 10 }}>
       <View style={{ padding: 12 }}>
@@ -141,7 +141,7 @@ const MaintenanceCenters = () => {
             value={searchQuery}
             onChangeText={handleSearch}
           />
-           
+
           <Pressable
             onPress={handleSortPress}
             style={{
@@ -161,22 +161,22 @@ const MaintenanceCenters = () => {
           </Pressable>
         </View>
         <View style={styles.pickerRow}>
-        <CustomPicker
-          data={Object.keys(citiesWithDistricts)}
-          selectedValue={selectedCity}
-          onValueChange={handleCityChange}
-          placeholder="Chọn thành phố"
-        />
-        
-        {selectedCity && (
           <CustomPicker
-            data={districts}
-            selectedValue={selectedDistrict}
-            onValueChange={(value) => setSelectedDistrict(value)}
-            placeholder="Chọn quận/huyện"
+            data={Object.keys(citiesWithDistricts)}
+            selectedValue={selectedCity}
+            onValueChange={handleCityChange}
+            placeholder="Chọn thành phố"
           />
-        )}
-      </View>
+
+          {selectedCity && (
+            <CustomPicker
+              data={districts}
+              selectedValue={selectedDistrict}
+              onValueChange={(value) => setSelectedDistrict(value)}
+              placeholder="Chọn quận/huyện"
+            />
+          )}
+        </View>
 
 
 
@@ -234,19 +234,25 @@ const MaintenanceCenters = () => {
                     >
                       ĐÁNH GIÁ
                     </Text>
-                    <View style={{ flexDirection: "row" }}>
-                      <Text
-                        style={{
-                          color: "white",
-                          fontSize: 15,
-                          fontWeight: "500",
-                          marginTop: 4,
-                        }}
-                      >
-                        {item?.rating}
-                      </Text>
-                      <AntDesign name="staro" size={24} color="white" />
+                    <View style={{ flexDirection: "row", alignItems: "center" }}>
+                      {Array.from({ length: Math.floor(item?.rating) }, (_, index) => (
+                        <AntDesign key={index} name="star" size={24} color="yellow" />
+                      ))}
+                      {item?.rating % 1 !== 0 && (
+                        <AntDesign name="staro" size={24} color="yellow" />
+                      )}
+
                     </View>
+                    <Text
+                      style={{
+                        color: "white",
+                        fontSize: 15,
+                        fontWeight: "500",
+                        marginLeft: 8,
+                      }}
+                    >
+                      {item?.rating} trên 5
+                    </Text>
                   </View>
                 </View>
 
@@ -442,5 +448,5 @@ const styles = StyleSheet.create({
     flex: 1,
     marginHorizontal: 5,
   },
-  
+
 });

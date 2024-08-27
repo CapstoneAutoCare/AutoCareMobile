@@ -16,7 +16,7 @@ const FeedbackList = () => {
     const [filterStatus, setFilterStatus] = useState(null);
     const [sortOrder, setSortOrder] = useState(null);
 
-    
+
 
     const getProfileInfo = async () => {
         await dispatch(getProfile());
@@ -45,7 +45,7 @@ const FeedbackList = () => {
         setSortOrder(sortOrder === 'newest' ? 'oldest' : 'newest');
     };
 
-    
+
 
     const sortedFeedbacks = feedbacks.sort((a, b) => {
         if (!sortOrder) return 0;
@@ -114,34 +114,38 @@ const FeedbackList = () => {
                                                 marginTop: 3,
                                             }}
                                         >
-                                            {item.clientName}
+                                            {item?.responseClient.firstName} {item?.responseClient.lastName}
                                         </Text>
                                     </View>
 
                                     <View>
-                    <Text
-                      style={{
-                        color: "white",
-                        fontSize: 15,
-                        fontWeight: "500",
-                      }}
-                    >
-                      ĐÁNH GIÁ
-                    </Text>
-                    <View style={{ flexDirection: "row" }}>
-                      <Text
-                        style={{
-                          color: "white",
-                          fontSize: 15,
-                          fontWeight: "500",
-                          marginTop: 4,
-                        }}
-                      >
-                        {item?.vote}
-                      </Text>
-                      <AntDesign name="staro" size={24} color="white" />
-                    </View>
-                  </View>
+                                        <Text
+                                            style={{
+                                                color: "white",
+                                                fontSize: 15,
+                                                fontWeight: "500",
+                                            }}
+                                        >
+                                            ĐÁNH GIÁ
+                                        </Text>
+                                        <View style={{ flexDirection: "row", alignItems: "center" }}>
+                                            {Array.from({ length: Math.floor(item?.vote) }, (_, index) => (
+                                                <AntDesign key={index} name="star" size={24} color="yellow" />
+                                            ))}
+                                            {item?.vote % 1 !== 0 && (
+                                                <AntDesign name="staro" size={24} color="yellow" />
+                                            )}
+                                            <Text
+                                                style={{
+                                                    color: "white",
+                                                    fontSize: 15,
+                                                    fontWeight: "500",
+                                                    marginLeft: 8,
+                                                }}
+                                            >
+                                            </Text>
+                                        </View>
+                                    </View>
                                 </View>
 
                                 <View

@@ -16,7 +16,7 @@ const SparePartComponent = ({
                     <CustomSearchableDropdown
                       items={availableSpareParts.map((part) => ({
                         id: part.sparePartsItemCostId,
-                        name: `${part.maintananceScheduleName} ${part.sparePartsItemName} - ${part.acturalCost} VND`,
+                        name: ` ${part.sparePartsItemName} - ${part.acturalCost} VND`,
                         cost: part.acturalCost,
                       }))}
                       onItemSelect={(item) => {

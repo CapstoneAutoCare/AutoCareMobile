@@ -1,12 +1,12 @@
 import React from 'react';
-import { View, Text, Image, StyleSheet, FlatList, Button, Alert } from 'react-native';
+import { View, Text, Image, StyleSheet, FlatList, Button, Alert, ScrollView } from 'react-native';
 import axiosClient from '../../services/axiosClient';
+
 const TaskDetail = ({ route }) => {
   const { task } = route.params;
 
   const handleCompleteService = async (serviceId) => {
     try {
-      // Update the task service status to DONE
       console.log(`COMPLETING SERVICE: ${serviceId}`);
       await axiosClient.patch(
         `MaintenanceTaskServiceInfoes/PatchStatus?id=${serviceId}&status=DONE`
@@ -17,18 +17,9 @@ const TaskDetail = ({ route }) => {
       console.error('Error completing service:', error);
     }
   };
-  const translateStatus = (status) => {
-    const statusMapping = {
-      DONE: "Hoàn Tất",
-      ACCEPTED: "Đang Thực Hiện",
-      ACTIVE: "Đang Thực Hiện"
-      
-    };
-    return statusMapping[status] || status;
-  };
+
   const handleCompleteSparepart = async (sparepartId) => {
     try {
-      // Update the spare part status to DONE
       console.log(`COMPLETING SPARE PART: ${sparepartId}`);
       await axiosClient.patch(
         `/MaintenanceTaskSparePartInfoes/PatchStatus?id=${sparepartId}&status=DONE`
@@ -39,7 +30,15 @@ const TaskDetail = ({ route }) => {
       console.error('Error completing spare part:', error);
     }
   };
-  
+
+  const translateStatus = (status) => {
+    const statusMapping = {
+      DONE: "Hoàn Tất",
+      ACCEPTED: "Đang Thực Hiện",
+      ACTIVE: "Đang Thực Hiện"
+    };
+    return statusMapping[status] || status;
+  };
 
   const renderService = ({ item }) => (
     <View style={styles.itemContainer}>
@@ -74,15 +73,17 @@ const TaskDetail = ({ route }) => {
   );
 
   return (
-    <View style={styles.container}>
+    <ScrollView contentContainerStyle={styles.container}>
       <Text style={styles.title}>{task.maintenanceTaskName}</Text>
       <Text style={styles.detail}>Ngày được giao: {new Date(task.createdDate).toLocaleString()}</Text>
       <Text style={styles.detail}>Trạng thái: {translateStatus(task.status)}</Text>
+
       <Text style={styles.sectionTitle}>Dịch Vụ</Text>
       <FlatList
         data={task.responseMainTaskServices}
         renderItem={renderService}
         keyExtractor={(item) => item.maintenanceTaskServiceInfoId}
+        scrollEnabled={false} // Prevents FlatList from scrolling independently
       />
 
       <Text style={styles.sectionTitle}>Phụ Tùng</Text>
@@ -90,8 +91,9 @@ const TaskDetail = ({ route }) => {
         data={task.responseMainTaskSpareParts}
         renderItem={renderSparePart}
         keyExtractor={(item) => item.maintenanceTaskSparePartInfoId}
+        scrollEnabled={false} // Prevents FlatList from scrolling independently
       />
-    </View>
+    </ScrollView>
   );
 };
 

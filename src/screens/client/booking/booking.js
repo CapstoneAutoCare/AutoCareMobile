@@ -7,6 +7,7 @@ import {
   Pressable,
   Modal,
   TouchableOpacity,
+  TextInput
 } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import moment from "moment";
@@ -16,7 +17,7 @@ import { getListBookingByClient } from "../../../app/Booking/actions";
 import { useNavigation } from "@react-navigation/native";
 import { Ionicons } from "@expo/vector-icons";
 import { cancel } from "../../../app/Center/actions";
-
+import { getListVehicleByClient } from "../../../app/Vehicle/actions";
 const Booking = () => {
   const navigation = useNavigation();
   const dispatch = useDispatch();
@@ -24,11 +25,26 @@ const Booking = () => {
   const [sortStatus, setSortStatus] = useState(null);
   const [isModalVisible, setModalVisible] = useState(false);
   const [isModalBooking, setModalBooking] = useState(false);
-
+  const { vehicleListByClient } = useSelector((state) => state.vehicle);
+  const [selectedVehicle, setSelectedVehicle] = useState(null); // New state for selected vehicle
+  const [isModalVehicle, setModalVehicle] = useState(false);
+  const handleVehicleSelect = (vehicle) => {
+    setSelectedVehicle(vehicle);
+  };
   const fetchGetListBooking = async () => {
     await dispatch(getListBookingByClient());
   };
+  const fetchGetVehicle = async () => {
+    await dispatch(getListVehicleByClient());
+  };
 
+  useEffect(() => {
+    const unsubscribe = navigation.addListener("focus", () => {
+      fetchGetVehicle();
+    });
+    fetchGetVehicle();
+    return unsubscribe;
+  }, [navigation]);
   useEffect(() => {
     const unsubscribe = navigation.addListener("focus", () => {
       fetchGetListBooking();
@@ -51,6 +67,11 @@ const Booking = () => {
   const sortedBookingList = sortStatus
     ? bookingListByClient.filter((item) => item.status === sortStatus)
     : bookingListByClient;
+    const filteredBookingList = selectedVehicle
+    ? sortedBookingList.filter(
+        (item) => item?.responseVehicles?.licensePlate === selectedVehicle?.licensePlate
+      )
+    : sortedBookingList;
   const handleCancel = async (id) => {
     await dispatch(cancel(id));
     alert("hủy đặt lịch thành công!");
@@ -66,6 +87,27 @@ const Booking = () => {
             justifyContent: "space-between",
           }}
         >
+          <TouchableOpacity
+            onPress={() => setModalVehicle(true)}
+            style={{
+              flexDirection: "row",
+              alignItems: "center",
+              borderWidth: 1,
+              borderColor: "#D0D0D0",
+              padding: 10,
+              borderRadius: 20,
+              width: 160,
+              justifyContent: "center",
+              marginBottom: 10,
+            }}
+          >
+            <Text style={{ marginRight: 6 }}>
+              {selectedVehicle
+                ? selectedVehicle.licensePlate
+                : "Chọn biển số xe"}
+            </Text>
+            <Ionicons name="car" size={20} color="black" />
+          </TouchableOpacity>
           <Pressable
             onPress={handleBook}
             style={{
@@ -79,6 +121,7 @@ const Booking = () => {
           >
             <Text style={{ color: "white" }}>Đặt lịch</Text>
           </Pressable>
+         
           {/* <Pressable
             onPress={() =>
               navigation.navigate("PostBooking", {
@@ -115,8 +158,8 @@ const Booking = () => {
           </Pressable>
         </View>
         <View>
-          {sortedBookingList.length > 0 &&
-            sortedBookingList.map((item, index) => (
+          {filteredBookingList.length > 0 &&
+            filteredBookingList.map((item, index) => (
               <Pressable
                 style={{
                   marginVertical: 12,
@@ -353,6 +396,41 @@ const Booking = () => {
             <TouchableOpacity
               style={[styles.modalButton, { backgroundColor: "red" }]}
               onPress={() => setModalBooking(false)}
+            >
+              <Text style={styles.modalButtonText}>Đóng</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
+      {/* Modal for vehicle selection */}
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={isModalVehicle}
+        onRequestClose={() => {
+          setModalVehicle(!isModalVehicle);
+        }}
+      >
+        <View style={styles.modalContainer}>
+          <View style={styles.modalContent}>
+            <Text style={styles.modalTitle}>Chọn Xe</Text>
+            {vehicleListByClient.map((vehicle) => (
+              <TouchableOpacity
+                key={vehicle.liscenePlate}
+                style={styles.modalButton}
+                onPress={() => {
+                  handleVehicleSelect(vehicle);
+                  setModalVehicle(false);
+                }}
+              >
+                <Text style={styles.modalButtonText}>
+                  {vehicle.licensePlate}
+                </Text>
+              </TouchableOpacity>
+            ))}
+            <TouchableOpacity
+              style={[styles.modalButton, { backgroundColor: "red" }]}
+              onPress={() => setModalVehicle(false)}
             >
               <Text style={styles.modalButtonText}>Đóng</Text>
             </TouchableOpacity>

@@ -52,7 +52,7 @@ const InforDetail = ({ route }) => {
       }
       const accessToken = await AsyncStorage.getItem("ACCESS_TOKEN");
       const response = await axios.post(
-        `${BASE_URL}api/Feedback/Post`,
+        `${BASE_URL}/Feedback/Post`,
         {
           comment: comment,
           vote: rating,
