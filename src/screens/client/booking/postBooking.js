@@ -6,7 +6,7 @@ import { useNavigation } from "@react-navigation/native";
 import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
 import CreateBooking from "./createBooking";
 import CreateBookingHaveItem from "./createBookingHaveItem";
-import { getListCenter } from "../../../app/Center/actions";
+import { getListCenter, getListCenterActive } from "../../../app/Center/actions";
 import { getListVehicleByClient } from "../../../app/Vehicle/actions";
 
 const PostBooking = ({ route }) => {
@@ -16,7 +16,7 @@ const PostBooking = ({ route }) => {
   const { centerList } = useSelector((state) => state.center);
   const { vehicleListByClient } = useSelector((state) => state.vehicle);
   const fetchGetListCenter = async () => {
-    await dispatch(getListCenter());
+    await dispatch(getListCenterActive());
   };
   const fetchGetListVehicle = async () => {
     await dispatch(getListVehicleByClient());

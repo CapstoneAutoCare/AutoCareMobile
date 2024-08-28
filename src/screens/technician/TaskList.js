@@ -22,12 +22,12 @@ const TaskList = () => {
     } else {
       setFilteredTasks(tasks.filter(task => task.status === selectedStatus));
     }
-  }, [tasks, selectedStatus]);
+  }, [tasks, selectedStatus, refreshing]);
 
   const onRefresh = () => {
     setRefreshing(true);
     dispatch(getTasks()).finally(() => {
-      setRefreshing(false);
+      setRefreshing(!refreshing);
     });
   };
 
@@ -42,13 +42,13 @@ const TaskList = () => {
     const statusMapping = {
       DONE: "Hoàn Tất",
       ACCEPTED: "Đang Thực Hiện",
-      
+
     };
     return statusMapping[status] || status;
   };
   const renderItem = ({ item }) => (
-    <TouchableOpacity 
-      style={styles.itemContainer} 
+    <TouchableOpacity
+      style={styles.itemContainer}
       onPress={() => navigation.navigate('TaskDetail', { task: item })}
     >
       <Text style={styles.taskName}>{item.maintenanceTaskName}</Text>

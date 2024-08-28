@@ -1,21 +1,35 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text, Image, StyleSheet, FlatList, Button, Alert, ScrollView } from 'react-native';
 import axiosClient from '../../services/axiosClient';
 
 const TaskDetail = ({ route }) => {
-  const { task } = route.params;
+  const { task: initialTask } = route.params;
+  const [task, setTask] = useState(initialTask);
 
+  const [refreshing, setRefreshing] = useState(false);
+  const fetchTaskData = async () => {
+    try {
+      const response = await axiosClient.get(`/MaintenanceTasks/GetById?id=${initialTask.maintenanceTaskId}`);
+      setTask(response.data);
+    } catch (error) {
+      console.error('Error fetching task data:', error);
+    }
+  };
   const handleCompleteService = async (serviceId) => {
     try {
       console.log(`COMPLETING SERVICE: ${serviceId}`);
       await axiosClient.patch(
         `MaintenanceTaskServiceInfoes/PatchStatus?id=${serviceId}&status=DONE`
       );
+      setRefreshing(!refreshing);
+
       Alert.alert('Đã xong công việc.');
     } catch (error) {
       Alert.alert('Lỗi không thể hoàn thành');
       console.error('Error completing service:', error);
     }
+    setRefreshing(!refreshing);
+
   };
 
   const handleCompleteSparepart = async (sparepartId) => {
@@ -24,11 +38,16 @@ const TaskDetail = ({ route }) => {
       await axiosClient.patch(
         `/MaintenanceTaskSparePartInfoes/PatchStatus?id=${sparepartId}&status=DONE`
       );
+      setRefreshing(!refreshing);
+
       Alert.alert('Đã xong công việc.');
+
     } catch (error) {
       Alert.alert('Lỗi không thể hoàn thành');
       console.error('Error completing spare part:', error);
     }
+    setRefreshing(!refreshing);
+
   };
 
   const translateStatus = (status) => {
@@ -71,7 +90,9 @@ const TaskDetail = ({ route }) => {
       </View>
     </View>
   );
-
+  useEffect(() => {
+    fetchTaskData();
+  }, [refreshing])
   return (
     <ScrollView contentContainerStyle={styles.container}>
       <Text style={styles.title}>{task.maintenanceTaskName}</Text>
