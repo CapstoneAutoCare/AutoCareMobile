@@ -89,8 +89,8 @@ const BookingDetail = ({ route }) => {
                 {bookingById?.responseCenter.maintenanceCenterName}
               </Text>
               <Text style={styles.name}>
-                Thông tin xe: {bookingById?.responseVehicles.vehicleModelName} -{" "}
-                {bookingById?.responseVehicles.vehiclesBrandName}
+                Thông tin xe: {bookingById?.responseVehicles.vehiclesBrandName} {" "}
+                {bookingById?.responseVehicles.vehicleModelName}
               </Text>
               <Text style={styles.centerName}>
                 Tên khách hàng: {bookingById?.responseClient.firstName}{" "}

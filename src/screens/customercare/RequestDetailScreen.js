@@ -5,7 +5,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import RequestInfoTab from '../../components/RequestDetailComponent/RequestInfoTab';
 import MaintenanceInfoTab from '../../components/RequestDetailComponent/MaintenanceInfoTab';
-import MaintenanceTaskTab from '../../components/RequestDetailComponent/MaintenanceTaskTab'; 
+import MaintenanceTaskTab from '../../components/RequestDetailComponent/MaintenanceTaskTab';
 import { clearStaffList } from '../../app/CusCare/requestDetailSlice';
 import ErrorComponent from '../../components/ErrorComponent';
 import {
@@ -13,7 +13,7 @@ import {
   fetchRequestDetail,
   fetchMaintenanceTasks,
   updateStatus,
-  
+
 } from '../../app/CusCare/requestDetailSlice';
 
 const Tab = createMaterialTopTabNavigator();
@@ -26,40 +26,46 @@ const RequestDetailScreen = () => {
   const { loading, error, request, maintenanceTasks, isTaskAssigned } = useSelector((state) => state.requestDetail);
   const [fetchError, setFetchError] = useState(null);
   const [assignError, setAssignError] = useState(null);
+  const [reload, setReload] = useState(false);
+
 
   useEffect(() => {
     dispatch(fetchRequestDetail(requestId));
-  }, [requestId]);
-
-  useEffect(() => {
+    dispatch(clearStaffList());
     if (request?.responseMaintenanceInformation?.informationMaintenanceId) {
       dispatch(fetchMaintenanceTasks());
     }
-  }, [dispatch, request?.responseMaintenanceInformation?.informationMaintenanceId]);
-  useEffect(() => {
-    dispatch(clearStaffList());
-}, []);
+  }, [reload, requestId, dispatch, request?.responseMaintenanceInformation?.informationMaintenanceId]);
+
+
+
   const handleUpdateStatus = async (newStatus) => {
     try {
       console.log("Start updating status: " + requestId, newStatus);
       const result = await dispatch(updateStatus({ requestId, newStatus })).unwrap();
       console.log("Status updated successfully:", result);
       dispatch(fetchRequestDetail(requestId));
+      setReload(!reload);
+
       console.log("Request detail fetched after status update.");
     } catch (error) {
       console.error("Error updating status:", error);
       setFetchError(error.message || "An unexpected error occurred.");
     }
+    setReload(!reload);
+
   };
-  
+
 
   const handleAssignTask = async (id, technicianId) => {
     try {
       await dispatch(assignTask({ id, technicianId })).unwrap();
       dispatch(fetchRequestDetail(requestId));
+      setReload(!reload);
     } catch (error) {
       setAssignError(error.message);
-    }
+    } setReload(!reload);
+
   };
 
   if (loading) return <ActivityIndicator size="large" color="#0000ff" />;
@@ -91,14 +97,14 @@ const RequestDetailScreen = () => {
       {request && (
         <Tab.Navigator>
           <Tab.Screen name="Thông tin lịch hẹn">
-            {() => <RequestInfoTab request={request} updateStatus={handleUpdateStatus}  assignTask={handleAssignTask} />}
+            {() => <RequestInfoTab request={request} updateStatus={handleUpdateStatus} assignTask={handleAssignTask} />}
           </Tab.Screen>
           <Tab.Screen name="Chi tiết dịch vụ">
             {() => <MaintenanceInfoTab request={request} />}
           </Tab.Screen>
           {isTaskAssigned && (
             <Tab.Screen name="Công việc">
-              {() => <MaintenanceTaskTab request={request} maintenanceTasks={filteredMaintenanceTasks}  assignTask={handleAssignTask}/>}
+              {() => <MaintenanceTaskTab request={request} maintenanceTasks={filteredMaintenanceTasks} assignTask={handleAssignTask} />}
             </Tab.Screen>
           )}
         </Tab.Navigator>

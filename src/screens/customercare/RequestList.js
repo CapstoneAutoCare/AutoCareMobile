@@ -59,7 +59,7 @@ const RequestList = () => {
   };
 
   const filteredRequests = (requests || []).filter(
-    (request) => 
+    (request) =>
       (filterStatus ? request.status === filterStatus : true) &&
       (searchQuery ? request.vehicleNumber.toLowerCase().includes(searchQuery.toLowerCase()) : true) &&
       (!startDate || moment(request.bookingDate).isSameOrAfter(startDate, 'day')) &&
@@ -97,7 +97,7 @@ const RequestList = () => {
     <ScrollView style={{ marginTop: 50 }}>
       <View style={{ padding: 12, backgroundColor: "#DDD" }}>
         <View style={{ flexDirection: "row", justifyContent: "flex-end", alignItems: "center", marginBottom: 10 }}>
-          
+
 
           <TouchableOpacity onPress={() => { setShowDatePicker(true); setDateType('start'); }} style={{ marginHorizontal: 8 }}>
             <Feather name="calendar" size={24} color="black" />
@@ -119,14 +119,14 @@ const RequestList = () => {
           )}
 
           <View style={{ marginRight: 10 }}>
-          <RNPickerSelect
+            <RNPickerSelect
               onValueChange={(value) => setFilterStatus(value)}
               placeholder={{ label: "Chọn trạng thái", value: null }}
               items={[
                 { label: "Đang chờ", value: "WAITING" },
                 { label: "Đã chấp nhận", value: "ACCEPTED" },
                 { label: "Đã hủy", value: "CANCELLED" },
-                
+
               ]}
               style={{
                 inputAndroid: {
@@ -155,7 +155,7 @@ const RequestList = () => {
           </TouchableOpacity>
         </View>
         <View>
-        <TextInput
+          <TextInput
             style={{
               height: 40,
               borderColor: 'gray',
@@ -211,8 +211,8 @@ const RequestList = () => {
                         marginTop: 3,
                       }}
                     >
-                       {item?.responseVehicles.vehiclesBrandName}
-                     {item?.responseVehicles.vehicleModelName} - {item?.responseVehicles.licensePlate}
+                      {item?.responseVehicles.vehiclesBrandName} {""}
+                      {item?.responseVehicles.vehicleModelName} - {item?.responseVehicles.licensePlate}
                     </Text>
                   </View>
 

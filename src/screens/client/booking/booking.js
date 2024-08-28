@@ -67,10 +67,10 @@ const Booking = () => {
   const sortedBookingList = sortStatus
     ? bookingListByClient.filter((item) => item.status === sortStatus)
     : bookingListByClient;
-    const filteredBookingList = selectedVehicle
+  const filteredBookingList = selectedVehicle
     ? sortedBookingList.filter(
-        (item) => item?.responseVehicles?.licensePlate === selectedVehicle?.licensePlate
-      )
+      (item) => item?.responseVehicles?.licensePlate === selectedVehicle?.licensePlate
+    )
     : sortedBookingList;
   const handleCancel = async (id) => {
     await dispatch(cancel(id));
@@ -121,7 +121,7 @@ const Booking = () => {
           >
             <Text style={{ color: "white" }}>Đặt lịch</Text>
           </Pressable>
-         
+
           {/* <Pressable
             onPress={() =>
               navigation.navigate("PostBooking", {
@@ -197,8 +197,8 @@ const Booking = () => {
                         marginTop: 3,
                       }}
                     >
-                      {item?.responseVehicles.vehicleModelName} -{" "}
-                      {item?.responseVehicles.vehiclesBrandName}
+                      {item?.responseVehicles.vehiclesBrandName} {""}
+                      {item?.responseVehicles.vehicleModelName} - {item?.responseVehicles?.licensePlate}
                     </Text>
                   </View>
 
