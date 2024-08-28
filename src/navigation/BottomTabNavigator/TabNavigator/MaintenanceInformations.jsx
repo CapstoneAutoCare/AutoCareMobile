@@ -9,6 +9,7 @@ import { Drawer } from "react-native-paper";
 import { FontAwesome } from "@expo/vector-icons";
 import InforDetail from "../../../screens/client/maintenanceInformations/inforDetail";
 import Receipts from "../../../screens/client/maintenanceInformations/receipts";
+import HistoryDetail from "../../../screens/client/maintenanceInformations/historyDetail";
 const Stack = createNativeStackNavigator();
 const MaintenanceInfor = ({ authenticated }) => {
   return (
@@ -22,6 +23,11 @@ const MaintenanceInfor = ({ authenticated }) => {
       <Stack.Screen
         name="InforDetail"
         component={InforDetail}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="HistoryDetail"
+        component={HistoryDetail}
         options={{ headerShown: false }}
       />
       <Stack.Screen

@@ -20,8 +20,7 @@ const RequestList = () => {
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
   const [showDatePicker, setShowDatePicker] = useState(false);
-  const [dateType, setDateType] = useState(null); // 'start' or 'end'
-
+  const [dateType, setDateType] = useState(null); 
   useEffect(() => {
     dispatch(fetchRequests(profile.CentreId));
   }, [dispatch]);

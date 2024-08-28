@@ -348,7 +348,7 @@ const getLastStatus = () => {
 };
 const lastStatus = getLastStatus();
 useEffect(() => {
-  if (!['CHECKIN', 'REPAIRING', 'PAYMENT'].includes(lastStatus)) {
+  if (!['CHECKIN', 'REPAIRING', 'PAYMENT', 'PAID', 'YETPAID'].includes(lastStatus)) {
     dispatch(setIsTaskAssigned(false));
   } else {
     dispatch(setIsTaskAssigned(true));

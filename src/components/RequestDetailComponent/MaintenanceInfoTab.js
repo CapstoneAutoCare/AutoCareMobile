@@ -47,8 +47,9 @@ const MaintenanceInfoTab = ({ request, error }) => {
       CREATEDBYClIENT: "Yêu cầu bởi khách hàng",
       CHECKIN: "Khách hàng đã đến",
       REPAIRING: "Đang sửa chữa",
-      PAYMENT: "Thanh toán"
-  
+      PAYMENT: "Thanh toán",
+      YETPAID: "Chưa thanh toán",
+      PAID: "Đã thanh toán"
     };
     return statusMapping[status] || status;
   };

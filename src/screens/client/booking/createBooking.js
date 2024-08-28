@@ -48,6 +48,9 @@ const CreateBooking = ({
     if (maintenanceCenter) {
       fetchOdo();
     }
+  }, [maintenanceCenter]);
+
+  useEffect(() => {
     const selectedVehicle = vehicleListByClient.find(
       (v) => v.vehiclesId === vehicle
     );
@@ -164,8 +167,7 @@ const CreateBooking = ({
     }
   };
   const today = new Date();
-  const oneMonthLater = new Date(today);
-  oneMonthLater.setMonth(today.getMonth() + 1);
+
 
   // Date picker change handler
   const onDateChange = (event, selectedDate) => {
@@ -173,7 +175,7 @@ const CreateBooking = ({
     setShowDatePicker(false);
     setBookingDate(currentDate);
     if (event.type === "set") {
-      setShowTimePicker(true);
+      setShowTimePicker(true);  
     }
   };
 
@@ -308,22 +310,22 @@ const CreateBooking = ({
             </Pressable>
             {showDatePicker && (
               <DateTimePicker
-                value={bookingDate}
-                mode="date"
-                display="default"
-                onChange={onDateChange}
-                minimumDate={today}  // Ngăn người dùng chọn ngày trong quá khứ
-                maximumDate={oneMonthLater}  // Ngày muộn nhất
-              />
-            )}
-            {showTimePicker && (
-              <DateTimePicker
-                value={bookingDate}
-                mode="time"
-                display="default"
-                onChange={onTimeChange}
-              />
-            )}
+              value={bookingDate}
+              mode="date"
+              display="default"
+              onChange={onDateChange}
+              minimumDate={today} 
+
+            />
+          )}
+          {showTimePicker && (
+            <DateTimePicker
+              value={bookingDate}
+              mode="time"
+              display="default"
+              onChange={onTimeChange}
+            />
+          )}
           </View>
           <View style={styles.inputContainer}>
             <TextInput

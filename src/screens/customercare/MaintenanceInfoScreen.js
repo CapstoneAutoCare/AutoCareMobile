@@ -208,7 +208,7 @@ const MaintenanceCenterInfoScreen = ({ }) => {
         return (
             <>
             <View style={styles.filterContainer}>
-                <Text>Filter by Vehicle Brand</Text>
+                
                 <FlatList
                     data={vehicleBrands}
                     keyExtractor={(item) => item.vehicleBrandId.toString()}
@@ -355,7 +355,7 @@ const MaintenanceCenterInfoScreen = ({ }) => {
                                 ({ item }) => (
                                     <TouchableOpacity onPress={() => openDetailModal(item, 'service')}>
                                         <Text style={styles.itemText}>
-                                            {"Dịch vụ tại mốc odoo " + item.maintananceScheduleName + " dành cho xe " + item.vehiclesBrandName + " " + item.vehicleModelName}
+                                            {"Dịch vụ" + " dành cho xe " + item.vehiclesBrandName + " " + item.vehicleModelName}
                                         </Text>
                                     </TouchableOpacity>
                                 )

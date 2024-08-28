@@ -175,6 +175,16 @@ const InforDetail = ({ route }) => {
               Tổng tiền: {info.totalPrice} Đồng
             </Text>
           </View>
+          <Pressable
+              onPress={() =>
+                navigation.navigate("HistoryDetail", {
+                  info,
+                })
+              }
+              style={styles.button}
+            >
+              <Text style={{ color: "white" }}>Lịch sử sửa chữa</Text>
+            </Pressable>
           {(info.status === "YETPAID" || info.status === "PAID") && (
             <Pressable
               onPress={() =>
