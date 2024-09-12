@@ -1,9 +1,13 @@
-import { StyleSheet, Text, View, ActivityIndicator, Pressable } from "react-native";
+import { StyleSheet, Text, View, ActivityIndicator, Pressable, ScrollView } from "react-native";
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import * as SignalR from "@microsoft/signalr";
 import { BASE_URL } from "../../../../env";
 import { useNavigation } from "@react-navigation/native";
+import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
+import MaintenanceTab from "./MaintenanceTab";  
+
+const Tab = createMaterialTopTabNavigator();
 
 const VehicleDetail = ({ route }) => {
     const navigation = useNavigation();
@@ -115,56 +119,69 @@ const VehicleDetail = ({ route }) => {
         return <Text style={styles.errorText}>Error: Vehicle not found</Text>;
     }
 
-    return (
+    const VehicleInfo = () => (
         <View style={styles.container}>
-            <Text style={styles.title}>Chi tiết xe</Text>
-            <View style={styles.infoContainer}>
-                <Text style={styles.infoLabel}>Model:</Text>
-                <Text style={styles.infoValue}>{vehicleobject.vehicleModelName}</Text>
-            </View>
-            <View style={styles.infoContainer}>
-                <Text style={styles.infoLabel}>Brand:</Text>
-                <Text style={styles.infoValue}>{vehicleobject.vehiclesBrandName}</Text>
-            </View>
-            <View style={styles.infoContainer}>
-                <Text style={styles.infoLabel}>Status:</Text>
-                <Text style={styles.infoValue}>{vehicleobject.status}</Text>
-            </View>
-            <View style={styles.infoContainer}>
-                <Text style={styles.infoLabel}>Description:</Text>
-                <Text style={styles.infoValue}>{vehicleobject.description}</Text>
-            </View>
-            <View style={styles.infoContainer}>
-                <Text style={styles.infoLabel}>Color:</Text>
-                <Text style={styles.infoValue}>{vehicleobject.color}</Text>
-            </View>
-            <View style={styles.infoContainer}>
-                <Text style={styles.infoLabel}>License Plate:</Text>
-                <Text style={styles.infoValue}>{vehicleobject.licensePlate}</Text>
-            </View>
-            <View style={styles.infoContainer}>
-                <Text style={styles.infoLabel}>Odometer:</Text>
-                <Text style={styles.infoValue}>{currentOdo} km</Text>
-            </View>
-            <View style={styles.infoContainer}>
-                <Text style={styles.infoLabel}>Created Date:</Text>
-                <Text style={styles.infoValue}>{vehicleobject.createdDate}</Text>
-            </View>
-            <Pressable
-                onPress={handleButtonPress}
-                style={[styles.button, isIncrementing ? styles.stopButton : styles.startButton]}
-            >
-                <Text style={styles.buttonText}>
-                    {isIncrementing ? "Stop Incrementing Odometer" : "Start Incrementing Odometer"}
-                </Text>
-            </Pressable>
-            <Pressable
-                onPress={() => navigation.goBack()}
-                style={styles.backButton}
-            >
-                <Text style={styles.buttonText}>Back</Text>
-            </Pressable>
+        <Text style={styles.title}>Chi tiết xe</Text>
+        <View style={styles.infoContainer}>
+            <Text style={styles.infoLabel}>Model:</Text>
+            <Text style={styles.infoValue}>{vehicleobject.vehicleModelName}</Text>
         </View>
+        <View style={styles.infoContainer}>
+            <Text style={styles.infoLabel}>Brand:</Text>
+            <Text style={styles.infoValue}>{vehicleobject.vehiclesBrandName}</Text>
+        </View>
+        <View style={styles.infoContainer}>
+            <Text style={styles.infoLabel}>Status:</Text>
+            <Text style={styles.infoValue}>{vehicleobject.status}</Text>
+        </View>
+        <View style={styles.infoContainer}>
+            <Text style={styles.infoLabel}>Description:</Text>
+            <Text style={styles.infoValue}>{vehicleobject.description}</Text>
+        </View>
+        <View style={styles.infoContainer}>
+            <Text style={styles.infoLabel}>Color:</Text>
+            <Text style={styles.infoValue}>{vehicleobject.color}</Text>
+        </View>
+        <View style={styles.infoContainer}>
+            <Text style={styles.infoLabel}>License Plate:</Text>
+            <Text style={styles.infoValue}>{vehicleobject.licensePlate}</Text>
+        </View>
+        <View style={styles.infoContainer}>
+            <Text style={styles.infoLabel}>Odometer:</Text>
+            <Text style={styles.infoValue}>{currentOdo} km</Text>
+        </View>
+        <View style={styles.infoContainer}>
+            <Text style={styles.infoLabel}>Created Date:</Text>
+            <Text style={styles.infoValue}>{vehicleobject.createdDate}</Text>
+        </View>
+        <Pressable
+            onPress={handleButtonPress}
+            style={[styles.button, isIncrementing ? styles.stopButton : styles.startButton]}
+        >
+            <Text style={styles.buttonText}>
+                {isIncrementing ? "Stop Incrementing Odometer" : "Start Incrementing Odometer"}
+            </Text>
+        </Pressable>
+        <Pressable
+            onPress={() => navigation.goBack()}
+            style={styles.backButton}
+        >
+            <Text style={styles.buttonText}>Back</Text>
+        </Pressable>
+    </View>
+    );
+
+    // Return tab navigator with two tabs
+    return (
+        <Tab.Navigator
+        screenOptions={{
+          tabBarStyle: { marginTop: 20 }, // Di chuyển thanh tab xuống
+        }}
+      >
+        <Tab.Screen name="Vehicle Details" component={VehicleInfo} />
+        <Tab.Screen name="Maintenance Packages" component={MaintenanceTab} initialParams={{ vehicle }} />
+      </Tab.Navigator>
+      
     );
 };
 

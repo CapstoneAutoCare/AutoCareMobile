@@ -290,7 +290,7 @@ const RequestList = () => {
 
                   <View style={{ alignItems: "center" }}>
                     <Pressable
-                      onPress={() => navigation.navigate('REQUEST_DETAIL', { requestId: item.bookingId })}
+                      onPress={() => navigation.navigate('REQUEST_DETAIL', { requestId: item.bookingId, cuscareId: profile.CustomerCareId })}
                       style={{
                         width: 32,
                         height: 32,

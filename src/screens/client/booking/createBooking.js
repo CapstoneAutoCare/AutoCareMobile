@@ -18,364 +18,359 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import CustomSearchableDropdown from "../../../features/CustomSearchableDropdown";
 import { BASE_URL } from "../../../../env";
 
-const CreateBooking = ({
-  centerList,
-  maintenanceCenterId,
-  vehicleListByClient,
-}) => {
+const CreateBooking = ({ centerList, maintenanceCenterId, vehicleListByClient }) => {
   const navigation = useNavigation();
   const [vehicle, setVehicle] = useState("");
-  const [odo, setOdo] = useState("");
-  const [odoName, setOdoName] = useState("");
-  const [maintenanceCenter, setMaintenanceCenter] = useState(
-    maintenanceCenterId || ""
-  );
+  const [maintenanceCenter, setMaintenanceCenter] = useState(maintenanceCenterId || "");
   const [note, setNote] = useState("");
+  const [odoBooking, setOdoBooking] = useState("");
   const [load, setLoad] = useState(false);
   const [bookingDate, setBookingDate] = useState(new Date());
   const [showDatePicker, setShowDatePicker] = useState(false);
-  const [filteredOdo, setFilteredOdo] = useState([]);
-  const [availableOdo, setAvailableOdo] = useState([]);
-  const [showTimePicker, setShowTimePicker] = useState(false);
-  const [odoList, setOdoList] = useState([]);
-  const [modelId, setModelId] = useState("");
-  const [displayedServices, setDisplayedServices] = useState([]);
-  const [showDialog, setShowDialog] = useState(false);
-  const [scheduleId, setScheduleId] = useState("");
+  const [maintenancePlans, setMaintenancePlans] = useState([]);
+  const [selectedPlan, setSelectedPlan] = useState(null);
+  const [showPlanModal, setShowPlanModal] = useState(false);
+  const [maintenanceDetails, setMaintenanceDetails] = useState([]);
+  const [showDetailsModal, setShowDetailsModal] = useState(false);
+  const [selectedDate, setSelectedDate] = useState(null); // Lưu ngày đã chọn
+  const [timeSlots, setTimeSlots] = useState([]); // Lưu các khung giờ
+  const [showTimeSlotModal, setShowTimeSlotModal] = useState(false); // Modal chọn giờ
+const [selectedTimeSlot, setSelectedTimeSlot] = useState(null); // Lưu giờ đã chọn
+  // useEffect(() => {
+  //   if (maintenanceCenter) {
+  //     fetchOdo();
+  //   }
+  // }, [maintenanceCenter]);
 
+  // useEffect(() => {
+  //   const selectedVehicle = vehicleListByClient.find(
+  //     (v) => v.vehiclesId === vehicle
+  //   );
+  //   if (selectedVehicle) {
+  //     setModelId(selectedVehicle.vehicleModelId);
+  //     setFilteredOdo(
+  //       availableOdo.filter(
+  //         (odo) => odo.vehicleModelId === selectedVehicle.vehicleModelId
+  //       )
+  //     );
+  //   } else {
+  //     setFilteredOdo([]);
+  //   }
+  // }, [vehicle, availableOdo]);
 
-  useEffect(() => {
-    if (maintenanceCenter) {
-      fetchOdo();
-    }
-  }, [maintenanceCenter]);
+  // // Fetch available Odo from API
+  // const fetchOdo = async () => {
+  //   try {
+  //     const accessToken = await AsyncStorage.getItem("ACCESS_TOKEN");
+  //     const response = await axios.get(
+  //       `${BASE_URL}/MaintenanceSchedule/GetListPackageCenterId?id=${maintenanceCenter}`,
+  //       {
+  //         headers: {
+  //           "Content-Type": "application/json",
+  //           Authorization: `Bearer ${accessToken}`,
+  //         },
+  //       }
+  //     );
+  //     setAvailableOdo(response.data);
+  //   } catch (error) {
+  //     console.error("Error fetching services:", error);
+  //   }
+  // };
 
-  useEffect(() => {
-    const selectedVehicle = vehicleListByClient.find(
-      (v) => v.vehiclesId === vehicle
-    );
-    if (selectedVehicle) {
-      setModelId(selectedVehicle.vehicleModelId);
-      setFilteredOdo(
-        availableOdo.filter(
-          (odo) => odo.vehicleModelId === selectedVehicle.vehicleModelId
-        )
-      );
-    } else {
-      setFilteredOdo([]);
-    }
-  }, [vehicle, availableOdo]);
+  // const fetchOdoList = async () => {
+  //   try {
+  //     const accessToken = await AsyncStorage.getItem("ACCESS_TOKEN");
+  //     if (!maintenanceCenter || !vehicle) return;
 
-  // Fetch available Odo from API
-  const fetchOdo = async () => {
+  //     const response = await axios.get(
+  //       `${BASE_URL}/MaintenanceServices/GetListPackageAndOdoTRUEByCenterIdAndVehicleModelId?id=${maintenanceCenter}&modelId=${modelId}`,
+  //       {
+  //         headers: {
+  //           accept: "text/plain",
+  //           Authorization: `Bearer ${accessToken}`,
+  //         },
+  //       }
+  //     );
+
+  //     const filteredServices = response.data.filter(service =>
+  //       service.maintananceScheduleId === scheduleId
+  //     );
+
+  //     setDisplayedServices(filteredServices);
+  //     setOdoList(filteredServices);
+  //   } catch (error) {
+  //     console.error("Error fetching Odo List:", error);
+  //   }
+  // };
+
+  const fetchMaintenanceVehiclesDetails = async () => {
     try {
       const accessToken = await AsyncStorage.getItem("ACCESS_TOKEN");
       const response = await axios.get(
-        `${BASE_URL}/MaintenanceSchedule/GetListPackageCenterId?id=${maintenanceCenter}`,
+        `${BASE_URL}/MaintenanceVehiclesDetails/GetListByVehicleId?vehicleId=${vehicle}`,
         {
           headers: {
-            "Content-Type": "application/json",
             Authorization: `Bearer ${accessToken}`,
           },
         }
       );
-      setAvailableOdo(response.data);
+    
+      const details = response.data;
+      setMaintenanceDetails(details);
+  
+      // Gộp các object theo maintenancePlanId
+      const groupedPlans = Object.values(
+        details.reduce((acc, item) => {
+          const planId = item.responseMaintenanceSchedules.maintenancePlanId;
+          if (!acc[planId]) {
+            acc[planId] = {
+              maintenancePlanId: planId,
+              ...item.responseMaintenanceSchedules,
+            };
+          }
+          return acc;
+        }, {})
+      );
+  
+      setMaintenancePlans(groupedPlans);  // Luôn hiển thị dropdown chọn gói bảo dưỡng
     } catch (error) {
-      console.error("Error fetching services:", error);
+      console.error("Error fetching maintenance vehicle details:", error);
     }
   };
-
-  const fetchOdoList = async () => {
-    try {
-      const accessToken = await AsyncStorage.getItem("ACCESS_TOKEN");
-      if (!maintenanceCenter || !vehicle) return;
-
-      const response = await axios.get(
-        `${BASE_URL}/MaintenanceServices/GetListPackageAndOdoTRUEByCenterIdAndVehicleModelId?id=${maintenanceCenter}&modelId=${modelId}`,
-        {
-          headers: {
-            accept: "text/plain",
-            Authorization: `Bearer ${accessToken}`,
-          },
-        }
-      );
-
-      const filteredServices = response.data.filter(service =>
-        service.maintananceScheduleId === scheduleId
-      );
-
-      setDisplayedServices(filteredServices);
-      setOdoList(filteredServices);
-    } catch (error) {
-      console.error("Error fetching Odo List:", error);
-    }
-  };
-
-  // Tạo một bản sao của bookingDate để tránh thay đổi trực tiếp
-  const adjustedBookingDate = new Date(bookingDate);
-
-  // Thêm 7 giờ vào thời gian
-  adjustedBookingDate.setHours(adjustedBookingDate.getHours() + 7);
+  
+  
 
   const handleSignup = async () => {
-    try {
-      if (!note || !maintenanceCenter) {
-        alert("Vui lòng điền đầy đủ thông tin");
-        return;
-      }
-      setLoad(true);
-      const accessToken = await AsyncStorage.getItem("ACCESS_TOKEN");
-      const response = await axios.post(
-        `${BASE_URL}/Bookings/PostHavePackage`,
-        {
-          vehicleId: vehicle,
-          maintenanceCenterId: maintenanceCenter,
-          maintananceScheduleId: odo || null,
-          note: note,
-          bookingDate: adjustedBookingDate.toISOString(),
-          informationName: "Đặt Lịch Bảo Dưỡng",
+    if (!note || !maintenanceCenter || !vehicle || !selectedPlan || !selectedTimeSlot) {
+      alert("Vui lòng điền đầy đủ thông tin");
+      return;
+    }
+  
+    setLoad(true);
+    const accessToken = await AsyncStorage.getItem("ACCESS_TOKEN");
+  
+    // Lưu trữ cả ngày và giờ
+    const adjustedBookingDate = new Date(selectedDate);
+    adjustedBookingDate.setHours(...selectedTimeSlot.split(':').map(Number)); // Gán giờ đã chọn
+  
+    const response = await axios.post(
+      `${BASE_URL}/Bookings/PostMaintenanceBooking`,
+      {
+        vehicleId: vehicle,
+        maintenanceCenterId: maintenanceCenter,
+        maintenancePlanId: selectedPlan,
+        note: note,
+        odoBooking: odoBooking,
+        bookingDate: adjustedBookingDate.toISOString(), // Ngày và giờ kết hợp
+      },
+      {
+        headers: {
+          "content-type": "application/json",
+          Authorization: `Bearer ${accessToken}`,
         },
-        {
-          headers: {
-            "content-type": "application/json",
-            Authorization: `Bearer ${accessToken}`,
-          },
-        }
-      );
-
-      if (response.status === 200) {
-        setLoad(false);
-        alert("Tạo lịch thành công!");
-        navigation.navigate("Booking");
-      } else {
-        setLoad(false);
-        alert("Tạo lịch không thành công. Vui lòng thử lại.");
       }
-    } catch (error) {
+    );
+  
+    if (response.status === 200) {
       setLoad(false);
-      console.error("Error during:", error);
-      if (error.response) {
-        console.error("Server responded with:", error.response.data);
-        alert("Server responded with an error. Please check the console for details.");
-      } else if (error.request) {
-        console.error("No response received:", error.request);
-        alert("No response received from the server. Please check your network connection.");
-      } else {
-        console.error("Error setting up the request:", error.message);
-        alert("An error occurred during the request setup. Please check the console for details.");
-      }
+      alert("Tạo lịch thành công!");
+      navigation.navigate("Booking");
+    } else {
+      setLoad(false);
+      alert("Tạo lịch không thành công. Vui lòng thử lại.");
     }
   };
-  const today = new Date();
-
-
-  // Date picker change handler
+  
   const onDateChange = (event, selectedDate) => {
     const currentDate = selectedDate || bookingDate;
     setShowDatePicker(false);
-    setBookingDate(currentDate);
-    if (event.type === "set") {
-      setShowTimePicker(true);  
-    }
+    setSelectedDate(currentDate); // Lưu ngày đã chọn
+    setShowTimeSlotModal(true); // Hiển thị modal chọn giờ
   };
+// Hàm để tạo khung giờ từ 8:00 sáng đến 7:00 tối với mỗi khoảng 30 phút
+const generateTimeSlots = () => {
+  const slots = [];
+  let startTime = new Date();
+  startTime.setHours(8, 0, 0, 0); // Bắt đầu từ 8:00 AM
+  const endTime = new Date();
+  endTime.setHours(19, 0, 1, 0); // Kết thúc vào 7:00 PM
 
-  const onTimeChange = (event, selectedTime) => {
-    const currentTime = selectedTime || bookingDate;
-    setShowTimePicker(false);
-    const updatedDate = new Date(
-      bookingDate.setHours(currentTime.getHours(), currentTime.getMinutes())
+  while (startTime < endTime) {
+    slots.push(
+      `${startTime.getHours().toString().padStart(2, '0')}:${startTime.getMinutes().toString().padStart(2, '0')}`
     );
-    setBookingDate(updatedDate);
+    startTime.setMinutes(startTime.getMinutes() + 30); // Tăng thêm 30 phút
+  }
+
+  return slots;
+};
+
+  const onSelectPlan = (plan) => {
+    setSelectedPlan(plan);
+  };
+  
+
+  const onCenterSelect = async (itemValue) => {
+    setMaintenanceCenter(itemValue);
+    await fetchMaintenanceVehiclesDetails();
   };
 
-  const renderServiceItem = ({ item }) => (
-    <View style={styles.serviceItem}>
-      <Text style={styles.serviceName}>{item.maintenanceServiceName}</Text>
-      <Text style={styles.serviceDetails}>
-        {item.vehiclesBrandName} {item.vehicleModelName} - Odo: {item.maintananceScheduleName} Km
-      </Text>
-    </View>
-  );
+  const handleModalOk = () => {
+    setShowDetailsModal(false);
+    fetchMaintenancePlans();
+    setShowPlanModal(true);
+  };
 
   return (
     <ScrollView style={{ marginTop: 20 }}>
       <View style={styles.container}>
         <View style={styles.form}>
-          {centerList.length > 0 && (
-            <View style={styles.inputContainer}>
-              <Picker
-                selectedValue={vehicle}
-                onValueChange={(itemValue) => {
-                  setVehicle(itemValue);
-                  setFilteredOdo([]);
-                  setOdo("");
-                  setOdoName("");
-                  fetchOdoList();
-                }}
-                style={styles.picker}
-              >
-                <Picker.Item label="Chọn xe" value="" />
-                {vehicleListByClient.map((vehicle) => (
-                  <Picker.Item
-                    key={vehicle.vehiclesId}
-                    label={
-                      vehicle.vehiclesBrandName +
-                      " " +
-                      vehicle.vehicleModelName +
-                      " " +
-                      vehicle.licensePlate
-                    }
-                    value={vehicle.vehiclesId}
-                  />
-                ))}
-              </Picker>
-            </View>
-          )}
-
-          {vehicleListByClient.length > 0 && (
-            <View style={styles.inputContainer}>
-              <Picker
-                selectedValue={maintenanceCenter}
-                onValueChange={(itemValue) => {
-                  setMaintenanceCenter(itemValue);
-                  setFilteredOdo([]);
-                  setOdo("");
-                  setOdoName("");
-                  fetchOdo();
-                  fetchOdoList();
-                }}
-                style={styles.picker}
-              >
-                <Picker.Item label="Chọn trung tâm bảo dưỡng" value="" />
-                {centerList.map((center) => (
-                  <Picker.Item
-                    key={center.maintenanceCenterId}
-                    label={center.maintenanceCenterName}
-                    value={center.maintenanceCenterId}
-                  />
-                ))}
-              </Picker>
-            </View>
-          )}
-
-          {maintenanceCenter && filteredOdo.length > 0 && (
-            <View style={styles.inputContainerCost}>
-              <CustomSearchableDropdown
-                items={filteredOdo.map((odo) => ({
-                  id: odo.maintenanceServiceId || "",
-                  name: `${odo.vehiclesBrandName || ""} ${odo.vehicleModelName || ""
-                    } - Odo: ${odo.maintananceScheduleName || ""} Km `,
-                  value: odo.maintananceScheduleId || "",
-                  imageUrl: odo.imageUrl || "",
-                  maintenanceServiceName: odo.maintenanceServiceName || "",
-                  ...odo,
-                }))}
-                onItemSelect={(item) => {
-                  if (item && item.value) {
-                    setOdo(item.value);
-                    setOdoName(item.name || "");
-                    setScheduleId(item.value);
-                  }
-                }}
-                placeholder={odoName || "Chọn Combo"}
-              />
-            </View>
-          )}
-
-          {maintenanceCenter && vehicle && odo && (
-            <View style={styles.inputContainer}>
-              <Pressable
-                onPress={() => {
-                  fetchOdoList();
-                  setShowDialog(true);
-                  console.log(odoList);
-                }}
-                style={styles.showButton}
-              >
-                <Text style={styles.showButtonText}>Show</Text>
-              </Pressable>
-            </View>
-          )}
+          <View style={styles.inputContainer}>
+            <Picker
+              selectedValue={vehicle}
+              onValueChange={(itemValue) => {
+                setVehicle(itemValue);
+              }}
+              style={styles.picker}
+            >
+              <Picker.Item label="Chọn xe" value="" />
+              {vehicleListByClient.map((vehicle) => (
+                <Picker.Item
+                  key={vehicle.vehiclesId}
+                  label={vehicle.vehiclesBrandName + " " + vehicle.vehicleModelName + " " + vehicle.licensePlate}
+                  value={vehicle.vehiclesId}
+                />
+              ))}
+            </Picker>
+          </View>
 
           <View style={styles.inputContainer}>
-            <Pressable
-              onPress={() => setShowDatePicker(true)}
-              style={styles.datePickerButton}
+            <Picker
+              selectedValue={maintenanceCenter}
+              onValueChange={onCenterSelect}
+              style={styles.picker}
             >
-              <Text style={styles.datePickerText}>
-                {bookingDate
-                  ? bookingDate.toLocaleString()
-                  : "Chọn ngày và giờ"}
-              </Text>
-            </Pressable>
-            {showDatePicker && (
-              <DateTimePicker
-              value={bookingDate}
-              mode="date"
-              display="default"
-              onChange={onDateChange}
-              minimumDate={today} 
-
-            />
-          )}
-          {showTimePicker && (
-            <DateTimePicker
-              value={bookingDate}
-              mode="time"
-              display="default"
-              onChange={onTimeChange}
-            />
-          )}
+              <Picker.Item label="Chọn trung tâm bảo dưỡng" value="" />
+              {centerList.map((center) => (
+                <Picker.Item
+                  key={center.maintenanceCenterId}
+                  label={center.maintenanceCenterName}
+                  value={center.maintenanceCenterId}
+                />
+              ))}
+            </Picker>
           </View>
+
+          <Pressable onPress={() => setShowDatePicker(true)} style={styles.datePickerButton}>
+  <Text style={styles.datePickerText}>
+    {selectedDate ? `${selectedDate.toLocaleDateString()} ${selectedTimeSlot ? selectedTimeSlot : ''}` : "Chọn ngày và giờ"}
+  </Text>
+</Pressable>
+
+
+          {showDatePicker && (
+            <DateTimePicker value={bookingDate} mode="date" display="default" onChange={onDateChange} />
+          )}
+<Modal transparent={true} animationType="slide" visible={showTimeSlotModal}>
+  <View style={styles.modalContainer}>
+    <View style={styles.modalContent}>
+      <Text style={styles.modalTitle}>Chọn giờ</Text>
+      <View style={styles.timeSlotContainer}>
+        {generateTimeSlots().map((slot, index) => (
+          <Pressable
+            key={index}
+            onPress={() => {
+              setSelectedTimeSlot(slot);
+              setShowTimeSlotModal(false); // Đóng modal khi chọn xong giờ
+            }}
+            style={styles.timeSlotBox}
+          >
+            <Text style={styles.timeSlotText}>{slot}</Text>
+          </Pressable>
+        ))}
+      </View>
+      <Pressable onPress={() => setShowTimeSlotModal(false)} style={styles.closeButton}>
+        <Text style={styles.closeButtonText}>Đóng</Text>
+      </Pressable>
+    </View>
+  </View>
+</Modal>
+
+          {showPlanModal && (
+            <Pressable onPress={() => setShowPlanModal(true)} style={styles.showButton}>
+              <Text style={styles.showButtonText}>Chọn gói bảo dưỡng</Text>
+            </Pressable>
+          )}
+    {maintenancePlans.length > 0 && (
+  <View style={styles.inputContainer}>
+    <Picker
+      selectedValue={selectedPlan}
+      onValueChange={(planId) => setSelectedPlan(planId)} // Cho phép người dùng thay đổi gói bảo dưỡng
+      style={styles.picker}
+    >
+      <Picker.Item label="Chọn gói bảo dưỡng" value="" />
+      {maintenancePlans.map((plan) => (
+        <Picker.Item
+          key={plan.maintenancePlanId}
+          label={`Gói ${plan.maintenancePlanName}`}
+          value={plan.maintenancePlanId}
+        />
+      ))}
+    </Picker>
+  </View>
+)}
+
+
+{/*<Modal transparent={true} animationType="slide" visible={showPlanModal}>
+  <View style={styles.dialogContainer}>
+    <View style={styles.dialogContent}>
+      <Text style={styles.dialogTitle}>Chọn gói bảo dưỡng</Text>
+      {maintenancePlans.map((plan) => (
+        <Pressable key={plan.maintenancePlanId} onPress={() => onSelectPlan(plan.maintenancePlanId)}>
+          <Text style={styles.serviceName}>{plan.maintenancePlanName}</Text>
+        </Pressable>
+      ))}
+      <Pressable onPress={() => setShowPlanModal(false)} style={styles.dialogCloseButton}>
+        <Text style={styles.dialogCloseButtonText}>Đóng</Text>
+      </Pressable>
+    </View>
+  </View>
+</Modal>
+*/}
+
           <View style={styles.inputContainer}>
             <TextInput
               style={styles.textInput}
-              placeholder="Lưu ý"
+              placeholder="Nhập ghi chú"
               value={note}
               onChangeText={(text) => setNote(text)}
             />
           </View>
-          {maintenanceCenter &&
-            vehicle &&
-            odo.length > 0 &&
-            odoList.length > 0 && (
-              <View>
-                {load ? (
-                  <Pressable style={styles.button}>
-                    <Text style={styles.buttonText}>Đang tạo lịch ...</Text>
-                  </Pressable>
-                ) : (
-                  <Pressable style={styles.button} onPress={handleSignup}>
-                    <Text style={styles.buttonText}>Tạo lịch</Text>
-                  </Pressable>
-                )}
-              </View>
-            )}
-        </View>
 
-        <Modal
-          transparent={true}
-          animationType="slide"
-          visible={showDialog}
-          onRequestClose={() => setShowDialog(false)}
-        >
-          <View style={styles.dialogContainer}>
-            <View style={styles.dialogContent}>
-              <Text style={styles.dialogTitle}>Danh sách dịch vụ</Text>
-              <FlatList
-                data={displayedServices}
-                renderItem={renderServiceItem}
-                keyExtractor={(item) => item.maintenanceServiceId.toString()}
-              />
-              <Pressable
-                onPress={() => setShowDialog(false)}
-                style={styles.dialogCloseButton}
-              >
-                <Text style={styles.dialogCloseButtonText}>Đóng</Text>
-              </Pressable>
-            </View>
+          <View style={styles.inputContainer}>
+            <TextInput
+              style={styles.textInput}
+              placeholder="Nhập Odo"
+              keyboardType="numeric"
+              onChangeText={(text) => setOdoBooking(text)}
+            />
           </View>
-        </Modal>
+
+          <Pressable onPress={handleSignup} style={styles.button}>
+            <Text style={styles.buttonText}>Tạo lịch</Text>
+          </Pressable>
+
+          <Modal transparent={true} animationType="slide" visible={showDetailsModal}>
+            <View style={styles.dialogContainer}>
+              <View style={styles.dialogContent}>
+                <Text style={styles.dialogTitle}>Bạn chưa có gói bảo dưỡng. Mua ngay?</Text>
+                <Pressable onPress={handleModalOk} style={styles.dialogCloseButton}>
+                  <Text style={styles.dialogCloseButtonText}>OK</Text>
+                </Pressable>
+              </View>
+            </View>
+          </Modal>
+        </View>
       </View>
     </ScrollView>
   );
@@ -391,28 +386,12 @@ const styles = StyleSheet.create({
     paddingHorizontal: 42,
     width: "100%",
   },
-  inputContainerCost: {
-    flexDirection: "column",
-    backgroundColor: COLORS.white,
-    paddingVertical: 10,
-    borderRadius: 10,
-    marginBottom: 12,
-    marginTop: 10,
-    paddingHorizontal: 10,
-  },
   inputContainer: {
-    flexDirection: "row",
-    alignItems: "center",
     backgroundColor: COLORS.white,
     paddingVertical: 10,
     borderRadius: 10,
     marginBottom: 12,
-    marginTop: 10,
     paddingHorizontal: 10,
-  },
-  textInput: {
-    flex: 1,
-    fontSize: 16,
   },
   picker: {
     flex: 1,
@@ -424,6 +403,7 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     backgroundColor: COLORS.white,
     borderRadius: 10,
+    marginBottom: 12,
   },
   datePickerText: {
     fontSize: 16,
@@ -443,11 +423,10 @@ const styles = StyleSheet.create({
   },
   showButton: {
     backgroundColor: COLORS.primary,
-    marginTop: 10,
     paddingVertical: 10,
     borderRadius: 10,
     alignItems: "center",
-    width: '100%',
+    marginTop: 10,
   },
   showButtonText: {
     color: COLORS.white,
@@ -458,10 +437,10 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: 'rgba(0,0,0,0.5)',
+    backgroundColor: "rgba(0,0,0,0.5)",
   },
   dialogContent: {
-    width: '80%',
+    width: "80%",
     backgroundColor: COLORS.white,
     borderRadius: 10,
     padding: 20,
@@ -472,32 +451,87 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     marginBottom: 10,
   },
-  serviceItem: {
+  dialogCloseButton: {
+    backgroundColor: COLORS.primary,
     paddingVertical: 10,
-    borderBottomWidth: 1,
-    borderBottomColor: COLORS.lightGray,
-    width: '100%',
+    borderRadius: 10,
+    marginTop: 20,
+    width: "50%",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+
+  dialogCloseButtonText: {
+    color: COLORS.white,
+    fontWeight: "bold",
+    fontSize: 16,
   },
   serviceName: {
     fontSize: 16,
-    fontWeight: 'bold',
+    marginVertical: 10,
   },
-  serviceDetails: {
-    fontSize: 14,
-    color: COLORS.gray,
+  modalContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
   },
-  dialogCloseButton: {
+  modalContent: {
+    width: "90%",
+    backgroundColor: COLORS.white,
+    padding: 20,
+    borderRadius: 10,
+    alignItems: "center",
+  },
+  modalTitle: {
+    fontSize: 18,
+    fontWeight: "bold",
+    marginBottom: 20,
+  },
+  timeSlotContainer: {
+    flexDirection: "row",
+    flexWrap: "wrap", // Cho phép các box nằm trên nhiều hàng
+    justifyContent: "space-between",
+  },
+  timeSlotBox: {
+    backgroundColor: COLORS.lightGray,
+    padding: 15,
+    borderRadius: 10,
+    width: "22%", // 4-5 box trên 1 hàng
+    alignItems: "center",
+    marginBottom: 10,
+    borderWidth: 1, // Thêm khung viền cho box
+    borderColor: COLORS.primary, // Màu khung viền
+  },
+  timeSlotText: {
+    fontSize: 16,
+    color: COLORS.black,
+  },
+  closeButton: {
     marginTop: 20,
     backgroundColor: COLORS.primary,
     paddingVertical: 10,
     paddingHorizontal: 20,
     borderRadius: 10,
   },
-  dialogCloseButtonText: {
+  closeButtonText: {
     color: COLORS.white,
-    fontWeight: 'bold',
-    fontSize: 16,
+    fontWeight: "bold",
   },
+  datePickerButton: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+    paddingVertical: 10,
+    backgroundColor: COLORS.white,
+    borderRadius: 10,
+    marginBottom: 12,
+  },
+  datePickerText: {
+    fontSize: 16,
+    color: COLORS.black,
+  },
+
 });
 
 export default CreateBooking;

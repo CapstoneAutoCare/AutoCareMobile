@@ -33,10 +33,10 @@ export const fetchRequestDetail = createAsyncThunk(
 // Async thunk to update status
 export const updateStatus = createAsyncThunk(
   'requestDetail/updateStatus',
-  async ({ requestId, newStatus }, thunkAPI) => {
+  async ({ cuscareId, requestId, newStatus }, thunkAPI) => {
     try {
-      await updateStatusAPI(requestId, newStatus);
-      return { requestId, newStatus };
+      await updateStatusAPI(cuscareId, requestId, newStatus);
+      return { cuscareId, requestId, newStatus };
     } catch (error) {
       return thunkAPI.rejectWithValue(error.message);
     }

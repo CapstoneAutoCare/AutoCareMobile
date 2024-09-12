@@ -22,8 +22,10 @@ const RequestDetailScreen = () => {
   const route = useRoute();
   const navigation = useNavigation();
   const dispatch = useDispatch();
-  const { requestId } = route.params;
+  const { requestId, cuscareId } = route.params;
   const { loading, error, request, maintenanceTasks, isTaskAssigned } = useSelector((state) => state.requestDetail);
+  const { profile } = useSelector((state) => state.user || {});
+
   const [fetchError, setFetchError] = useState(null);
   const [assignError, setAssignError] = useState(null);
   const [reload, setReload] = useState(false);
@@ -32,17 +34,17 @@ const RequestDetailScreen = () => {
   useEffect(() => {
     dispatch(fetchRequestDetail(requestId));
     dispatch(clearStaffList());
-    if (request?.responseMaintenanceInformation?.informationMaintenanceId) {
+    if (request?.responseMaintenanceInformation[0]?.informationMaintenanceId) {
       dispatch(fetchMaintenanceTasks());
     }
-  }, [reload, requestId, dispatch, request?.responseMaintenanceInformation?.informationMaintenanceId]);
+  }, [reload, requestId, dispatch, request?.responseMaintenanceInformation[0]?.informationMaintenanceId]);
 
 
 
   const handleUpdateStatus = async (newStatus) => {
     try {
-      console.log("Start updating status: " + requestId, newStatus);
-      const result = await dispatch(updateStatus({ requestId, newStatus })).unwrap();
+      console.log("Start updating status: " + cuscareId, requestId, newStatus);
+      const result = await dispatch(updateStatus({ cuscareId, requestId, newStatus })).unwrap();
       console.log("Status updated successfully:", result);
       dispatch(fetchRequestDetail(requestId));
       setReload(!reload);
@@ -89,7 +91,7 @@ const RequestDetailScreen = () => {
   };
 
   const filteredMaintenanceTasks = maintenanceTasks.filter(
-    (task) => task.informationMaintenanceId === request?.responseMaintenanceInformation?.informationMaintenanceId
+    (task) => task.informationMaintenanceId === request?.responseMaintenanceInformation[0]?.informationMaintenanceId
   );
 
   return (
@@ -97,7 +99,7 @@ const RequestDetailScreen = () => {
       {request && (
         <Tab.Navigator>
           <Tab.Screen name="Thông tin lịch hẹn">
-            {() => <RequestInfoTab request={request} updateStatus={handleUpdateStatus} assignTask={handleAssignTask} />}
+            {() => <RequestInfoTab request={request} updateStatus={handleUpdateStatus} assignTask={handleAssignTask} profile={profile}  />}
           </Tab.Screen>
           <Tab.Screen name="Chi tiết dịch vụ">
             {() => <MaintenanceInfoTab request={request} />}

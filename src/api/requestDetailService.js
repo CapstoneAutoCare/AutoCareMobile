@@ -54,10 +54,10 @@ export const getTechnicianDetail = async (technicianId) => {
   }
 };
 
-export const updateStatus = async (requestId, newStatus) => {
+export const updateStatus = async (cuscareId, requestId, newStatus) => {
   try {
     const response = await axiosClient.patch(
-      `Bookings/UpdateStatus?bookingId=${requestId}&status=${newStatus}`,
+      `Bookings/UpdateStatus?customercareId=${cuscareId}&bookingId=${requestId}&status=${newStatus}`,
       null,
       {
         headers: {

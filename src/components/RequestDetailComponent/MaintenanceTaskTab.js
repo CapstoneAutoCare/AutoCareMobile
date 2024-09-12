@@ -9,7 +9,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import moment from 'moment';
 const MaintenanceTaskTab = ({ maintenanceTasks, request, assignTask }) => {
     const [technicianDetails, setTechnicianDetails] = useState({});
-    const mInfoId = request.responseMaintenanceInformation.informationMaintenanceId;
+    const mInfoId = request.responseMaintenanceInformation[0].informationMaintenanceId;
     const navigation = useNavigation();
     const [isAssignModalVisible, setAssignModalVisible] = useState(false);
     const staffList = useSelector((state) => state.requestDetail.staffList);

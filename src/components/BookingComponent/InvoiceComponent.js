@@ -1,34 +1,69 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, Button, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, ActivityIndicator } from 'react-native';
 import Moment from 'moment';
+import axiosClient from '../../services/axiosClient';
 
 const InvoiceComponent = ({ request, invoiceData }) => {
+  const [maintenanceInfo, setMaintenanceInfo] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  // Fetch maintenance information based on bookingId
+  useEffect(() => {
+    const fetchMaintenanceInfo = async () => {
+      try {
+        const response = await axiosClient.get(`MaintenanceInformations/GetListByBookingId?id=${request.bookingId}`);
+        setMaintenanceInfo(response.data[0]);  // Truy cập vào phần tử đầu tiên của mảng
+      } catch (err) {
+        setError(err.message || 'Có lỗi xảy ra');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchMaintenanceInfo();
+  }, [request.bookingId]);
 
   const formatCurrency = (value) => {
-    return value.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' });
+    return !value ? "không tính phí" : value.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' });
   };
 
   const renderServiceInfos = () => {
-    return request.responseMaintenanceInformation.responseMaintenanceServiceInfos.map(info => (
-      <View key={info.maintenanceServiceInfoId} style={styles.tableRow}>
-        <Text style={styles.tableCell}>{info.maintenanceServiceInfoName}</Text>
-        <Text style={styles.tableCell}>{info.quantity}</Text>
-        <Text style={styles.tableCell}>{formatCurrency(info.actualCost)}</Text>
-        <Text style={styles.tableCell}>{formatCurrency(info.totalCost)}</Text>
+    return maintenanceInfo?.responseMaintenanceServiceInfos?.map((info, index) => (
+      <View key={index} style={styles.tableRow}>
+        <Text style={styles.tableCell}>{info?.maintenanceServiceInfoName || 'N/A'}</Text>
+        <Text style={styles.tableCell}>{info?.quantity || '0'}</Text>
+        <Text style={styles.tableCell}>{formatCurrency(info?.actualCost)}</Text>
+        <Text style={styles.tableCell}>{formatCurrency(info?.totalCost)}</Text>
       </View>
     ));
   };
 
   const renderSparePartInfos = () => {
-    return request.responseMaintenanceInformation.responseMaintenanceSparePartInfos.map(info => (
-      <View key={info.maintenanceSparePartInfoId} style={styles.tableRow}>
-        <Text style={styles.tableCell}>{info.maintenanceSparePartInfoName}</Text>
-        <Text style={styles.tableCell}>{info.quantity}</Text>
-        <Text style={styles.tableCell}>{formatCurrency(info.actualCost)}</Text>
-        <Text style={styles.tableCell}>{formatCurrency(info.totalCost)}</Text>
+    return maintenanceInfo?.responseMaintenanceSparePartInfos?.map((info, index) => (
+      <View key={index} style={styles.tableRow}>
+        <Text style={styles.tableCell}>{info?.maintenanceSparePartInfoName || 'N/A'}</Text>
+        <Text style={styles.tableCell}>{info?.quantity || '0'}</Text>
+        <Text style={styles.tableCell}>{formatCurrency(info?.actualCost)}</Text>
+        <Text style={styles.tableCell}>{formatCurrency(info?.totalCost)}</Text>
       </View>
     ));
   };
+
+  if (loading) {
+    return <ActivityIndicator size="large" color="#0000ff" />;
+  }
+
+  if (error) {
+    return <Text>{error}</Text>;
+  }
+
+  if (!maintenanceInfo) {
+    return <Text>Không có dữ liệu bảo dưỡng</Text>;
+  }
+
+  const totalAmount = invoiceData?.totalAmount || 0;  // Default to 0 if null
+  const shouldDisplayTotals = totalAmount > 0;
 
   return (
     <ScrollView style={styles.container}>
@@ -38,18 +73,20 @@ const InvoiceComponent = ({ request, invoiceData }) => {
       </View>
 
       <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Client Information</Text>
+        <Text style={styles.sectionTitle}>Thông tin khách hàng</Text>
         <Text>Tên: {request.responseClient.firstName} {request.responseClient.lastName}</Text>
         <Text>Email: {request.responseClient.email}</Text>
         <Text>Số điện thoại: {request.responseClient.phone}</Text>
         <Text>Địa Chỉ: {request.responseClient.address}</Text>
       </View>
 
+
+
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>Thông tin xe</Text>
-        <Text>Mẫu Xe: {request.responseVehicles.vehicleModelName}</Text>
-        <Text>Nhãn Hiệu: {request.responseVehicles.vehiclesBrandName}</Text>
-        <Text>Biển Số: {request.responseVehicles.licensePlate}</Text>
+        <Text>Mẫu Xe: {maintenanceInfo?.responseVehicles?.vehicleModelName || 'N/A'}</Text>
+        <Text>Nhãn Hiệu: {maintenanceInfo?.responseVehicles?.vehiclesBrandName || 'N/A'}</Text>
+        <Text>Biển Số: {maintenanceInfo?.responseVehicles?.licensePlate || 'N/A'}</Text>
       </View>
 
       <View style={styles.section}>
@@ -64,9 +101,15 @@ const InvoiceComponent = ({ request, invoiceData }) => {
           {renderServiceInfos()}
           {renderSparePartInfos()}
         </View>
-        <Text style={styles.totalPrice}>Tổng: {formatCurrency(invoiceData?.subTotal)}</Text>
-        <Text style={styles.totalPrice}>VAT: {invoiceData?.vat}%</Text>
-        <Text style={styles.totalPrice}>Tổng Giá Trị Thanh Toán:  {formatCurrency(invoiceData?.totalAmount)}</Text>
+
+        {/* Chỉ hiển thị Tổng và VAT nếu tổng thanh toán > 0 */}
+        {shouldDisplayTotals && (
+          <>
+            <Text style={styles.totalPrice}>Tổng: {formatCurrency(invoiceData?.subTotal)}</Text>
+            <Text style={styles.totalPrice}>VAT: {invoiceData?.vat}%</Text>
+          </>
+        )}
+        <Text style={styles.totalPrice}>Tổng Giá Trị Thanh Toán: {formatCurrency(totalAmount)}</Text>
       </View>
     </ScrollView>
   );

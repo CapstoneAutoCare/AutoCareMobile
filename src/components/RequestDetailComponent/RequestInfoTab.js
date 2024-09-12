@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { ScrollView, View, Text, Button, StyleSheet, Pressable, TextInput } from 'react-native';
-import { Card } from 'react-native-paper';
+import { Card, Checkbox } from 'react-native-paper';
 import { MaterialIcons } from '@expo/vector-icons';
 import moment from 'moment';
 import ErrorComponent from '../ErrorComponent';
@@ -31,26 +31,11 @@ const RequestInfoTab = ({ request, updateStatus, error, profile, assignTask}) =>
   const [isOdooModalVisible, setOdooModalVisible] = useState(false);
   const [odooNumber, setOdooNumber] = useState("");
   const [odooDetails, setOdooDetails] = useState(null);
-
-  //useEffect(() => {
-    //if (request?.responseMaintenanceInformation.responseMaintenanceServiceInfos.length === 0 && request?.responseMaintenanceInformation.responseMaintenanceSparePartInfos.length === 0) {
-   //   alert(
-  //      "Không có thông tin dịch vụ, có muốn tạo không?",
-   //     [
-   //       {
-   //         text: "Không",
-   //         style: "cancel",
-   //       },
-  //        {
-   //         text: "Đồng ý",
-   //         onPress: () => navigation.navigate("CREATE_BOOKING_INFO", { request, profile, centre }),
-   //       },
-   //     ],
-   //     { cancelable: false }
-   //   );
-    //}
-  //}, [request]);
-  const mInfoId = request.responseMaintenanceInformation?.informationMaintenanceId;
+  const [isServiceModalVisible, setServiceModalVisible] = useState(false);
+  const [servicePackages, setServicePackages] = useState([]);
+  const [selectedPackage, setSelectedPackage] = useState(null);
+  const [maintenanceInfo, setMaintenanceInfo] = useState(null);
+  const mInfoId = request.responseMaintenanceInformation[0]?.informationMaintenanceId;
   const currentTime = moment();
 
 
@@ -61,10 +46,26 @@ const RequestInfoTab = ({ request, updateStatus, error, profile, assignTask}) =>
 
   
   useEffect(() => {
+    const getMaintenanceInfo = async () => {
+      try {
+        const response = await axiosClient.get(
+          `MaintenanceInformations/GetListByBookingId?id=${request.bookingId}`,
+          {                                                                                                   
+            headers: {
+              'Content-Type': 'text/plain',
+            },
+          }
+        );
+        
+        setMaintenanceInfo(response.data);
+      } catch (error) {
+        console.error('Error fetching services:', error);
+      }
+    };
     const fetchSpareParts = async () => {
       try {
         const response = await axiosClient.get(
-          `SparePartsItemCosts/GetListByDifSparePartAndInforId?centerId=${request.maintenanceCenterId}&inforId=${request.responseMaintenanceInformation.informationMaintenanceId}`,
+          `SparePartsItemCosts/GetListByDifSparePartAndInforId?centerId=${request.maintenanceCenterId}&inforId=${request.responseMaintenanceInformation[0].informationMaintenanceId}`,
           {
             headers: {
               'Content-Type': 'application/json',
@@ -83,8 +84,8 @@ const RequestInfoTab = ({ request, updateStatus, error, profile, assignTask}) =>
     const fetchServices = async () => {
       try {
         const response = await axiosClient.get(
-          `MaintenanceServiceCosts/GetListByDifMaintenanceServiceAndInforIdAndBooleanFalse?centerId=${request.maintenanceCenterId}&inforId=${request.responseMaintenanceInformation.informationMaintenanceId}`,
-          {
+          `MaintenanceServiceCosts/GetListByDifMaintenanceServiceAndInforIdAndBooleanFalse?centerId=${request.maintenanceCenterId}&inforId=${request.responseMaintenanceInformation[0].informationMaintenanceId}`,
+          {                                                                                                   
             headers: {
               'Content-Type': 'application/json',
             },
@@ -102,10 +103,49 @@ const RequestInfoTab = ({ request, updateStatus, error, profile, assignTask}) =>
     fetchSpareParts();
     fetchServices();
     fetchOdooHistories();
+    getMaintenanceInfo();
   }, []);
   
-   
-  
+  const fetchMaintenanceVehiclesDetails = async () => {
+    try {
+      const response = await axiosClient.get(`MaintenanceVehiclesDetails/GetListByVehicleId?vehicleId=${request.responseVehicles.vehiclesId}`);
+      setServicePackages(response.data);
+    } catch (error) {
+      console.error("Error fetching vehicle packages:", error);
+    }
+  };
+
+  // Hàm gọi API để tạo maintenanceInformation
+  const createMaintenanceInformation = async () => {
+    try {
+      const payload = {
+        informationMaintenanceName: selectedPackage?.responseMaintenanceSchedules?.maintenancePlanName + " tại mốc " + selectedPackage?.responseMaintenanceSchedules?.maintananceScheduleName + " km" ,
+        vehicleId: request?.responseVehicles?.vehiclesId,
+        note: selectedPackage?.responseMaintenanceSchedules?.maintenancePlanName + " tại mốc " + selectedPackage?.responseMaintenanceSchedules?.maintananceScheduleName + " km" ,
+        bookingId: request?.bookingId,
+        customerCareId: profile?.CustomerCareId,
+        maintananceScheduleId: selectedPackage?.responseMaintenanceSchedules?.maintananceScheduleId,
+      };
+      console.log(payload);
+      const response = await axiosClient.post('MaintenanceInformations/PostMaintenance', payload, {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+      if (response.status === 200) {
+        dispatch(fetchRequestDetail(request.bookingId)); // Reload lại dữ liệu
+        setServiceModalVisible(false);
+        alert('Tạo gói dịch vụ thành công');
+      }
+    } catch (error) {
+      console.error("Error creating maintenance information:", error.response.data);
+      alert('Có lỗi xảy ra khi tạo gói dịch vụ');
+    }
+  };
+  const handleChooseServicePackage = () => {
+    fetchMaintenanceVehiclesDetails();
+    setServiceModalVisible(true);
+  };
   const toggleModal = (type) => {
     setModalType(type);
     setModalVisible(!isModalVisible);
@@ -225,7 +265,7 @@ const RequestInfoTab = ({ request, updateStatus, error, profile, assignTask}) =>
   
   const handlePayment = async () => {
     try {
-      const infoId = request.responseMaintenanceInformation?.informationMaintenanceId;
+      const infoId = request.responseMaintenanceInformation[0]?.informationMaintenanceId;
   
      
       const fetchInvoiceData = async () => {
@@ -308,7 +348,7 @@ const handleOdooUpdate = async () => {
       odo: odooNumber,
       description: "Chỉ số odoo tại hãng",
       vehiclesId: request.responseVehicles.vehiclesId,
-      maintenanceInformationId: request.responseMaintenanceInformation.informationMaintenanceId
+      maintenanceInformationId: request.responseMaintenanceInformation[0]?.informationMaintenanceId
     });
 
     if (response.status === 200) {
@@ -319,11 +359,11 @@ const handleOdooUpdate = async () => {
       // Fetch Odoo data after successful update
       dispatch(fetchRequestDetail(request.bookingId));
     } else {
-      alert("Lỗi", "Cập nhật không thành công. Vui lòng thử lại.");
+      alert("Cập nhật không thành công. Vui lòng thử lại.");
     }
   } catch (error) {
     console.error(error);
-    alert("Lỗi", "Đã xảy ra lỗi khi cập nhật số Odoo.");
+    alert("Đã xảy ra lỗi khi cập nhật số Odoo.");
   }
 };
 const fetchOdooHistories = async () =>{
@@ -343,7 +383,7 @@ const fetchOdooHistories = async () =>{
     }
 
 const getLastStatus = () => {
-  const statuses = request?.responseMaintenanceInformation?.status;
+  const statuses = request?.responseMaintenanceInformation[0]?.status;
   return statuses
 };
 const lastStatus = getLastStatus();
@@ -431,7 +471,7 @@ const OdooCard = ({ odoHistoryName, odo, createdDate, description }) => {
             <MaterialIcons name="event" size={24} color="black" /> Ngày đặt lịch: {moment(request?.bookingDate).format('DD/MM/YYYY HH:mm')}
           </Text>
           <Text style={[styles.label, {color: getStatusColor(request?.responseMaintenanceInformation?.status)}]}>
-            <MaterialIcons name="info" size={24} color="black" /> Trạng thái: {translateStatus(request?.responseMaintenanceInformation?.status)}
+            <MaterialIcons name="info" size={24} color="black" /> Trạng thái: {translateStatus(request?.responseMaintenanceInformation[0]?.status)}
           </Text>
           <Text style={styles.label}>
             <MaterialIcons name="person" size={24} color="black" /> Tên khách hàng: {request?.clientName}
@@ -486,6 +526,10 @@ const OdooCard = ({ odoHistoryName, odo, createdDate, description }) => {
 
       </View>   
       )}
+      {!request.responseMaintenanceInformation || request.responseMaintenanceInformation.length === 0 && (
+        <Button title="Chọn gói dịch vụ cho khách hàng" onPress={handleChooseServicePackage} />
+      )}
+
       {lastStatus === 'REPAIRING' && (
         <>
           <Button title="Thêm Phụ Tùng" onPress={() => toggleModal('SPARE_PART')} />
@@ -497,11 +541,12 @@ const OdooCard = ({ odoHistoryName, odo, createdDate, description }) => {
             <Button title="Cập Nhật Số Odoo" onPress={toggleOdooModal} />
           </>
       )}
-      {lastStatus === 'PAYMENT' && (
-        <>
-          <Button title="In Hóa Đơn" onPress={() => { handlePayment() }} />
-        </>
-      )}
+      {(lastStatus === 'YETPAID' || lastStatus === 'PAYMENT' || lastStatus === 'PAID') && (
+  <>
+    <Button title="In Hóa Đơn" onPress={() => { handlePayment() }} />
+  </>
+)}
+
     </View>
   )  : null
 )}
@@ -560,6 +605,26 @@ const OdooCard = ({ odoHistoryName, odo, createdDate, description }) => {
     <Button title="Hủy" onPress={toggleAssignModal} />
   </View>
 </Modal>
+<Modal isVisible={isServiceModalVisible}>
+        <View style={styles.modalContent}>
+          <Text>Chọn gói dịch vụ</Text>
+          {servicePackages.map((packageItem) => (
+            <Pressable
+            key={packageItem.responseMaintenanceSchedules.maintananceScheduleId} 
+            onPress={() => setSelectedPackage(packageItem)}  
+            style={{ flexDirection: 'row', alignItems: 'center', marginVertical: 8 }}
+          >
+            <Checkbox
+              status={selectedPackage?.responseMaintenanceSchedules?.maintananceScheduleId === packageItem.responseMaintenanceSchedules.maintananceScheduleId ? 'checked' : 'unchecked'}  // Sử dụng "status" thay vì "value"
+              onPress={() => setSelectedPackage(packageItem)}  // Gán toàn bộ object packageItem
+            />
+            <Text>{`Gói ${packageItem.responseMaintenanceSchedules.maintenancePlanName} tại mốc ${packageItem.responseMaintenanceSchedules.maintananceScheduleName}km`}</Text>
+          </Pressable>
+          ))}
+          <Button title="Tạo" onPress={createMaintenanceInformation} />
+          <Button title="Hủy" onPress={() => setServiceModalVisible(false)} />
+        </View>
+      </Modal>
 
     </ScrollView>
   );
