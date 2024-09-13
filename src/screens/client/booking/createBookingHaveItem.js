@@ -225,6 +225,7 @@ const CreateBookingHaveItem = ({
       const now = new Date();
       const vietnamTime = new Date(now.getTime() + 7 * 60 * 60 * 1000);
       const accessToken = await AsyncStorage.getItem("ACCESS_TOKEN");
+      console.log( vehicle, maintenanceCenter, note, adjustedBookingDate, spareParts , services)
       const response = await axios.post(
         `${BASE_URL}/Bookings/PostHaveItems`,
         {

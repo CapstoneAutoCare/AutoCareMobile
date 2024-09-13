@@ -36,6 +36,8 @@ const CreateBooking = ({ centerList, maintenanceCenterId, vehicleListByClient })
   const [timeSlots, setTimeSlots] = useState([]); // Lưu các khung giờ
   const [showTimeSlotModal, setShowTimeSlotModal] = useState(false); // Modal chọn giờ
 const [selectedTimeSlot, setSelectedTimeSlot] = useState(null); // Lưu giờ đã chọn
+const today = new Date(); // Ngày hiện tại
+
   // useEffect(() => {
   //   if (maintenanceCenter) {
   //     fetchOdo();
@@ -147,39 +149,47 @@ const [selectedTimeSlot, setSelectedTimeSlot] = useState(null); // Lưu giờ đ
     }
   
     setLoad(true);
-    const accessToken = await AsyncStorage.getItem("ACCESS_TOKEN");
+    try {
+      const accessToken = await AsyncStorage.getItem("ACCESS_TOKEN");
   
-    // Lưu trữ cả ngày và giờ
-    const adjustedBookingDate = new Date(selectedDate);
-    adjustedBookingDate.setHours(...selectedTimeSlot.split(':').map(Number)); // Gán giờ đã chọn
+      // Cộng thêm 7 tiếng vào giờ đã chọn
+      const adjustedBookingDate = new Date(selectedDate);
+      const [hours, minutes] = selectedTimeSlot.split(':').map(Number);
+      adjustedBookingDate.setHours(hours + 7, minutes, 0, 0); // Thêm 7 tiếng
   
-    const response = await axios.post(
-      `${BASE_URL}/Bookings/PostMaintenanceBooking`,
-      {
-        vehicleId: vehicle,
-        maintenanceCenterId: maintenanceCenter,
-        maintenancePlanId: selectedPlan,
-        note: note,
-        odoBooking: odoBooking,
-        bookingDate: adjustedBookingDate.toISOString(), // Ngày và giờ kết hợp
-      },
-      {
-        headers: {
-          "content-type": "application/json",
-          Authorization: `Bearer ${accessToken}`,
+      const response = await axios.post(
+        `${BASE_URL}/Bookings/PostMaintenanceBooking`,
+        {
+          vehicleId: vehicle,
+          maintenanceCenterId: maintenanceCenter,
+          maintenancePlanId: selectedPlan,
+          note: note,
+          odoBooking: odoBooking,
+          bookingDate: adjustedBookingDate.toISOString(), // Ngày và giờ kết hợp
         },
-      }
-    );
+        {
+          headers: {
+            "content-type": "application/json",
+            Authorization: `Bearer ${accessToken}`,
+          },
+        }
+      );
   
-    if (response.status === 200) {
+      if (response.status === 200) {
+        alert("Tạo lịch thành công!");
+        navigation.navigate("Booking");
+      } else {
+        alert("Tạo lịch không thành công. Vui lòng thử lại.");
+      }
+    } catch (error) {
+      console.error("Error creating booking:", error);
+      alert("Có lỗi xảy ra khi tạo lịch.");
+    } finally {
       setLoad(false);
-      alert("Tạo lịch thành công!");
-      navigation.navigate("Booking");
-    } else {
-      setLoad(false);
-      alert("Tạo lịch không thành công. Vui lòng thử lại.");
     }
   };
+  
+  
   
   const onDateChange = (event, selectedDate) => {
     const currentDate = selectedDate || bookingDate;
@@ -191,7 +201,17 @@ const [selectedTimeSlot, setSelectedTimeSlot] = useState(null); // Lưu giờ đ
 const generateTimeSlots = () => {
   const slots = [];
   let startTime = new Date();
-  startTime.setHours(8, 0, 0, 0); // Bắt đầu từ 8:00 AM
+  const currentTime = new Date(); // Thời gian hiện tại
+
+  // Nếu ngày được chọn là hôm nay, giới hạn từ giờ hiện tại
+  if (selectedDate && selectedDate.toDateString() === currentTime.toDateString()) {
+    const hours = currentTime.getHours();
+    const minutes = currentTime.getMinutes();
+    startTime.setHours(hours, minutes + 60); // Thêm 1 giờ so với thời gian hiện tại
+  } else {
+    startTime.setHours(8, 0, 0, 0); // Bắt đầu từ 8:00 AM cho các ngày tương lai
+  }
+
   const endTime = new Date();
   endTime.setHours(19, 0, 1, 0); // Kết thúc vào 7:00 PM
 
@@ -204,7 +224,10 @@ const generateTimeSlots = () => {
 
   return slots;
 };
-
+useEffect(() => {
+  const timeSlots = generateTimeSlots();
+  setTimeSlots(timeSlots);
+}, [selectedDate]);
   const onSelectPlan = (plan) => {
     setSelectedPlan(plan);
   };
@@ -269,7 +292,13 @@ const generateTimeSlots = () => {
 
 
           {showDatePicker && (
-            <DateTimePicker value={bookingDate} mode="date" display="default" onChange={onDateChange} />
+            <DateTimePicker
+            value={bookingDate}
+            mode="date"
+            display="default"
+            onChange={onDateChange}
+            minimumDate={today} // Giới hạn ngày từ hôm nay trở đi
+          />
           )}
 <Modal transparent={true} animationType="slide" visible={showTimeSlotModal}>
   <View style={styles.modalContainer}>
@@ -337,6 +366,27 @@ const generateTimeSlots = () => {
   </View>
 </Modal>
 */}
+{showTimeSlotModal && timeSlots.length === 0 && (
+  <Modal transparent={true} animationType="slide" visible={true}>
+    <View style={styles.modalContainer}>
+      <View style={styles.modalContent}>
+        <Text style={styles.modalTitle}>Đã hết giờ làm việc</Text>
+        <Text style={{ marginVertical: 10 }}>
+          Đã hết giờ làm việc vào ngày bạn đã chọn, vui lòng chọn ngày khác
+        </Text>
+        <Pressable
+          onPress={() => {
+            setShowTimeSlotModal(false);
+            setShowDatePicker(true); // Hiển thị lại DatePicker để chọn ngày khác
+          }}
+          style={styles.closeButton}
+        >
+          <Text style={styles.closeButtonText}>OK</Text>
+        </Pressable>
+      </View>
+    </View>
+  </Modal>
+)}
 
           <View style={styles.inputContainer}>
             <TextInput

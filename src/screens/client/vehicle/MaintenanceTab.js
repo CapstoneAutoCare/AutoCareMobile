@@ -47,13 +47,26 @@ const MaintenanceTab = ({ route }) => {
           headers: { Authorization: `Bearer ${accessToken}` },
         }
       );
-      setMaintenancePlans(response.data);
+  
+      // Lọc các gói bảo dưỡng dựa trên vehicleModelId
+      const filteredPlans = response.data.filter(plan => 
+        plan.reponseVehicleModels?.vehicleModelId === vehicle.vehicleModelId
+      );
+  
+      if (filteredPlans.length === 0) {
+        alert("Trung tâm không có gói nào phù hợp với xe của bạn");
+      }
+  
+      setMaintenancePlans(filteredPlans);
     } catch (error) {
       console.error("Error fetching maintenance plans:", error);
     } finally {
       setLoading(false);
     }
   };
+  
+  
+  
 
   const fetchMaintenanceVehiclesDetails = async () => {
     setLoading(true);
@@ -93,7 +106,7 @@ const MaintenanceTab = ({ route }) => {
     if (!selectedPlan || !selectedCenter) {
       return alert("Please select a center and a plan");
     }
-
+  
     setLoading(true);
     try {
       const accessToken = await AsyncStorage.getItem("ACCESS_TOKEN");
@@ -111,9 +124,11 @@ const MaintenanceTab = ({ route }) => {
           },
         }
       );
+      
       if (response.status === 200) {
         alert("Maintenance package registered successfully!");
-        fetchMaintenanceVehiclesDetails();
+        setShowModal(false); // Đóng modal sau khi đăng ký thành công
+        fetchMaintenanceVehiclesDetails(); // Refresh danh sách gói bảo dưỡng
       } else {
         alert("Failed to register maintenance package.");
       }
