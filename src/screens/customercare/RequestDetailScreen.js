@@ -32,17 +32,22 @@ const RequestDetailScreen = () => {
 
 
   useEffect(() => {
-    dispatch(fetchRequestDetail(requestId));
-    dispatch(clearStaffList());
-    if (request?.responseMaintenanceInformation[0]?.informationMaintenanceId) {
-      dispatch(fetchMaintenanceTasks());
+    if (requestId) {
+      console.log('Fetching request details and clearing staff list');
+      dispatch(fetchRequestDetail(requestId));
+      dispatch(clearStaffList());
+      
+        console.log('Fetching maintenance tasks');
+        dispatch(fetchMaintenanceTasks());
+      
     }
-  }, [reload, requestId, dispatch, request?.responseMaintenanceInformation[0]?.informationMaintenanceId]);
+  }, [requestId]);  // Thêm length để tránh vòng lặp
 
 
 
   const handleUpdateStatus = async (newStatus) => {
     try {
+      console.log("Updating status to:", newStatus);
       console.log("Start updating status: " + cuscareId, requestId, newStatus);
       const result = await dispatch(updateStatus({ cuscareId, requestId, newStatus })).unwrap();
       console.log("Status updated successfully:", result);

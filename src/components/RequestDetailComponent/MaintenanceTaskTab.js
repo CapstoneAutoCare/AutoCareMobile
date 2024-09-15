@@ -9,13 +9,33 @@ import { useDispatch, useSelector } from 'react-redux';
 import moment from 'moment';
 const MaintenanceTaskTab = ({ maintenanceTasks, request, assignTask }) => {
     const [technicianDetails, setTechnicianDetails] = useState({});
-    const mInfoId = request.responseMaintenanceInformation[0].informationMaintenanceId;
+    const [maintenanceInformation, setMaintenanceInformation] = useState([]);
+
+
     const navigation = useNavigation();
     const [isAssignModalVisible, setAssignModalVisible] = useState(false);
     const staffList = useSelector((state) => state.requestDetail.staffList);
     const [selectedStaff, setSelectedStaff] = useState(null);
     const dispatch = useDispatch();
-
+    useEffect(() => {
+        const fetchMaintenanceInformation = async () => {
+          console.log('Fetching maintenance information');
+    
+          try {
+            const response = await axiosClient.get(`MaintenanceInformations/GetListByBookingId?id=${request.bookingId}`);
+            setMaintenanceInformation(response.data);
+          } catch (err) {
+            Alert.alert("Lỗi", "Không thể lấy dữ liệu bảo dưỡng.");
+          } finally {
+            setLoading(false);
+          }
+        };
+      
+        if (request.bookingId) {
+          fetchMaintenanceInformation();  
+        }
+      
+      }, [request.bookingId]);  
     const fetchStaffList = async () => {
         if (request?.maintenanceCenterId && staffList.length === 0) {
             await dispatch(fetchStaffByCenter(request.maintenanceCenterId));
@@ -41,8 +61,8 @@ const MaintenanceTaskTab = ({ maintenanceTasks, request, assignTask }) => {
             alert('Vui lòng chọn một nhân viên để giao xe');
             return;
         }
-        console.log(` MaintenanceTaskTab: ${mInfoId}, ${selectedStaff.technicianId}`);
-        assignTask( mInfoId, selectedStaff.technicianId );
+        console.log(` MaintenanceTaskTab: ${maintenanceInformation.informationMaintenanceId}, ${selectedStaff.technicianId}`);
+        assignTask( maintenanceInformation.informationMaintenanceId, selectedStaff.technicianId );
         toggleAssignModal();
     };
     

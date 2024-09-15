@@ -13,6 +13,8 @@ const MaintenanceInfoTab = ({ request, error }) => {
 
   useEffect(() => {
     const fetchMaintenanceInformation = async () => {
+      console.log('Fetching maintenance information');
+
       try {
         const response = await axiosClient.get(`MaintenanceInformations/GetListByBookingId?id=${request.bookingId}`);
         setMaintenanceInformation(response.data);
@@ -22,11 +24,12 @@ const MaintenanceInfoTab = ({ request, error }) => {
         setLoading(false);
       }
     };
-
-    if (request?.bookingId) {
-      fetchMaintenanceInformation();
+  
+    if (request.bookingId) {
+      fetchMaintenanceInformation();  
     }
-  }, [request.bookingId]);
+  
+  }, [request.bookingId]);  
 
   if (loading) {
     return <Text>Đang tải dữ liệu...</Text>;

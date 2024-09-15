@@ -18,7 +18,10 @@ const MaintenanceTab = ({ route }) => {
   const [loading, setLoading] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [showDetailsModal, setShowDetailsModal] = useState(false);
+  const [showDeepDetailsModal, setShowDeepDetailsModal] = useState(false);
+
   const [selectedPlanDetails, setSelectedPlanDetails] = useState([]);
+  const [selectedSmallPackage, setSelectedSmallPackage] = useState(null);
 
   useEffect(() => {
     const fetchCenters = async () => {
@@ -139,12 +142,25 @@ const MaintenanceTab = ({ route }) => {
       setLoading(false);
     }
   };
-
+  const fetchSmallPackageDetail = async (maintenanceVehiclesDetailId) => {
+    try {
+      const accessToken = await AsyncStorage.getItem("ACCESS_TOKEN");
+      const response = await axios.get(`${BASE_URL}/MaintenanceInformations/GetByMvd?id=${maintenanceVehiclesDetailId}`, {
+        headers: { Authorization: `Bearer ${accessToken}` },
+      });
+      setSelectedSmallPackage(response.data);
+      setShowDeepDetailsModal(true);
+    } catch (error) {
+      console.error("Error fetching small package detail:", error);
+    }
+  };
   const handleShowDetails = (groupedPlans) => {
     setSelectedPlanDetails(groupedPlans);
     setShowDetailsModal(true);
   };
-
+  const handleSmallPackagePress = (maintenanceVehiclesDetailId) => {
+    fetchSmallPackageDetail(maintenanceVehiclesDetailId);
+  };
   if (loading) {
     return <ActivityIndicator size="large" color="#0000ff" />;
   }
@@ -215,7 +231,7 @@ const MaintenanceTab = ({ route }) => {
         </View>
       )}
 
-      {/* Modal hiển thị các gói nhỏ */}
+      {/* Modal hiển thị các gói nhỏ dưới dạng card */}
       <Modal transparent={true} visible={showDetailsModal} animationType="slide">
         <View style={styles.modalContainer}>
           <View style={styles.modalContent}>
@@ -224,7 +240,14 @@ const MaintenanceTab = ({ route }) => {
               data={selectedPlanDetails}
               keyExtractor={(item) => item.responseMaintenanceSchedules.maintananceScheduleId.toString()}
               renderItem={({ item }) => (
-                <Text style={styles.subPlanText}>{item.responseMaintenanceSchedules.maintenancePlanName + ` tại mốc ${item.responseMaintenanceSchedules.maintananceScheduleName} km`}</Text>
+                <Pressable
+                  style={styles.cardContainer}
+                  onPress={() => handleSmallPackagePress(item.maintenanceVehiclesDetailId)}
+                >
+                  <Text style={styles.planTitle}>
+                    {item.responseMaintenanceSchedules.maintenancePlanName + ` tại mốc ${item.responseMaintenanceSchedules.maintananceScheduleName} km`}
+                  </Text>
+                </Pressable>
               )}
             />
             <Pressable onPress={() => setShowDetailsModal(false)} style={styles.closeButton}>
@@ -233,6 +256,38 @@ const MaintenanceTab = ({ route }) => {
           </View>
         </View>
       </Modal>
+      {/* New Modal hiển thị chi tiết sâu hơn của gói nhỏ */}
+<Modal transparent={true} visible={showDeepDetailsModal} animationType="slide">
+  <View style={styles.modalContainer}>
+    <View style={styles.modalContent}>
+      <Text style={styles.modalTitle}>Chi tiết gói nhỏ</Text>
+      {selectedSmallPackage ? (
+        <View>
+          <Text style={styles.detailText}>Tên gói: {selectedSmallPackage.informationMaintenanceName}</Text>
+          <Text style={styles.detailText}>Trạng thái: {selectedSmallPackage.status}</Text>
+
+          {/* Danh sách các dịch vụ bên trong gói */}
+          <Text style={styles.sectionTitle}>Các dịch vụ trong gói:</Text>
+          <FlatList
+            data={selectedSmallPackage.responseMaintenanceServiceInfos}
+            keyExtractor={(item) => item.maintenanceServiceInfoId.toString()}
+            renderItem={({ item }) => (
+              <View style={styles.serviceItem}>
+                <Text style={styles.serviceName}>{item.maintenanceServiceInfoName}</Text>
+              </View>
+            )}
+          />
+
+        </View>
+      ) : (
+        <Text>Đang tải...</Text>
+      )}
+      <Pressable onPress={() => setShowDeepDetailsModal(false)} style={styles.closeButton}>
+        <Text style={styles.buttonText}>Đóng</Text>
+      </Pressable>
+    </View>
+  </View>
+</Modal>
     </ScrollView>
   );
 };
@@ -310,6 +365,34 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 18,
     fontWeight: "bold",
+    marginBottom: 10,
+  },
+  detailText: {
+    fontSize: 16,
+    marginBottom: 10,
+  },
+  cardContainer: {
+    backgroundColor: "#e9ecef",
+    padding: 15,
+    borderRadius: 8,
+    marginBottom: 10,
+  },
+  serviceItem: {
+    backgroundColor: "#f1f3f5",
+    padding: 10,
+    marginVertical: 5,
+    borderRadius: 5,
+    borderWidth: 1,
+    borderColor: "#ddd",
+  },
+  serviceName: {
+    fontSize: 16,
+    color: "#333",
+  },
+  sectionTitle: {
+    fontSize: 18,
+    fontWeight: "bold",
+    marginTop: 15,
     marginBottom: 10,
   },
 });
