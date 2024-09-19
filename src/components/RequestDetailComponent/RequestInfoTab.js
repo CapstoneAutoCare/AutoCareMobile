@@ -37,7 +37,7 @@ const RequestInfoTab = ({ request, updateStatus, error, profile, assignTask}) =>
   const [maintenanceInfo, setMaintenanceInfo] = useState({});
   const [isServiceCreated, setIsServiceCreated] = useState(false);
   const [isMInfo, setIsMInfo] = useState(true);
-  const mInfoId = request.responseMaintenanceInformation[0]?.informationMaintenanceId;
+  const mInfoId = maintenanceInfo?.informationMaintenanceId;
   const currentTime = moment();
 
 
@@ -69,22 +69,24 @@ const RequestInfoTab = ({ request, updateStatus, error, profile, assignTask}) =>
             setMaintenanceInfo(validMaintenanceInfo);  
             console.log(maintenanceInfo);
             // Gọi các API khác với validMaintenanceInfo.informationMaintenanceId
-            const [sparePartsResponse, servicesResponse, odoDataResponse] = await Promise.all([
+            const [sparePartsResponse, servicesResponse, 
+              //odoDataResponse
+            ] = await Promise.all([
               axiosClient.get(
                 `SparePartsItemCosts/GetListByDifSparePartAndInforId?centerId=${request.maintenanceCenterId}&inforId=${validMaintenanceInfo.informationMaintenanceId}`
               ),
               axiosClient.get(
                 `MaintenanceServiceCosts/GetListByDifMaintenanceServiceAndInforIdAndBooleanFalse?centerId=${request.maintenanceCenterId}&inforId=${validMaintenanceInfo.informationMaintenanceId}`
               ),
-              axiosClient.get(
-                `/OdoHistories/GetOdoByInforId?id=${validMaintenanceInfo.informationMaintenanceId}`
-              ),
+              //axiosClient.get(
+              //  `/OdoHistories/GetOdoByInforId?id=${validMaintenanceInfo.informationMaintenanceId}`
+             // ),
             ]);
   
             // Cập nhật state với dữ liệu từ các API khác
             setAvailableSpareParts(sparePartsResponse.data);
             setAvailableServices(servicesResponse.data);
-            setOdooDetails(odoDataResponse.data);
+            //setOdooDetails(odoDataResponse.data);
           } else {
             console.log("No valid maintenance info found (all are CANCELLED)");
             setIsMInfo(false);
@@ -110,7 +112,7 @@ const RequestInfoTab = ({ request, updateStatus, error, profile, assignTask}) =>
   const fetchMaintenanceVehiclesDetails = async () => {
     try {
       console.log("fetch vehicledetail");
-      const response = await axiosClient.get(`MaintenanceVehiclesDetails/GetListByPlanAndVehicleAndCenter?planId=${request.maintenancePlanId}&vehicleId=${request.responseVehicles.vehiclesId}&centerId=${request.responseCenter.maintenanceCenterId}`);
+      const response = await axiosClient.get(`MaintenanceInformations/GetListByPlanAndVehicleAndCenterAndStatusWatingbycar?planId=${request.maintenancePlanId}&vehicleId=${request.responseVehicles.vehiclesId}&centerId=${request.responseCenter.maintenanceCenterId}`);
       setServicePackages(response.data);
     } catch (error) {
       console.error("Error fetching vehicle packages:", error);
@@ -123,11 +125,10 @@ const RequestInfoTab = ({ request, updateStatus, error, profile, assignTask}) =>
     
     try {
       const payload = {
-        informationMaintenanceName: `${selectedPackage?.responseMaintenanceSchedules?.maintenancePlanName} tại mốc ${selectedPackage?.responseMaintenanceSchedules?.maintananceScheduleName} km`,
-        note: `${selectedPackage?.responseMaintenanceSchedules?.maintenancePlanName} tại mốc ${selectedPackage?.responseMaintenanceSchedules?.maintananceScheduleName} km`,
-        bookingId: request?.bookingId,
-        customerCareId: profile?.CustomerCareId,
-        maintenanceVehiclesDetailId: selectedPackage?.maintenanceVehiclesDetailId,
+        note: `${selectedPackage?.informationMaintenanceName} km`, 
+      bookingId: request?.bookingId,
+      customerCareId: profile?.CustomerCareId,
+      informationMaintenanceId: selectedPackage.informationMaintenanceId,
       };
   
       console.log(payload);
@@ -272,7 +273,7 @@ const RequestInfoTab = ({ request, updateStatus, error, profile, assignTask}) =>
   
   const handlePayment = async () => {
     try {
-      const infoId = request.responseMaintenanceInformation[0]?.informationMaintenanceId;
+      const infoId = maintenanceInfo.informationMaintenanceId;
   
      
       const fetchInvoiceData = async () => {
@@ -312,7 +313,7 @@ const RequestInfoTab = ({ request, updateStatus, error, profile, assignTask}) =>
   
   const handleCheckin = async () => {
     try {
-      const infoId = request.responseMaintenanceInformation[0].informationMaintenanceId;
+      const infoId = maintenanceInfo?.informationMaintenanceId;
       if (lastStatus === 'CHECKIN') return; // Skip if already in CHECKIN status
 
       await axiosClient.patch(
@@ -556,7 +557,9 @@ const OdooCard = ({ odoHistoryName, odo, createdDate, description }) => {
       {(!request.responseMaintenanceInformation || request.responseMaintenanceInformation.length === 0 || !isMInfo )&& (
         <Button title="Chọn gói dịch vụ cho khách hàng" onPress={handleChooseServicePackage} />
       )}
-      {(lastStatus === 'CHECKIN' && servicePackages.length > 0)&& (
+      {(lastStatus === 'CHECKIN' 
+      //&& servicePackages.length > 0
+    )&& (
         <>
           <Button title="Chuyển đổi gói dịch vụ" onPress={handleChange} />
         </>
@@ -641,15 +644,15 @@ const OdooCard = ({ odoHistoryName, odo, createdDate, description }) => {
           <Text>Chọn gói dịch vụ</Text>
           {servicePackages.map((packageItem) => (
             <Pressable
-            key={packageItem.maintenanceVehiclesDetailId} 
+            key={packageItem.informationMaintenanceId} 
             onPress={() => setSelectedPackage(packageItem)}  
             style={{ flexDirection: 'row', alignItems: 'center', marginVertical: 8 }}
           >
             <Checkbox
-              status={selectedPackage?.responseMaintenanceSchedules?.maintananceScheduleId === packageItem.responseMaintenanceSchedules.maintananceScheduleId ? 'checked' : 'unchecked'}  // Sử dụng "status" thay vì "value"
+              status={selectedPackage?.informationMaintenanceId === packageItem.informationMaintenanceId ? 'checked' : 'unchecked'}  // Sử dụng "status" thay vì "value"
               onPress={() => setSelectedPackage(packageItem)}  // Gán toàn bộ object packageItem
             />
-            <Text>{`Gói ${packageItem.responseMaintenanceSchedules.maintenancePlanName} tại mốc ${packageItem.responseMaintenanceSchedules.maintananceScheduleName}km`}</Text>
+            <Text>{`Gói ${packageItem.informationMaintenanceName} km`}</Text>
           </Pressable>
           ))}
           <Button title="Tạo" onPress={createMaintenanceInformation} />

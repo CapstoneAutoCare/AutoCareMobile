@@ -7,9 +7,10 @@ import StaffListComponent from '../BookingComponent/StaffListComponent';
 import {  fetchStaffByCenter } from '../../app/CusCare/requestDetailSlice';
 import { useDispatch, useSelector } from 'react-redux';
 import moment from 'moment';
+import axiosClient from '../../services/axiosClient';
 const MaintenanceTaskTab = ({ maintenanceTasks, request, assignTask }) => {
     const [technicianDetails, setTechnicianDetails] = useState({});
-    const [maintenanceInformation, setMaintenanceInformation] = useState([]);
+    
 
 
     const navigation = useNavigation();
@@ -17,25 +18,44 @@ const MaintenanceTaskTab = ({ maintenanceTasks, request, assignTask }) => {
     const staffList = useSelector((state) => state.requestDetail.staffList);
     const [selectedStaff, setSelectedStaff] = useState(null);
     const dispatch = useDispatch();
+    const [maintenanceInformation, setMaintenanceInformation] = useState([]);
     useEffect(() => {
         const fetchMaintenanceInformation = async () => {
-          console.log('Fetching maintenance information');
-    
+          console.log('Fetching maintenance information for task');
+          console.log('Booking ID: ', request.bookingId);
+      
           try {
-            const response = await axiosClient.get(`MaintenanceInformations/GetListByBookingId?id=${request.bookingId}`);
-            setMaintenanceInformation(response.data);
+            const maintenanceInfoResponse = await axiosClient.get(
+                `MaintenanceInformations/GetListByBookingId?id=${request.bookingId}`
+              );
+        
+              // Nếu có dữ liệu, tiếp tục lọc và gọi các API khác
+              if (maintenanceInfoResponse.data && maintenanceInfoResponse.data.length > 0) {
+                
+                // Lọc ra các mục có status khác "CANCELLED"
+                const validMaintenanceInfo = maintenanceInfoResponse.data.find(
+                  (item) => item.status !== "CANCELLED"
+                );
+        
+                if (validMaintenanceInfo) {
+                    setMaintenanceInformation(validMaintenanceInfo);  
+                }
+
+            } else {
+                console.log('API response is empty or undefined');
+            }
           } catch (err) {
-            Alert.alert("Lỗi", "Không thể lấy dữ liệu bảo dưỡng.");
-          } finally {
-            setLoading(false);
-          }
+            Alert.alert("Không thể lấy dữ liệu bảo dưỡng.");
+            console.log('API error: ', err);
+          } 
         };
       
         if (request.bookingId) {
-          fetchMaintenanceInformation();  
+          fetchMaintenanceInformation();
         }
+      }, [request.bookingId]);
       
-      }, [request.bookingId]);  
+     
     const fetchStaffList = async () => {
         if (request?.maintenanceCenterId && staffList.length === 0) {
             await dispatch(fetchStaffByCenter(request.maintenanceCenterId));

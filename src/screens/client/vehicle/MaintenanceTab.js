@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, Pressable, ActivityIndicator, FlatList, StyleSheet, Modal, ScrollView } from "react-native";
+import { View, Text, Pressable, ActivityIndicator, FlatList, StyleSheet, Modal, ScrollView, Linking } from "react-native";
 import axios from "axios";
 import { Picker } from "@react-native-picker/picker";
 import { useDispatch, useSelector } from "react-redux";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { getListCenterActive } from "../../../app/Center/actions";
 import { BASE_URL } from "../../../../env";
+import moment from "moment";
 
 const MaintenanceTab = ({ route }) => {
   const { vehicle } = route.params;
@@ -19,9 +20,11 @@ const MaintenanceTab = ({ route }) => {
   const [showModal, setShowModal] = useState(false);
   const [showDetailsModal, setShowDetailsModal] = useState(false);
   const [showDeepDetailsModal, setShowDeepDetailsModal] = useState(false);
-
   const [selectedPlanDetails, setSelectedPlanDetails] = useState([]);
   const [selectedSmallPackage, setSelectedSmallPackage] = useState(null);
+
+  // New state for storing package costs
+  const [packageCosts, setPackageCosts] = useState([]);
 
   useEffect(() => {
     const fetchCenters = async () => {
@@ -45,31 +48,61 @@ const MaintenanceTab = ({ route }) => {
     try {
       const accessToken = await AsyncStorage.getItem("ACCESS_TOKEN");
       const response = await axios.get(
-        `${BASE_URL}/MaintenancePlans/GetListByCenter?id=${selectedCenter}`,
+        `${BASE_URL}/MaintenancePlans/GetListByCenterAndVehicle?id=${selectedCenter}&vehicleId=${vehicle.vehiclesId}`,
         {
           headers: { Authorization: `Bearer ${accessToken}` },
         }
       );
   
-      // Lọc các gói bảo dưỡng dựa trên vehicleModelId
       const filteredPlans = response.data.filter(plan => 
         plan.reponseVehicleModels?.vehicleModelId === vehicle.vehicleModelId
       );
   
-      if (filteredPlans.length === 0) {
+      if (!filteredPlans.length > 0) {
+        setShowModal(false)
         alert("Trung tâm không có gói nào phù hợp với xe của bạn");
       }
   
-      setMaintenancePlans(filteredPlans);
+      // Fetch costs for each plan
+      const updatedPlans = await Promise.all(filteredPlans.map(async (plan) => {
+        const costData = await fetchPackageCosts(plan);
+        return { ...plan, totalCost: costData };
+      }));
+  
+      setMaintenancePlans(updatedPlans);
     } catch (error) {
       console.error("Error fetching maintenance plans:", error);
     } finally {
       setLoading(false);
     }
   };
-  
-  
-  
+
+  const fetchPackageCosts = async (plan) => {
+    try {
+      const accessToken = await AsyncStorage.getItem("ACCESS_TOKEN");
+      const response = await axios.get(
+        `${BASE_URL}/MaintenanceServices/GetListPackageOdoTRUEByCenterIdAndModelIdAndPlanId?id=${selectedCenter}&modelId=${plan.reponseVehicleModels.vehicleModelId}&planId=${plan.maintenancePlanId}`,
+        {
+          headers: { Authorization: `Bearer ${accessToken}` },
+        }
+      );
+
+      const maintenanceServices = response.data;
+      let totalCost = 0;
+
+      maintenanceServices.forEach((service) => {
+        const serviceCost = service.responseMaintenanceServiceCosts.reduce(
+          (acc, costItem) => acc + costItem.acturalCost, 0
+        );
+        totalCost += serviceCost;
+      });
+
+      return totalCost;
+    } catch (error) {
+      console.error("Error fetching package costs:", error);
+      return 0;
+    }
+  };
 
   const fetchMaintenanceVehiclesDetails = async () => {
     setLoading(true);
@@ -113,12 +146,16 @@ const MaintenanceTab = ({ route }) => {
     setLoading(true);
     try {
       const accessToken = await AsyncStorage.getItem("ACCESS_TOKEN");
+      const createdDate = moment().add(7, 'hours').format('YYYY-MM-DDTHH:mm:ss');
+      console.log(selectedCenter, selectedPlan, vehicle.vehiclesId);
       const response = await axios.post(
-        `${BASE_URL}/MaintenanceVehiclesDetails/Post`,
+        `${BASE_URL}/Payments/CreateVnPayPaymentUrlTransaction`,
         {
-          maintanancePlanId: selectedPlan,
-          vehiclesId: vehicle.vehiclesId,
           maintenanceCenterId: selectedCenter,
+          maintenancePlanId: selectedPlan,
+          vehiclesId: vehicle.vehiclesId,
+          fullName: "Thanh toán bảo dưỡng",
+          createdDate: createdDate,
         },
         {
           headers: {
@@ -127,21 +164,22 @@ const MaintenanceTab = ({ route }) => {
           },
         }
       );
-      
+  
       if (response.status === 200) {
-        alert("Maintenance package registered successfully!");
-        setShowModal(false); // Đóng modal sau khi đăng ký thành công
-        fetchMaintenanceVehiclesDetails(); // Refresh danh sách gói bảo dưỡng
+        const paymentUrl = response.data;
+        Linking.openURL(paymentUrl);
+        setShowModal(false)
       } else {
-        alert("Failed to register maintenance package.");
+        alert("Failed to create VNPay payment transaction.");
       }
     } catch (error) {
-      console.error("Error creating maintenance package:", error);
-      alert("Error occurred while creating maintenance package.");
+      console.error("Error creating VNPay payment transaction:", error);
+      alert("Error occurred while creating VNPay payment transaction.");
     } finally {
       setLoading(false);
     }
   };
+
   const fetchSmallPackageDetail = async (maintenanceVehiclesDetailId) => {
     try {
       const accessToken = await AsyncStorage.getItem("ACCESS_TOKEN");
@@ -161,18 +199,41 @@ const MaintenanceTab = ({ route }) => {
   const handleSmallPackagePress = (maintenanceVehiclesDetailId) => {
     fetchSmallPackageDetail(maintenanceVehiclesDetailId);
   };
+
+  const statusColors = {
+    DEFAULT: "#e9ecef",
+    PENDING: "#e9ecef",
+    CANCELLED: "#dc3545",
+    FINISHED: "#28a745",
+    NEXT: "#ffc107",
+  };
+  
+  const getSmallPackageColor = (packages, index) => {
+    const currentPackage = packages[index];
+    const previousPackage = index > 0 ? packages[index - 1] : null;
+    const currentStatus = currentPackage.status || "PENDING";
+  
+    if (currentStatus === "CANCELLED" || currentStatus === "PAID") {
+      return statusColors[currentStatus] || statusColors.DEFAULT;
+    }
+  
+    if (currentStatus === "PENDING" && previousPackage && previousPackage.status !== "PENDING") {
+      return statusColors.NEXT;
+    }
+  
+    return statusColors[currentStatus] || statusColors.DEFAULT;
+  };
+
   if (loading) {
     return <ActivityIndicator size="large" color="#0000ff" />;
   }
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
-      {/* Nút đăng ký gói bảo dưỡng */}
       <Pressable onPress={() => setShowModal(true)} style={styles.registerButton}>
         <Text style={styles.buttonText}>Đăng ký gói bảo dưỡng</Text>
       </Pressable>
 
-      {/* Hiển thị modal để chọn trung tâm và gói bảo dưỡng */}
       <Modal transparent={true} visible={showModal} animationType="slide">
         <View style={styles.modalContainer}>
           <View style={styles.modalContent}>
@@ -200,20 +261,21 @@ const MaintenanceTab = ({ route }) => {
                   {maintenancePlans.map((plan) => (
                     <Picker.Item
                       key={plan.maintenancePlanId}
-                      label={plan.maintenancePlanName}
+                      label={`${plan.maintenancePlanName} - ${plan.totalCost.toLocaleString('vi-VN', {
+                        style: 'currency',
+                        currency: 'VND',
+                      })}`}
                       value={plan.maintenancePlanId}
                     />
                   ))}
                 </Picker>
               </>
             )}
-
             <Pressable onPress={createMaintenancePackage} style={styles.confirmButton}>
-              <Text style={styles.buttonText}>Xác nhận đăng ký</Text>
+              <Text style={styles.buttonText}>Xác nhận</Text>
             </Pressable>
-
-            <Pressable onPress={() => setShowModal(false)} style={styles.closeButton}>
-              <Text style={styles.buttonText}>Đóng</Text>
+            <Pressable onPress={() => setShowModal(false)} style={styles.cancelButton}>
+              <Text style={styles.buttonText}>Hủy</Text>
             </Pressable>
           </View>
         </View>
@@ -237,19 +299,22 @@ const MaintenanceTab = ({ route }) => {
           <View style={styles.modalContent}>
             <Text style={styles.modalTitle}>Chi tiết gói bảo dưỡng</Text>
             <FlatList
-              data={selectedPlanDetails}
-              keyExtractor={(item) => item.responseMaintenanceSchedules.maintananceScheduleId.toString()}
-              renderItem={({ item }) => (
-                <Pressable
-                  style={styles.cardContainer}
-                  onPress={() => handleSmallPackagePress(item.maintenanceVehiclesDetailId)}
-                >
-                  <Text style={styles.planTitle}>
-                    {item.responseMaintenanceSchedules.maintenancePlanName + ` tại mốc ${item.responseMaintenanceSchedules.maintananceScheduleName} km`}
-                  </Text>
-                </Pressable>
-              )}
-            />
+  data={selectedPlanDetails}
+  keyExtractor={(item, index) => index.toString()}
+  renderItem={({ item, index }) => (
+    <Pressable
+      style={[
+        styles.cardContainer,
+        { backgroundColor: getSmallPackageColor(selectedPlanDetails, index) }
+      ]}
+      onPress={() => handleSmallPackagePress(item.maintenanceVehiclesDetailId)}
+    >
+      <Text style={styles.planTitle}>
+        {item.responseMaintenanceSchedules.maintenancePlanName + ` tại mốc ${item.responseMaintenanceSchedules.maintananceScheduleName} km`}
+      </Text>
+    </Pressable>
+  )}
+/>
             <Pressable onPress={() => setShowDetailsModal(false)} style={styles.closeButton}>
               <Text style={styles.buttonText}>Đóng</Text>
             </Pressable>
@@ -337,8 +402,8 @@ const styles = StyleSheet.create({
     borderColor: "#ddd",
   },
   planTitle: {
-    fontWeight: "bold",
     fontSize: 16,
+    color: "#000", 
   },
   subPlanText: {
     fontSize: 14,
