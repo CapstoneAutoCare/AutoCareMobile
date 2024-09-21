@@ -12,6 +12,7 @@ import SettingScreen from "../../../screens/Profile/SettingScreen";
 import Logout from "../../../manager/logout";
 import UpdateProfile from './../../../screens/Profile/updateProfile';
 import ChangePassword from './../../../screens/Profile/changePassword';
+import TransactionHistoryScreen from "../../../screens/Profile/transactionHistory";
 const Drawer = createDrawerNavigator();
 
 const ProfileNavigator = () => {
@@ -52,6 +53,16 @@ const ProfileNavigator = () => {
           title: "Trang cá nhân",
           drawerIcon: ({ size, color }) => {
             return <FontAwesome name="user" size={28} color={color} />;
+          },
+        }}
+      />
+      <Drawer.Screen
+        name={"TRANSACTION_HISTORY"}
+        component={TransactionHistoryScreen}
+        options={{
+          title: "Lịch Sử Giao Dịch",
+          drawerIcon: ({ size, color }) => {
+            return <FontAwesome name="history" size={28} color={color} />;
           },
         }}
       />

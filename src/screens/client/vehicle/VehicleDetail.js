@@ -116,57 +116,54 @@ const VehicleDetail = ({ route }) => {
 
 
     if (!vehicleobject) {
-        return <Text style={styles.errorText}>Error: Vehicle not found</Text>;
+        return <Text style={styles.errorText}>Lỗi: Không tìm thấy xe</Text>;
     }
 
     const VehicleInfo = () => (
         <View style={styles.container}>
         <Text style={styles.title}>Chi tiết xe</Text>
         <View style={styles.infoContainer}>
-            <Text style={styles.infoLabel}>Model:</Text>
+            <Text style={styles.infoLabel}>Mẫu xe:</Text>
             <Text style={styles.infoValue}>{vehicleobject.vehicleModelName}</Text>
         </View>
         <View style={styles.infoContainer}>
-            <Text style={styles.infoLabel}>Brand:</Text>
+            <Text style={styles.infoLabel}>Hãng xe:</Text>
             <Text style={styles.infoValue}>{vehicleobject.vehiclesBrandName}</Text>
         </View>
         <View style={styles.infoContainer}>
-            <Text style={styles.infoLabel}>Status:</Text>
+            <Text style={styles.infoLabel}>Trạng thái:</Text>
             <Text style={styles.infoValue}>{vehicleobject.status}</Text>
         </View>
         <View style={styles.infoContainer}>
-            <Text style={styles.infoLabel}>Description:</Text>
+            <Text style={styles.infoLabel}>Đặc điểm xe:</Text>
             <Text style={styles.infoValue}>{vehicleobject.description}</Text>
         </View>
         <View style={styles.infoContainer}>
-            <Text style={styles.infoLabel}>Color:</Text>
+            <Text style={styles.infoLabel}>Màu xe:</Text>
             <Text style={styles.infoValue}>{vehicleobject.color}</Text>
         </View>
         <View style={styles.infoContainer}>
-            <Text style={styles.infoLabel}>License Plate:</Text>
+            <Text style={styles.infoLabel}>Biển số xe:</Text>
             <Text style={styles.infoValue}>{vehicleobject.licensePlate}</Text>
         </View>
         <View style={styles.infoContainer}>
-            <Text style={styles.infoLabel}>Odometer:</Text>
+            <Text style={styles.infoLabel}>Chỉ số Odo:</Text>
             <Text style={styles.infoValue}>{currentOdo} km</Text>
         </View>
-        <View style={styles.infoContainer}>
-            <Text style={styles.infoLabel}>Created Date:</Text>
-            <Text style={styles.infoValue}>{vehicleobject.createdDate}</Text>
-        </View>
+        
         <Pressable
             onPress={handleButtonPress}
             style={[styles.button, isIncrementing ? styles.stopButton : styles.startButton]}
         >
             <Text style={styles.buttonText}>
-                {isIncrementing ? "Stop Incrementing Odometer" : "Start Incrementing Odometer"}
+                {isIncrementing ? "Kết thúc" : "Bắt đầu di chuyển"}
             </Text>
         </Pressable>
         <Pressable
             onPress={() => navigation.goBack()}
             style={styles.backButton}
         >
-            <Text style={styles.buttonText}>Back</Text>
+            <Text style={styles.buttonText}>Quay lại</Text>
         </Pressable>
     </View>
     );
@@ -178,8 +175,8 @@ const VehicleDetail = ({ route }) => {
           tabBarStyle: { marginTop: 20 }, // Di chuyển thanh tab xuống
         }}
       >
-        <Tab.Screen name="Vehicle Details" component={VehicleInfo} />
-        <Tab.Screen name="Maintenance Packages" component={MaintenanceTab} initialParams={{ vehicle }} />
+        <Tab.Screen name="Thông tin chi tiết xe" component={VehicleInfo} />
+        <Tab.Screen name="Gói bảo dưỡng của xe" component={MaintenanceTab} initialParams={{ vehicle }} />
       </Tab.Navigator>
       
     );

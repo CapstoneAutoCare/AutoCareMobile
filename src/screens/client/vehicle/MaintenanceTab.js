@@ -203,7 +203,7 @@ const MaintenanceTab = ({ route }) => {
   const statusColors = {
     DEFAULT: "#e9ecef",
     PENDING: "#e9ecef",
-    CANCELLED: "#dc3545",
+    EXPIRED: "#dc3545",
     FINISHED: "#28a745",
     NEXT: "#ffc107",
   };
@@ -390,6 +390,9 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     color: "#fff",
+  },
+  cancelButton:{
+    color: "#35dccc",
   },
   planContainer: {
     backgroundColor: "#f8f9fa",

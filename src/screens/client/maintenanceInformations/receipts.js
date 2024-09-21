@@ -63,7 +63,7 @@ const Receipts = ({ route }) => {
     try {
       const accessToken = await AsyncStorage.getItem("ACCESS_TOKEN");
       const response = await axios.post(
-        `${BASE_URL}/Payments/CreateVnPayPaymentUrl`,
+        `${BASE_URL}/Payments/CreateVnPayPaymentUrlMoblie`,
         requestBody,
         {
           headers: {

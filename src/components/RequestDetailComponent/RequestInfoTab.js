@@ -50,13 +50,25 @@ const RequestInfoTab = ({ request, updateStatus, error, profile, assignTask}) =>
   useEffect(() => {
     console.log("Fetching maintenance info first");
   
+    const fetchOdoHistory = async (informationMaintenanceId) => {
+      try {
+        const odoDataResponse = await axiosClient.get(
+          `/OdoHistories/GetOdoByInforId?id=${informationMaintenanceId}`
+        );
+        // Set Odo history details if needed
+        setOdooDetails(odoDataResponse.data);
+      } catch (error) {
+        console.error("Error fetching OdoHistory data:", error);
+      }
+    };
+    
     const fetchData = async () => {
       try {
         // Gọi API để lấy maintenanceInfo trước
         const maintenanceInfoResponse = await axiosClient.get(
           `MaintenanceInformations/GetListByBookingId?id=${request.bookingId}`
         );
-  
+    
         // Nếu có dữ liệu, tiếp tục lọc và gọi các API khác
         if (maintenanceInfoResponse.data && maintenanceInfoResponse.data.length > 0) {
           
@@ -64,29 +76,35 @@ const RequestInfoTab = ({ request, updateStatus, error, profile, assignTask}) =>
           const validMaintenanceInfo = maintenanceInfoResponse.data.find(
             (item) => item.status !== "CANCELLED"
           );
-  
+    
           if (validMaintenanceInfo) {
             setMaintenanceInfo(validMaintenanceInfo);  
             console.log(maintenanceInfo);
+    
             // Gọi các API khác với validMaintenanceInfo.informationMaintenanceId
-            const [sparePartsResponse, servicesResponse, 
-              //odoDataResponse
-            ] = await Promise.all([
+            const [sparePartsResponse, servicesResponse] = await Promise.all([
               axiosClient.get(
                 `SparePartsItemCosts/GetListByDifSparePartAndInforId?centerId=${request.maintenanceCenterId}&inforId=${validMaintenanceInfo.informationMaintenanceId}`
               ),
               axiosClient.get(
                 `MaintenanceServiceCosts/GetListByDifMaintenanceServiceAndInforIdAndBooleanFalse?centerId=${request.maintenanceCenterId}&inforId=${validMaintenanceInfo.informationMaintenanceId}`
               ),
-              //axiosClient.get(
-              //  `/OdoHistories/GetOdoByInforId?id=${validMaintenanceInfo.informationMaintenanceId}`
-             // ),
             ]);
-  
-            // Cập nhật state với dữ liệu từ các API khác
-            setAvailableSpareParts(sparePartsResponse.data);
-            setAvailableServices(servicesResponse.data);
-            //setOdooDetails(odoDataResponse.data);
+    
+            // Filter Spare Parts based on vehicleModelName
+            const filteredSpareParts = sparePartsResponse.data.filter(
+              (item) => item.vehicleModelName === request?.responseVehicles.vehicleModelName
+            );
+            setAvailableSpareParts(filteredSpareParts);
+    
+            // Filter Services based on vehicleModelName
+            const filteredServices = servicesResponse.data.filter(
+              (item) => item.vehicleModelName === request?.responseVehicles.vehicleModelName
+            );
+            setAvailableServices(filteredServices);
+    
+            // Fetch OdoHistory after fetching other data
+            await fetchOdoHistory(validMaintenanceInfo.informationMaintenanceId);
           } else {
             console.log("No valid maintenance info found (all are CANCELLED)");
             setIsMInfo(false);
@@ -99,7 +117,8 @@ const RequestInfoTab = ({ request, updateStatus, error, profile, assignTask}) =>
       }
     };
   
-    fetchData();  // Gọi một lần khi điều kiện được thỏa mãn
+    fetchData();  
+    fetchOdoHistory();
   }, [request?.maintenanceCenterId, request?.responseMaintenanceInformation, request.bookingId]);
   
   
@@ -275,20 +294,22 @@ const RequestInfoTab = ({ request, updateStatus, error, profile, assignTask}) =>
     try {
       const infoId = maintenanceInfo.informationMaintenanceId;
   
-     
       const fetchInvoiceData = async () => {
         try {
           const response = await axiosClient.get(`Receipts/GetByInforId?id=${infoId}`);
           setInvoiceData(response.data);
+          return response.data; // Trả về data nếu thành công
         } catch (error) {
           console.error('Error fetching invoice data:', error);
+          return null; // Trả về null nếu có lỗi
         }
       };
   
-      fetchInvoiceData();
+      const invoiceData = await fetchInvoiceData();
   
+      // Nếu fetchInvoiceData trả về null (có lỗi), thì mới gọi axiosClient.post
       if (!invoiceData) {
-        const description = "Hóa Đơn Xe" + request.responseVehicles.licensePlate; 
+        const description = "Hóa Đơn Xe " + request.responseVehicles.licensePlate;
         await axiosClient.post(
           'Receipts/Post',
           { informationMaintenanceId: infoId, description },
@@ -299,7 +320,7 @@ const RequestInfoTab = ({ request, updateStatus, error, profile, assignTask}) =>
           }
         );
   
-       
+        // Gọi lại fetchInvoiceData sau khi post thành công
         await fetchInvoiceData();
       }
   
@@ -309,7 +330,18 @@ const RequestInfoTab = ({ request, updateStatus, error, profile, assignTask}) =>
       alert('Có lỗi xảy ra khi thanh toán. Vui lòng thử lại.');
     }
   };
-  
+  const checkAndUpdateInvoiceStatus = async (invoiceData) => {
+    if (invoiceData.status === 'YETPAID' && invoiceData.totalAmount === 0) {
+      try {
+        const response = await axiosClient.patch(
+          `Receipts/ChangeStatus?id=${invoiceData.receiptId}&status=PAID`
+        );
+        console.log('Status updated to PAID:', response.data);
+      } catch (error) {
+        console.error('Error updating status:', error);
+      }
+    }
+  };
   
   const handleCheckin = async () => {
     try {
@@ -622,10 +654,16 @@ const OdooCard = ({ odoHistoryName, odo, createdDate, description }) => {
       </Modal>
       <Modal isVisible={isInvoiceModalVisible} style={styles.fullScreenModal}>
   <ScrollView contentContainerStyle={styles.scrollViewContent}>
-    <View style={styles.modalContent}>
-      <InvoiceComponent request={request} profile={profile} invoiceData={invoiceData} />
-      <Button title="Xác Nhận" onPress={toggleInvoiceModal} /> 
-    </View>
+  <View style={styles.modalContent}>
+  <InvoiceComponent request={request} profile={profile} invoiceData={invoiceData} />
+  <Button 
+    title="Xác Nhận" 
+    onPress={() => {
+      toggleInvoiceModal();
+      checkAndUpdateInvoiceStatus(invoiceData);  
+    }} 
+  />
+</View>
   </ScrollView>
 </Modal>
 <Modal isVisible={isAssignModalVisible}>

@@ -69,6 +69,8 @@ const CreateBookingHaveItem = ({
   const [filteredServices, setFilteredServices] = useState([]);
   const [filteredOdo, setFilteredOdo] = useState([]);
   const [currentStep, setCurrentStep] = useState(0);
+  const [odoBooking, setOdoBooking] = useState("");
+
   const steps = [
     <StepOne key="step1" />,
     <StepTwo key="step2" />,
@@ -225,7 +227,7 @@ const CreateBookingHaveItem = ({
       const now = new Date();
       const vietnamTime = new Date(now.getTime() + 7 * 60 * 60 * 1000);
       const accessToken = await AsyncStorage.getItem("ACCESS_TOKEN");
-      console.log( vehicle, maintenanceCenter, note, adjustedBookingDate, spareParts , services)
+      console.log( vehicle, maintenanceCenter, note, odoBooking, adjustedBookingDate, spareParts , services)
       const response = await axios.post(
         `${BASE_URL}/Bookings/PostHaveItems`,
         {
@@ -233,16 +235,20 @@ const CreateBookingHaveItem = ({
           maintenanceCenterId: maintenanceCenter,
           // maintananceScheduleId: null,
           note: note,
+          odoBooking: odoBooking,
           bookingDate: adjustedBookingDate.toISOString(),
-          createMaintenanceInformationHaveItemsByClient: {
+          
+          createMaintenanceInformationHaveItemsByClient: [{
             // customerCareId: customerCare,
             // finishedDate: vietnamTime.toISOString(),
             createMaintenanceSparePartInfos:
               spareParts.length > 0 ? spareParts : null,
             createMaintenanceServiceInfos:
               services.length > 0 ? services : null,
-          },
+          },],
+          
         },
+      
         {
           headers: {
             "Content-Type": "application/json",
@@ -387,6 +393,15 @@ const CreateBookingHaveItem = ({
                   required={true}
                 />
               </View>
+              <View style={styles.inputContainer}>
+            <TextInput
+              style={styles.textInput}
+              placeholder="Nhập Odo"
+              keyboardType="numeric"
+              value={odoBooking}
+              onChangeText={(text) => setOdoBooking(text)}
+            />
+          </View>
             </>
           ) : currentStep === 1 ? (
             <>

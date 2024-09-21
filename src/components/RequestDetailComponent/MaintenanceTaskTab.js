@@ -4,10 +4,11 @@ import { getTechnicianDetail } from '../../api/requestDetailService';
 import { useNavigation } from '@react-navigation/native';
 import Modal from 'react-native-modal';
 import StaffListComponent from '../BookingComponent/StaffListComponent';
-import {  fetchStaffByCenter } from '../../app/CusCare/requestDetailSlice';
+import { fetchStaffByCenter } from '../../app/CusCare/requestDetailSlice';
 import { useDispatch, useSelector } from 'react-redux';
 import moment from 'moment';
 import axiosClient from '../../services/axiosClient';
+
 const MaintenanceTaskTab = ({ maintenanceTasks, request, assignTask }) => {
     const [technicianDetails, setTechnicianDetails] = useState({});
     
@@ -15,47 +16,38 @@ const MaintenanceTaskTab = ({ maintenanceTasks, request, assignTask }) => {
 
     const navigation = useNavigation();
     const [isAssignModalVisible, setAssignModalVisible] = useState(false);
+    const [isTaskAssigned, setIsTaskAssigned] = useState(false); // State to control button visibility
     const staffList = useSelector((state) => state.requestDetail.staffList);
     const [selectedStaff, setSelectedStaff] = useState(null);
     const dispatch = useDispatch();
     const [maintenanceInformation, setMaintenanceInformation] = useState([]);
+
     useEffect(() => {
         const fetchMaintenanceInformation = async () => {
-          console.log('Fetching maintenance information for task');
-          console.log('Booking ID: ', request.bookingId);
-      
-          try {
-            const maintenanceInfoResponse = await axiosClient.get(
-                `MaintenanceInformations/GetListByBookingId?id=${request.bookingId}`
-              );
-        
-              // Nếu có dữ liệu, tiếp tục lọc và gọi các API khác
-              if (maintenanceInfoResponse.data && maintenanceInfoResponse.data.length > 0) {
-                
-                // Lọc ra các mục có status khác "CANCELLED"
-                const validMaintenanceInfo = maintenanceInfoResponse.data.find(
-                  (item) => item.status !== "CANCELLED"
+            try {
+                const maintenanceInfoResponse = await axiosClient.get(
+                    `MaintenanceInformations/GetListByBookingId?id=${request.bookingId}`
                 );
-        
-                if (validMaintenanceInfo) {
-                    setMaintenanceInformation(validMaintenanceInfo);  
-                }
 
-            } else {
-                console.log('API response is empty or undefined');
+                if (maintenanceInfoResponse.data && maintenanceInfoResponse.data.length > 0) {
+                    const validMaintenanceInfo = maintenanceInfoResponse.data.find(
+                        (item) => item.status !== "CANCELLED"
+                    );
+
+                    if (validMaintenanceInfo) {
+                        setMaintenanceInformation(validMaintenanceInfo);
+                    }
+                }
+            } catch (err) {
+                console.log('API error: ', err);
             }
-          } catch (err) {
-            Alert.alert("Không thể lấy dữ liệu bảo dưỡng.");
-            console.log('API error: ', err);
-          } 
         };
-      
+
         if (request.bookingId) {
-          fetchMaintenanceInformation();
+            fetchMaintenanceInformation();
         }
-      }, [request.bookingId]);
-      
-     
+    }, [request.bookingId]);
+
     const fetchStaffList = async () => {
         if (request?.maintenanceCenterId && staffList.length === 0) {
             await dispatch(fetchStaffByCenter(request.maintenanceCenterId));
@@ -75,17 +67,25 @@ const MaintenanceTaskTab = ({ maintenanceTasks, request, assignTask }) => {
     const toggleAssignModal = () => {
         setAssignModalVisible(!isAssignModalVisible);
     };
-    
+
     const handleAssignTask = async () => {
         if (!selectedStaff) {
             alert('Vui lòng chọn một nhân viên để giao xe');
             return;
         }
-        console.log(` MaintenanceTaskTab: ${maintenanceInformation.informationMaintenanceId}, ${selectedStaff.technicianId}`);
-        assignTask( maintenanceInformation.informationMaintenanceId, selectedStaff.technicianId );
+
+        assignTask(maintenanceInformation.informationMaintenanceId, selectedStaff.technicianId);
         toggleAssignModal();
+        setIsTaskAssigned(true); // Hide button after task is assigned
     };
-    
+
+    // Automatically hide button if maintenanceTasks has data
+    useEffect(() => {
+        if (maintenanceTasks && maintenanceTasks.length > 0) {
+            setIsTaskAssigned(true);
+        }
+    }, [maintenanceTasks]);
+
     useEffect(() => {
         const fetchTechnicianDetails = async () => {
             const technicianInfo = {};
@@ -104,17 +104,17 @@ const MaintenanceTaskTab = ({ maintenanceTasks, request, assignTask }) => {
 
         fetchTechnicianDetails();
     }, [maintenanceTasks]);
+
     const translateStatus = (status) => {
         const statusMapping = {
-          WAITING: "Đang chờ",
-          ACCEPTED: "Đã chấp nhận",
-          CANCELLED: "Đã hủy",
-          DONE: "Đã hoàn thành",
-    
-      
+            WAITING: "Đang chờ",
+            ACCEPTED: "Đã chấp nhận",
+            CANCELLED: "Đã hủy",
+            DONE: "Đã hoàn thành",
         };
         return statusMapping[status] || status;
-      };
+    };
+
     const renderTaskItem = ({ item }) => {
         const technician = technicianDetails[item.technicianId];
         return (
@@ -148,7 +148,9 @@ const MaintenanceTaskTab = ({ maintenanceTasks, request, assignTask }) => {
                 keyExtractor={(item) => item.maintenanceTaskId.toString()}
                 contentContainerStyle={styles.listContainer}
             />
-            <Button title="Giao xe cho nhân viên" onPress={toggleAssignModal} />
+            {!isTaskAssigned && ( // Conditionally render button
+                <Button title="Giao xe cho nhân viên" onPress={toggleAssignModal} />
+            )}
             <Modal isVisible={isAssignModalVisible}>
                 <View style={styles.modalContent}>
                     <StaffListComponent
@@ -157,8 +159,8 @@ const MaintenanceTaskTab = ({ maintenanceTasks, request, assignTask }) => {
                         setSelectedStaff={setSelectedStaff}
                     />
                     <View style={styles.buttonContainer}>
-                    <Button title="Xác nhận" onPress={handleAssignTask} />
-                    <Button title="Hủy" onPress={toggleAssignModal} />
+                        <Button title="Xác nhận" onPress={handleAssignTask} />
+                        <Button title="Hủy" onPress={toggleAssignModal} />
                     </View>
                 </View>
             </Modal>
@@ -217,9 +219,9 @@ const styles = StyleSheet.create({
     },
     buttonContainer: {
         flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginTop: 16,
-    }
+        justifyContent: 'space-between',
+        marginTop: 16,
+    },
 });
 
-export default MaintenanceTaskTab
+export default MaintenanceTaskTab;

@@ -72,6 +72,9 @@ const BookingDetail = ({ route }) => {
   const formatCurrency = (value) => {
     return value.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' });
   };
+  const trueMaintenanceInfo = bookingById?.responseMaintenanceInformation?.filter(
+    (item) => item.status !== "CANCELLED"
+  );
   return (
     <ScrollView style={styles.container}>
       <View style={styles.header}>
@@ -134,72 +137,88 @@ const BookingDetail = ({ route }) => {
         </View>
       )}
 
-      <Text style={styles.sectionTitle}>Danh sách dịch vụ</Text>
-      {bookingById?.responseMaintenanceInformation
-        ?.responseMaintenanceServiceInfos?.length > 0 ? (
-        <View style={styles.tableContainer}>
-          <View style={styles.tableHeader}>
-            <Text style={styles.tableHeaderText}>Tên dịch vụ</Text>
-            <Text style={styles.tableHeaderText}>Đơn Giá</Text>
-            <Text style={styles.tableHeaderText}>Số lượng</Text>
-            <Text style={styles.tableHeaderText}>Thành tiền</Text>
-            <Text style={styles.tableHeaderText}>Thao tác</Text>
-          </View>
-          {bookingById.responseMaintenanceInformation.responseMaintenanceServiceInfos.map(
-            (item, index) => (
-              <View style={styles.tableRow} key={index}>
-                <Text style={styles.tableRowText}>{item.maintenanceServiceInfoName}</Text>
-                <Text style={styles.tableRowText}>{formatCurrency(item.actualCost)} </Text>
-                <Text style={styles.tableRowText}>{item.quantity} lần</Text>
-                <Text style={styles.tableRowText}>{formatCurrency(item.totalCost)} </Text>
+       {/* Bước 2: Render danh sách dịch vụ từ trueMaintenanceInfo */}
+       <Text style={styles.sectionTitle}>Danh sách dịch vụ</Text>
+      {trueMaintenanceInfo?.map((item, index) =>
+        item.responseMaintenanceServiceInfos?.length > 0 ? (
+          <View key={index} style={styles.tableContainer}>
+            <View style={styles.tableHeader}>
+              <Text style={styles.tableHeaderText}>Tên dịch vụ</Text>
+              <Text style={styles.tableHeaderText}>Đơn Giá</Text>
+              <Text style={styles.tableHeaderText}>Số lượng</Text>
+              <Text style={styles.tableHeaderText}>Thành tiền</Text>
+              <Text style={styles.tableHeaderText}>Thao tác</Text>
+            </View>
+            {item.responseMaintenanceServiceInfos.map((service, i) => (
+              <View style={styles.tableRow} key={i}>
+                <Text style={styles.tableRowText}>
+                  {service.maintenanceServiceInfoName}
+                </Text>
+                <Text style={styles.tableRowText}>
+                  {formatCurrency(service.actualCost)}
+                </Text>
+                <Text style={styles.tableRowText}>{service.quantity} lần</Text>
+                <Text style={styles.tableRowText}>
+                  {formatCurrency(service.totalCost)}
+                </Text>
                 <Pressable
                   style={styles.detailButton}
-                  onPress={() => handleServiceDetailClick(item.maintenanceServiceInfoId)}
+                  onPress={() =>
+                    handleServiceDetailClick(service.maintenanceServiceInfoId)
+                  }
                 >
                   <Text style={styles.detailButtonText}>Thông tin</Text>
                 </Pressable>
               </View>
-            )
-          )}
-        </View>
-      ) : (
-        <View style={styles.emptyContainer}>
-          <Text style={styles.emptyText}>Không có dịch vụ</Text>
-        </View>
+            ))}
+          </View>
+        ) : (
+          <View key={index} style={styles.emptyContainer}>
+            <Text style={styles.emptyText}>Không có dịch vụ</Text>
+          </View>
+        )
       )}
 
+      {/* Bước 3: Render danh sách phụ tùng từ trueMaintenanceInfo */}
       <Text style={styles.sectionTitle}>Danh sách phụ tùng</Text>
-      {bookingById?.responseMaintenanceInformation
-        ?.responseMaintenanceSparePartInfos?.length > 0 ? (
-        <View style={styles.tableContainer}>
-          <View style={styles.tableHeader}>
-            <Text style={styles.tableHeaderText}>Tên dịch vụ</Text>
-            <Text style={styles.tableHeaderText}>Đơn Giá</Text>
-            <Text style={styles.tableHeaderText}>Số lượng</Text>
-            <Text style={styles.tableHeaderText}>Thành tiền</Text>
-            <Text style={styles.tableHeaderText}>Thao tác</Text>
-          </View>
-          {bookingById.responseMaintenanceInformation.responseMaintenanceSparePartInfos.map(
-            (item, index) => (
-              <View style={styles.tableRow} key={index}>
-                <Text style={styles.tableRowText}>{item.maintenanceSparePartInfoName}</Text>
-                <Text style={styles.tableRowText}>{formatCurrency(item.actualCost)} </Text>
-                <Text style={styles.tableRowText}>{item.quantity} lần</Text>
-                <Text style={styles.tableRowText}>{formatCurrency(item.totalCost)} </Text>
+      {trueMaintenanceInfo?.map((item, index) =>
+        item.responseMaintenanceSparePartInfos?.length > 0 ? (
+          <View key={index} style={styles.tableContainer}>
+            <View style={styles.tableHeader}>
+              <Text style={styles.tableHeaderText}>Tên phụ tùng</Text>
+              <Text style={styles.tableHeaderText}>Đơn Giá</Text>
+              <Text style={styles.tableHeaderText}>Số lượng</Text>
+              <Text style={styles.tableHeaderText}>Thành tiền</Text>
+              <Text style={styles.tableHeaderText}>Thao tác</Text>
+            </View>
+            {item.responseMaintenanceSparePartInfos.map((sparePart, i) => (
+              <View style={styles.tableRow} key={i}>
+                <Text style={styles.tableRowText}>
+                  {sparePart.maintenanceSparePartInfoName}
+                </Text>
+                <Text style={styles.tableRowText}>
+                  {formatCurrency(sparePart.actualCost)}
+                </Text>
+                <Text style={styles.tableRowText}>{sparePart.quantity} lần</Text>
+                <Text style={styles.tableRowText}>
+                  {formatCurrency(sparePart.totalCost)}
+                </Text>
                 <Pressable
                   style={styles.detailButton}
-                  onPress={() => handleSparePartDetailClick(item.maintenanceSparePartInfoId)}
+                  onPress={() =>
+                    handleSparePartDetailClick(sparePart.maintenanceSparePartInfoId)
+                  }
                 >
                   <Text style={styles.detailButtonText}>Thông tin</Text>
                 </Pressable>
               </View>
-            )
-          )}
-        </View>
-      ) : (
-        <View style={styles.emptyContainer}>
-          <Text style={styles.emptyText}>Không có phụ tùng</Text>
-        </View>
+            ))}
+          </View>
+        ) : (
+          <View key={index} style={styles.emptyContainer}>
+            <Text style={styles.emptyText}>Không có phụ tùng</Text>
+          </View>
+        )
       )}
       <Modal
         transparent={true}
