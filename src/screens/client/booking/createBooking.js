@@ -35,8 +35,8 @@ const CreateBooking = ({ centerList, maintenanceCenterId, vehicleListByClient })
   const [selectedDate, setSelectedDate] = useState(null); // Lưu ngày đã chọn
   const [timeSlots, setTimeSlots] = useState([]); // Lưu các khung giờ
   const [showTimeSlotModal, setShowTimeSlotModal] = useState(false); // Modal chọn giờ
-const [selectedTimeSlot, setSelectedTimeSlot] = useState(null); // Lưu giờ đã chọn
-const today = new Date(); // Ngày hiện tại
+  const [selectedTimeSlot, setSelectedTimeSlot] = useState(null); // Lưu giờ đã chọn
+  const today = new Date(); // Ngày hiện tại
 
   // useEffect(() => {
   //   if (maintenanceCenter) {
@@ -116,10 +116,10 @@ const today = new Date(); // Ngày hiện tại
           },
         }
       );
-    
+
       const details = response.data;
       setMaintenanceDetails(details);
-  
+
       // Gộp các object theo maintenancePlanId
       const groupedPlans = Object.values(
         details.reduce((acc, item) => {
@@ -133,30 +133,30 @@ const today = new Date(); // Ngày hiện tại
           return acc;
         }, {})
       );
-  
+
       setMaintenancePlans(groupedPlans);  // Luôn hiển thị dropdown chọn gói bảo dưỡng
     } catch (error) {
       console.error("Error fetching maintenance vehicle details:", error);
     }
   };
-  
-  
+
+
 
   const handleSignup = async () => {
     if (!note || !maintenanceCenter || !vehicle || !selectedPlan || !selectedTimeSlot) {
       alert("Vui lòng điền đầy đủ thông tin");
       return;
     }
-  
+
     setLoad(true);
     try {
       const accessToken = await AsyncStorage.getItem("ACCESS_TOKEN");
-  
+
       // Cộng thêm 7 tiếng vào giờ đã chọn
       const adjustedBookingDate = new Date(selectedDate);
       const [hours, minutes] = selectedTimeSlot.split(':').map(Number);
       adjustedBookingDate.setHours(hours + 7, minutes, 0, 0); // Thêm 7 tiếng
-  
+
       const response = await axios.post(
         `${BASE_URL}/Bookings/PostMaintenanceBooking`,
         {
@@ -174,7 +174,7 @@ const today = new Date(); // Ngày hiện tại
           },
         }
       );
-  
+
       if (response.status === 200) {
         alert("Tạo lịch thành công!");
         navigation.navigate("Booking");
@@ -188,50 +188,50 @@ const today = new Date(); // Ngày hiện tại
       setLoad(false);
     }
   };
-  
-  
-  
+
+
+
   const onDateChange = (event, selectedDate) => {
     const currentDate = selectedDate || bookingDate;
     setShowDatePicker(false);
     setSelectedDate(currentDate); // Lưu ngày đã chọn
     setShowTimeSlotModal(true); // Hiển thị modal chọn giờ
   };
-// Hàm để tạo khung giờ từ 8:00 sáng đến 7:00 tối với mỗi khoảng 30 phút
-const generateTimeSlots = () => {
-  const slots = [];
-  let startTime = new Date();
-  const currentTime = new Date(); // Thời gian hiện tại
+  // Hàm để tạo khung giờ từ 8:00 sáng đến 7:00 tối với mỗi khoảng 30 phút
+  const generateTimeSlots = () => {
+    const slots = [];
+    let startTime = new Date();
+    const currentTime = new Date(); // Thời gian hiện tại
 
-  // Nếu ngày được chọn là hôm nay, giới hạn từ giờ hiện tại
-  if (selectedDate && selectedDate.toDateString() === currentTime.toDateString()) {
-    const hours = currentTime.getHours();
-    const minutes = currentTime.getMinutes();
-    startTime.setHours(hours, minutes + 60); // Thêm 1 giờ so với thời gian hiện tại
-  } else {
-    startTime.setHours(8, 0, 0, 0); // Bắt đầu từ 8:00 AM cho các ngày tương lai
-  }
+    // Nếu ngày được chọn là hôm nay, giới hạn từ giờ hiện tại
+    if (selectedDate && selectedDate.toDateString() === currentTime.toDateString()) {
+      const hours = currentTime.getHours();
+      const minutes = currentTime.getMinutes();
+      startTime.setHours(hours, minutes + 60); // Thêm 1 giờ so với thời gian hiện tại
+    } else {
+      startTime.setHours(8, 0, 0, 0); // Bắt đầu từ 8:00 AM cho các ngày tương lai
+    }
 
-  const endTime = new Date();
-  endTime.setHours(19, 0, 1, 0); // Kết thúc vào 7:00 PM
+    const endTime = new Date();
+    endTime.setHours(19, 0, 1, 0); // Kết thúc vào 7:00 PM
 
-  while (startTime < endTime) {
-    slots.push(
-      `${startTime.getHours().toString().padStart(2, '0')}:${startTime.getMinutes().toString().padStart(2, '0')}`
-    );
-    startTime.setMinutes(startTime.getMinutes() + 30); // Tăng thêm 30 phút
-  }
+    while (startTime < endTime) {
+      slots.push(
+        `${startTime.getHours().toString().padStart(2, '0')}:${startTime.getMinutes().toString().padStart(2, '0')}`
+      );
+      startTime.setMinutes(startTime.getMinutes() + 30); // Tăng thêm 30 phút
+    }
 
-  return slots;
-};
-useEffect(() => {
-  const timeSlots = generateTimeSlots();
-  setTimeSlots(timeSlots);
-}, [selectedDate]);
+    return slots;
+  };
+  useEffect(() => {
+    const timeSlots = generateTimeSlots();
+    setTimeSlots(timeSlots);
+  }, [selectedDate]);
   const onSelectPlan = (plan) => {
     setSelectedPlan(plan);
   };
-  
+
 
   const onCenterSelect = async (itemValue) => {
     setMaintenanceCenter(itemValue);
@@ -285,72 +285,72 @@ useEffect(() => {
           </View>
 
           <Pressable onPress={() => setShowDatePicker(true)} style={styles.datePickerButton}>
-  <Text style={styles.datePickerText}>
-    {selectedDate ? `${selectedDate.toLocaleDateString()} ${selectedTimeSlot ? selectedTimeSlot : ''}` : "Chọn ngày và giờ"}
-  </Text>
-</Pressable>
+            <Text style={styles.datePickerText}>
+              {selectedDate ? `${selectedDate.toLocaleDateString()} ${selectedTimeSlot ? selectedTimeSlot : ''}` : "Chọn ngày và giờ"}
+            </Text>
+          </Pressable>
 
 
           {showDatePicker && (
             <DateTimePicker
-            value={bookingDate}
-            mode="date"
-            display="default"
-            onChange={onDateChange}
-            minimumDate={today} // Giới hạn ngày từ hôm nay trở đi
-          />
+              value={bookingDate}
+              mode="date"
+              display="default"
+              onChange={onDateChange}
+              minimumDate={today} // Giới hạn ngày từ hôm nay trở đi
+            />
           )}
-<Modal transparent={true} animationType="slide" visible={showTimeSlotModal}>
-  <View style={styles.modalContainer}>
-    <View style={styles.modalContent}>
-      <Text style={styles.modalTitle}>Chọn giờ</Text>
-      <View style={styles.timeSlotContainer}>
-        {generateTimeSlots().map((slot, index) => (
-          <Pressable
-            key={index}
-            onPress={() => {
-              setSelectedTimeSlot(slot);
-              setShowTimeSlotModal(false); // Đóng modal khi chọn xong giờ
-            }}
-            style={styles.timeSlotBox}
-          >
-            <Text style={styles.timeSlotText}>{slot}</Text>
-          </Pressable>
-        ))}
-      </View>
-      <Pressable onPress={() => setShowTimeSlotModal(false)} style={styles.closeButton}>
-        <Text style={styles.closeButtonText}>Đóng</Text>
-      </Pressable>
-    </View>
-  </View>
-</Modal>
+          <Modal transparent={true} animationType="slide" visible={showTimeSlotModal}>
+            <View style={styles.modalContainer}>
+              <View style={styles.modalContent}>
+                <Text style={styles.modalTitle}>Chọn giờ</Text>
+                <View style={styles.timeSlotContainer}>
+                  {generateTimeSlots().map((slot, index) => (
+                    <Pressable
+                      key={index}
+                      onPress={() => {
+                        setSelectedTimeSlot(slot);
+                        setShowTimeSlotModal(false); // Đóng modal khi chọn xong giờ
+                      }}
+                      style={styles.timeSlotBox}
+                    >
+                      <Text style={styles.timeSlotText}>{slot}</Text>
+                    </Pressable>
+                  ))}
+                </View>
+                <Pressable onPress={() => setShowTimeSlotModal(false)} style={styles.closeButton}>
+                  <Text style={styles.closeButtonText}>Đóng</Text>
+                </Pressable>
+              </View>
+            </View>
+          </Modal>
 
           {showPlanModal && (
             <Pressable onPress={() => setShowPlanModal(true)} style={styles.showButton}>
               <Text style={styles.showButtonText}>Chọn gói bảo dưỡng</Text>
             </Pressable>
           )}
-    {maintenancePlans.length > 0 && (
-  <View style={styles.inputContainer}>
-    <Picker
-      selectedValue={selectedPlan}
-      onValueChange={(planId) => setSelectedPlan(planId)} // Cho phép người dùng thay đổi gói bảo dưỡng
-      style={styles.picker}
-    >
-      <Picker.Item label="Chọn gói bảo dưỡng" value="" />
-      {maintenancePlans.map((plan) => (
-        <Picker.Item
-          key={plan.maintenancePlanId}
-          label={`Gói ${plan.maintenancePlanName}`}
-          value={plan.maintenancePlanId}
-        />
-      ))}
-    </Picker>
-  </View>
-)}
+          {maintenancePlans.length > 0 && (
+            <View style={styles.inputContainer}>
+              <Picker
+                selectedValue={selectedPlan}
+                onValueChange={(planId) => setSelectedPlan(planId)} // Cho phép người dùng thay đổi gói bảo dưỡng
+                style={styles.picker}
+              >
+                <Picker.Item label="Chọn gói bảo dưỡng" value="" />
+                {maintenancePlans.map((plan) => (
+                  <Picker.Item
+                    key={plan.maintenancePlanId}
+                    label={`Gói ${plan.maintenancePlanName}`}
+                    value={plan.maintenancePlanId}
+                  />
+                ))}
+              </Picker>
+            </View>
+          )}
 
 
-{/*<Modal transparent={true} animationType="slide" visible={showPlanModal}>
+          {/*<Modal transparent={true} animationType="slide" visible={showPlanModal}>
   <View style={styles.dialogContainer}>
     <View style={styles.dialogContent}>
       <Text style={styles.dialogTitle}>Chọn gói bảo dưỡng</Text>
@@ -366,27 +366,27 @@ useEffect(() => {
   </View>
 </Modal>
 */}
-{showTimeSlotModal && timeSlots.length === 0 && (
-  <Modal transparent={true} animationType="slide" visible={true}>
-    <View style={styles.modalContainer}>
-      <View style={styles.modalContent}>
-        <Text style={styles.modalTitle}>Đã hết giờ làm việc</Text>
-        <Text style={{ marginVertical: 10 }}>
-          Đã hết giờ làm việc vào ngày bạn đã chọn, vui lòng chọn ngày khác
-        </Text>
-        <Pressable
-          onPress={() => {
-            setShowTimeSlotModal(false);
-            setShowDatePicker(true); // Hiển thị lại DatePicker để chọn ngày khác
-          }}
-          style={styles.closeButton}
-        >
-          <Text style={styles.closeButtonText}>OK</Text>
-        </Pressable>
-      </View>
-    </View>
-  </Modal>
-)}
+          {showTimeSlotModal && timeSlots.length === 0 && (
+            <Modal transparent={true} animationType="slide" visible={true}>
+              <View style={styles.modalContainer}>
+                <View style={styles.modalContent}>
+                  <Text style={styles.modalTitle}>Đã hết giờ làm việc</Text>
+                  <Text style={{ marginVertical: 10 }}>
+                    Đã hết giờ làm việc vào ngày bạn đã chọn, vui lòng chọn ngày khác
+                  </Text>
+                  <Pressable
+                    onPress={() => {
+                      setShowTimeSlotModal(false);
+                      setShowDatePicker(true); // Hiển thị lại DatePicker để chọn ngày khác
+                    }}
+                    style={styles.closeButton}
+                  >
+                    <Text style={styles.closeButtonText}>OK</Text>
+                  </Pressable>
+                </View>
+              </View>
+            </Modal>
+          )}
 
           <View style={styles.inputContainer}>
             <TextInput

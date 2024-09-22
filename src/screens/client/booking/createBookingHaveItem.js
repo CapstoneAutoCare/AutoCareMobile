@@ -7,6 +7,7 @@ import {
   StyleSheet,
   ScrollView,
   Button,
+  Modal
 } from "react-native";
 import { Picker } from "@react-native-picker/picker";
 import DateTimePicker from "@react-native-community/datetimepicker";
@@ -70,7 +71,10 @@ const CreateBookingHaveItem = ({
   const [filteredOdo, setFilteredOdo] = useState([]);
   const [currentStep, setCurrentStep] = useState(0);
   const [odoBooking, setOdoBooking] = useState("");
-
+  const [selectedDate, setSelectedDate] = useState(null); // Lưu ngày đã chọn
+  const [timeSlots, setTimeSlots] = useState([]); // Lưu các khung giờ
+  const [showTimeSlotModal, setShowTimeSlotModal] = useState(false); // Modal chọn giờ
+  const [selectedTimeSlot, setSelectedTimeSlot] = useState(null); // Lưu giờ đã chọn
   const steps = [
     <StepOne key="step1" />,
     <StepTwo key="step2" />,
@@ -212,11 +216,11 @@ const CreateBookingHaveItem = ({
   const onSubmit = () => {
     alert("Form submitted!");
   };
-    // Tạo một bản sao của bookingDate để tránh thay đổi trực tiếp
-    const adjustedBookingDate = new Date(bookingDate);
+  // Tạo một bản sao của bookingDate để tránh thay đổi trực tiếp
+  const adjustedBookingDate = new Date(bookingDate);
 
-    // Thêm 7 giờ vào thời gian
-    adjustedBookingDate.setHours(adjustedBookingDate.getHours() + 7);
+  // Thêm 7 giờ vào thời gian
+  adjustedBookingDate.setHours(adjustedBookingDate.getHours() + 7);
   const handleSignup = async () => {
     try {
       if (!note || !maintenanceCenter) {
@@ -227,7 +231,7 @@ const CreateBookingHaveItem = ({
       const now = new Date();
       const vietnamTime = new Date(now.getTime() + 7 * 60 * 60 * 1000);
       const accessToken = await AsyncStorage.getItem("ACCESS_TOKEN");
-      console.log( vehicle, maintenanceCenter, note, odoBooking, adjustedBookingDate, spareParts , services)
+      console.log(vehicle, maintenanceCenter, note, odoBooking, adjustedBookingDate, spareParts, services)
       const response = await axios.post(
         `${BASE_URL}/Bookings/PostHaveItems`,
         {
@@ -237,7 +241,7 @@ const CreateBookingHaveItem = ({
           note: note,
           odoBooking: odoBooking,
           bookingDate: adjustedBookingDate.toISOString(),
-          
+
           createMaintenanceInformationHaveItemsByClient: [{
             // customerCareId: customerCare,
             // finishedDate: vietnamTime.toISOString(),
@@ -246,9 +250,9 @@ const CreateBookingHaveItem = ({
             createMaintenanceServiceInfos:
               services.length > 0 ? services : null,
           },],
-          
+
         },
-      
+
         {
           headers: {
             "Content-Type": "application/json",
@@ -272,21 +276,40 @@ const CreateBookingHaveItem = ({
   const onDateChange = (event, selectedDate) => {
     const currentDate = selectedDate || bookingDate;
     setShowDatePicker(false);
-    setBookingDate(currentDate);
-    if (event.type === "set") {
-      setShowTimePicker(true);
+    setSelectedDate(currentDate); // Lưu ngày đã chọn
+    setShowTimeSlotModal(true); // Hiển thị modal chọn giờ
+  };
+  // Hàm để tạo khung giờ từ 8:00 sáng đến 7:00 tối với mỗi khoảng 30 phút
+  const generateTimeSlots = () => {
+    const slots = [];
+    let startTime = new Date();
+    const currentTime = new Date(); // Thời gian hiện tại
+
+    // Nếu ngày được chọn là hôm nay, giới hạn từ giờ hiện tại
+    if (selectedDate && selectedDate.toDateString() === currentTime.toDateString()) {
+      const hours = currentTime.getHours();
+      const minutes = currentTime.getMinutes();
+      startTime.setHours(hours, minutes + 60); // Thêm 1 giờ so với thời gian hiện tại
+    } else {
+      startTime.setHours(8, 0, 0, 0); // Bắt đầu từ 8:00 AM cho các ngày tương lai
     }
-  };
 
-  const onTimeChange = (event, selectedTime) => {
-    const currentTime = selectedTime || bookingDate;
-    setShowTimePicker(false);
-    const updatedDate = new Date(
-      bookingDate.setHours(currentTime.getHours(), currentTime.getMinutes())
-    );
-    setBookingDate(updatedDate);
-  };
+    const endTime = new Date();
+    endTime.setHours(19, 0, 1, 0); // Kết thúc vào 7:00 PM
 
+    while (startTime < endTime) {
+      slots.push(
+        `${startTime.getHours().toString().padStart(2, '0')}:${startTime.getMinutes().toString().padStart(2, '0')}`
+      );
+      startTime.setMinutes(startTime.getMinutes() + 30); // Tăng thêm 30 phút
+    }
+
+    return slots;
+  };
+  useEffect(() => {
+    const timeSlots = generateTimeSlots();
+    setTimeSlots(timeSlots);
+  }, [selectedDate]);
   useEffect(() => {
     const selectedVehicle = vehicleListByClient.find(
       (v) => v.vehiclesId === vehicle
@@ -394,14 +417,14 @@ const CreateBookingHaveItem = ({
                 />
               </View>
               <View style={styles.inputContainer}>
-            <TextInput
-              style={styles.textInput}
-              placeholder="Nhập Odo"
-              keyboardType="numeric"
-              value={odoBooking}
-              onChangeText={(text) => setOdoBooking(text)}
-            />
-          </View>
+                <TextInput
+                  style={styles.textInput}
+                  placeholder="Nhập Odo"
+                  keyboardType="numeric"
+                  value={odoBooking}
+                  onChangeText={(text) => setOdoBooking(text)}
+                />
+              </View>
             </>
           ) : currentStep === 1 ? (
             <>
@@ -474,7 +497,7 @@ const CreateBookingHaveItem = ({
                           placeholder="Chi phí"
                           value={String(
                             sparePart.actualCost * sparePart.quantity ||
-                              sparePart.actualCost
+                            sparePart.actualCost
                           )}
                           keyboardType="numeric"
                           editable={false}
@@ -597,32 +620,66 @@ const CreateBookingHaveItem = ({
             </>
           ) : (
             <View style={styles.inputContainer}>
-              <Pressable
-                onPress={() => setShowDatePicker(true)}
-                style={styles.datePickerButton}
-              >
+              <Pressable onPress={() => setShowDatePicker(true)} style={styles.datePickerButton}>
                 <Text style={styles.datePickerText}>
-                  {bookingDate
-                    ? bookingDate.toLocaleString()
-                    : "Chọn ngày và giờ"}
+                  {selectedDate ? `${selectedDate.toLocaleDateString()} ${selectedTimeSlot ? selectedTimeSlot : ''}` : "Chọn ngày và giờ"}
                 </Text>
               </Pressable>
+
+
               {showDatePicker && (
                 <DateTimePicker
                   value={bookingDate}
                   mode="date"
                   display="default"
                   onChange={onDateChange}
-                  minimumDate={today}
+                  minimumDate={today} // Giới hạn ngày từ hôm nay trở đi
                 />
               )}
-              {showTimePicker && (
-                <DateTimePicker
-                  value={bookingDate}
-                  mode="time"
-                  display="default"
-                  onChange={onTimeChange}
-                />
+              <Modal transparent={true} animationType="slide" visible={showTimeSlotModal}>
+                <View style={styles.modalContainer}>
+                  <View style={styles.modalContent}>
+                    <Text style={styles.modalTitle}>Chọn giờ</Text>
+                    <View style={styles.timeSlotContainer}>
+                      {generateTimeSlots().map((slot, index) => (
+                        <Pressable
+                          key={index}
+                          onPress={() => {
+                            setSelectedTimeSlot(slot);
+                            setShowTimeSlotModal(false); // Đóng modal khi chọn xong giờ
+                          }}
+                          style={styles.timeSlotBox}
+                        >
+                          <Text style={styles.timeSlotText}>{slot}</Text>
+                        </Pressable>
+                      ))}
+                    </View>
+                    <Pressable onPress={() => setShowTimeSlotModal(false)} style={styles.closeButton}>
+                      <Text style={styles.closeButtonText}>Đóng</Text>
+                    </Pressable>
+                  </View>
+                </View>
+              </Modal>
+              {showTimeSlotModal && timeSlots.length === 0 && (
+                <Modal transparent={true} animationType="slide" visible={true}>
+                  <View style={styles.modalContainer}>
+                    <View style={styles.modalContent}>
+                      <Text style={styles.modalTitle}>Đã hết giờ làm việc</Text>
+                      <Text style={{ marginVertical: 10 }}>
+                        Đã hết giờ làm việc vào ngày bạn đã chọn, vui lòng chọn ngày khác
+                      </Text>
+                      <Pressable
+                        onPress={() => {
+                          setShowTimeSlotModal(false);
+                          setShowDatePicker(true); // Hiển thị lại DatePicker để chọn ngày khác
+                        }}
+                        style={styles.closeButton}
+                      >
+                        <Text style={styles.closeButtonText}>OK</Text>
+                      </Pressable>
+                    </View>
+                  </View>
+                </Modal>
               )}
             </View>
           )}
@@ -737,6 +794,67 @@ const styles = StyleSheet.create({
     color: COLORS.white,
     fontWeight: "bold",
     fontSize: 20,
+  },
+  modalContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
+  },
+  modalContent: {
+    width: "90%",
+    backgroundColor: COLORS.white,
+    padding: 20,
+    borderRadius: 10,
+    alignItems: "center",
+  },
+  modalTitle: {
+    fontSize: 18,
+    fontWeight: "bold",
+    marginBottom: 20,
+  },
+  timeSlotContainer: {
+    flexDirection: "row",
+    flexWrap: "wrap", // Cho phép các box nằm trên nhiều hàng
+    justifyContent: "space-between",
+  },
+  timeSlotBox: {
+    backgroundColor: COLORS.lightGray,
+    padding: 15,
+    borderRadius: 10,
+    width: "22%", // 4-5 box trên 1 hàng
+    alignItems: "center",
+    marginBottom: 10,
+    borderWidth: 1, // Thêm khung viền cho box
+    borderColor: COLORS.primary, // Màu khung viền
+  },
+  timeSlotText: {
+    fontSize: 16,
+    color: COLORS.black,
+  },
+  closeButton: {
+    marginTop: 20,
+    backgroundColor: COLORS.primary,
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 10,
+  },
+  closeButtonText: {
+    color: COLORS.white,
+    fontWeight: "bold",
+  },
+  datePickerButton: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+    paddingVertical: 10,
+    backgroundColor: COLORS.white,
+    borderRadius: 10,
+    marginBottom: 12,
+  },
+  datePickerText: {
+    fontSize: 16,
+    color: COLORS.black,
   },
 });
 
