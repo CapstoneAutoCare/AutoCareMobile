@@ -22,7 +22,10 @@ const MaintenanceTab = ({ route }) => {
   const [showDeepDetailsModal, setShowDeepDetailsModal] = useState(false);
   const [selectedPlanDetails, setSelectedPlanDetails] = useState([]);
   const [selectedSmallPackage, setSelectedSmallPackage] = useState(null);
-
+  const [groupedServices, setGroupedServices] = useState([]);
+  const [selectedServiceGroup, setSelectedServiceGroup] = useState([]);
+  const [showGroupedModal, setShowGroupedModal] = useState(false);
+  const [showServiceDetailsModal, setShowServiceDetailsModal] = useState(false);
   // New state for storing package costs
   const [packageCosts, setPackageCosts] = useState([]);
 
@@ -53,22 +56,22 @@ const MaintenanceTab = ({ route }) => {
           headers: { Authorization: `Bearer ${accessToken}` },
         }
       );
-  
-      const filteredPlans = response.data.filter(plan => 
+
+      const filteredPlans = response.data.filter(plan =>
         plan.reponseVehicleModels?.vehicleModelId === vehicle.vehicleModelId
       );
-  
+
       if (!filteredPlans.length > 0) {
         setShowModal(false)
         alert("Trung tâm không có gói nào phù hợp với xe của bạn");
       }
-  
+
       // Fetch costs for each plan
       const updatedPlans = await Promise.all(filteredPlans.map(async (plan) => {
         const costData = await fetchPackageCosts(plan);
         return { ...plan, totalCost: costData };
       }));
-  
+
       setMaintenancePlans(updatedPlans);
     } catch (error) {
       console.error("Error fetching maintenance plans:", error);
@@ -137,12 +140,45 @@ const MaintenanceTab = ({ route }) => {
       setLoading(false);
     }
   };
+  const fetchAndGroupServices = async () => {
+    if (!selectedCenter || !selectedPlan) return;
 
+    setLoading(true);
+    try {
+      const accessToken = await AsyncStorage.getItem("ACCESS_TOKEN");
+      const response = await axios.get(
+        `${BASE_URL}/MaintenanceServices/GetListPackageOdoTRUEByCenterIdAndModelIdAndPlanId?id=${selectedCenter}&modelId=${vehicle.vehicleModelId}&planId=${selectedPlan}`,
+        { headers: { Authorization: `Bearer ${accessToken}` } }
+      );
+
+      const grouped = response.data.reduce((acc, item) => {
+        const scheduleName = item.maintananceScheduleName;
+        if (!acc[scheduleName]) acc[scheduleName] = [];
+        acc[scheduleName].push(item);
+        return acc;
+      }, {});
+
+      setGroupedServices(Object.keys(grouped).map(schedule => ({
+        maintananceScheduleName: schedule,
+        services: grouped[schedule],
+      })));
+
+      setShowGroupedModal(true);
+    } catch (error) {
+      console.error("Error fetching and grouping services:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+  const handleGroupPress = (group) => {
+    setSelectedServiceGroup(group.services);
+    setShowServiceDetailsModal(true);
+  };
   const createMaintenancePackage = async () => {
     if (!selectedPlan || !selectedCenter) {
       return alert("Please select a center and a plan");
     }
-  
+
     setLoading(true);
     try {
       const accessToken = await AsyncStorage.getItem("ACCESS_TOKEN");
@@ -164,7 +200,7 @@ const MaintenanceTab = ({ route }) => {
           },
         }
       );
-  
+
       if (response.status === 200) {
         const paymentUrl = response.data;
         Linking.openURL(paymentUrl);
@@ -207,20 +243,20 @@ const MaintenanceTab = ({ route }) => {
     FINISHED: "#28a745",
     NEXT: "#ffc107",
   };
-  
+
   const getSmallPackageColor = (packages, index) => {
     const currentPackage = packages[index];
     const previousPackage = index > 0 ? packages[index - 1] : null;
     const currentStatus = currentPackage.status || "PENDING";
-  
+
     if (currentStatus === "CANCELLED" || currentStatus === "PAID") {
       return statusColors[currentStatus] || statusColors.DEFAULT;
     }
-  
+
     if (currentStatus === "PENDING" && previousPackage && previousPackage.status !== "PENDING") {
       return statusColors.NEXT;
     }
-  
+
     return statusColors[currentStatus] || statusColors.DEFAULT;
   };
 
@@ -256,7 +292,10 @@ const MaintenanceTab = ({ route }) => {
                 <Text style={styles.modalTitle}>Chọn gói bảo dưỡng:</Text>
                 <Picker
                   selectedValue={selectedPlan}
-                  onValueChange={(value) => setSelectedPlan(value)}
+                  onValueChange={(value) => {
+                    setSelectedPlan(value);
+                    fetchAndGroupServices(); // Gọi hàm sau khi chọn gói bảo dưỡng
+                  }}
                 >
                   {maintenancePlans.map((plan) => (
                     <Picker.Item
@@ -280,7 +319,43 @@ const MaintenanceTab = ({ route }) => {
           </View>
         </View>
       </Modal>
-
+      <Modal transparent={true} visible={showGroupedModal} animationType="slide">
+        <View style={styles.modalContainer}>
+          <View style={styles.modalContent}>
+            <Text style={styles.modalTitle}>Các mốc bảo dưỡng của dịch vụ này</Text>
+            {groupedServices.map((group) => (
+              <Pressable
+                key={group.maintananceScheduleName}
+                style={styles.groupContainer}
+                onPress={() => handleGroupPress(group)}
+              >
+                <Text style={styles.groupTitle}>
+                  {`Gói bảo dưỡng tại ${group.maintananceScheduleName} km`}
+                </Text>
+              </Pressable>
+            ))}
+            <Text>Ấn vào gói để xem chi tiết gói</Text>
+            <Pressable onPress={() => setShowGroupedModal(false)} style={styles.cancelButton}>
+              <Text style={styles.buttonText}>Đóng</Text>
+            </Pressable>
+          </View>
+        </View>
+      </Modal>
+      <Modal transparent={true} visible={showServiceDetailsModal} animationType="slide">
+        <View style={styles.modalContainer}>
+          <View style={styles.modalContent}>
+            <Text style={styles.modalTitle}>Chi tiết các dịch vụ trong nhóm</Text>
+            {selectedServiceGroup.map((service, index) => (
+              <View key={index} style={styles.serviceDetail}>
+                <Text>{service.maintenanceServiceName}</Text>
+              </View>
+            ))}
+            <Pressable onPress={() => setShowServiceDetailsModal(false)} style={styles.cancelButton}>
+              <Text style={styles.buttonText}>Đóng</Text>
+            </Pressable>
+          </View>
+        </View>
+      </Modal>
       {/* Hiển thị các gói bảo dưỡng đã đăng ký */}
       {maintenanceDetails.length > 0 && (
         <View>
@@ -299,22 +374,22 @@ const MaintenanceTab = ({ route }) => {
           <View style={styles.modalContent}>
             <Text style={styles.modalTitle}>Chi tiết gói bảo dưỡng</Text>
             <FlatList
-  data={selectedPlanDetails}
-  keyExtractor={(item, index) => index.toString()}
-  renderItem={({ item, index }) => (
-    <Pressable
-      style={[
-        styles.cardContainer,
-        { backgroundColor: getSmallPackageColor(selectedPlanDetails, index) }
-      ]}
-      onPress={() => handleSmallPackagePress(item.maintenanceVehiclesDetailId)}
-    >
-      <Text style={styles.planTitle}>
-        {item.responseMaintenanceSchedules.maintenancePlanName + ` tại mốc ${item.responseMaintenanceSchedules.maintananceScheduleName} km`}
-      </Text>
-    </Pressable>
-  )}
-/>
+              data={selectedPlanDetails}
+              keyExtractor={(item, index) => index.toString()}
+              renderItem={({ item, index }) => (
+                <Pressable
+                  style={[
+                    styles.cardContainer,
+                    { backgroundColor: getSmallPackageColor(selectedPlanDetails, index) }
+                  ]}
+                  onPress={() => handleSmallPackagePress(item.maintenanceVehiclesDetailId)}
+                >
+                  <Text style={styles.planTitle}>
+                    {item.responseMaintenanceSchedules.maintenancePlanName + ` tại mốc ${item.responseMaintenanceSchedules.maintananceScheduleName} km`}
+                  </Text>
+                </Pressable>
+              )}
+            />
             <Pressable onPress={() => setShowDetailsModal(false)} style={styles.closeButton}>
               <Text style={styles.buttonText}>Đóng</Text>
             </Pressable>
@@ -322,37 +397,37 @@ const MaintenanceTab = ({ route }) => {
         </View>
       </Modal>
       {/* New Modal hiển thị chi tiết sâu hơn của gói nhỏ */}
-<Modal transparent={true} visible={showDeepDetailsModal} animationType="slide">
-  <View style={styles.modalContainer}>
-    <View style={styles.modalContent}>
-      <Text style={styles.modalTitle}>Chi tiết gói nhỏ</Text>
-      {selectedSmallPackage ? (
-        <View>
-          <Text style={styles.detailText}>Tên gói: {selectedSmallPackage.informationMaintenanceName}</Text>
-          <Text style={styles.detailText}>Trạng thái: {selectedSmallPackage.status}</Text>
+      <Modal transparent={true} visible={showDeepDetailsModal} animationType="slide">
+        <View style={styles.modalContainer}>
+          <View style={styles.modalContent}>
+            <Text style={styles.modalTitle}>Chi tiết gói nhỏ</Text>
+            {selectedSmallPackage ? (
+              <View>
+                <Text style={styles.detailText}>Tên gói: {selectedSmallPackage.informationMaintenanceName}</Text>
+                <Text style={styles.detailText}>Trạng thái: {selectedSmallPackage.status}</Text>
 
-          {/* Danh sách các dịch vụ bên trong gói */}
-          <Text style={styles.sectionTitle}>Các dịch vụ trong gói:</Text>
-          <FlatList
-            data={selectedSmallPackage.responseMaintenanceServiceInfos}
-            keyExtractor={(item) => item.maintenanceServiceInfoId.toString()}
-            renderItem={({ item }) => (
-              <View style={styles.serviceItem}>
-                <Text style={styles.serviceName}>{item.maintenanceServiceInfoName}</Text>
+                {/* Danh sách các dịch vụ bên trong gói */}
+                <Text style={styles.sectionTitle}>Các dịch vụ trong gói:</Text>
+                <FlatList
+                  data={selectedSmallPackage.responseMaintenanceServiceInfos}
+                  keyExtractor={(item) => item.maintenanceServiceInfoId.toString()}
+                  renderItem={({ item }) => (
+                    <View style={styles.serviceItem}>
+                      <Text style={styles.serviceName}>{item.maintenanceServiceInfoName}</Text>
+                    </View>
+                  )}
+                />
+
               </View>
+            ) : (
+              <Text>Đang tải...</Text>
             )}
-          />
-
+            <Pressable onPress={() => setShowDeepDetailsModal(false)} style={styles.closeButton}>
+              <Text style={styles.buttonText}>Đóng</Text>
+            </Pressable>
+          </View>
         </View>
-      ) : (
-        <Text>Đang tải...</Text>
-      )}
-      <Pressable onPress={() => setShowDeepDetailsModal(false)} style={styles.closeButton}>
-        <Text style={styles.buttonText}>Đóng</Text>
-      </Pressable>
-    </View>
-  </View>
-</Modal>
+      </Modal>
     </ScrollView>
   );
 };
@@ -391,8 +466,13 @@ const styles = StyleSheet.create({
   buttonText: {
     color: "#fff",
   },
-  cancelButton:{
-    color: "#35dccc",
+  cancelButton: {
+    backgroundColor: "#ff5c5c",
+    padding: 10,
+    marginTop: 10,
+    borderRadius: 5,
+    justifyContent: "center",
+    alignItems: "center",
   },
   planContainer: {
     backgroundColor: "#f8f9fa",
@@ -406,7 +486,7 @@ const styles = StyleSheet.create({
   },
   planTitle: {
     fontSize: 16,
-    color: "#000", 
+    color: "#000",
   },
   subPlanText: {
     fontSize: 14,
@@ -463,4 +543,7 @@ const styles = StyleSheet.create({
     marginTop: 15,
     marginBottom: 10,
   },
+  groupContainer: { padding: 12, borderRadius: 5, backgroundColor: "#f1f1f1", marginBottom: 8 },
+  groupTitle: { fontSize: 16 },
+  serviceDetail: { marginBottom: 10 },
 });

@@ -21,7 +21,7 @@ const VehicleNavigator = ({ authenticated }) => {
       <Stack.Screen
         name="VEHICLE_DETAIL"
         component={VehicleDetail}
-        options={{ headerShown: false }}
+        options={{ title: "Thông tin xe" }}
       />
     </Stack.Navigator>
   );

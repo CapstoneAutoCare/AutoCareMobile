@@ -172,7 +172,6 @@ const VehicleDetail = ({ route }) => {
     return (
         <Tab.Navigator
         screenOptions={{
-          tabBarStyle: { marginTop: 20 }, // Di chuyển thanh tab xuống
         }}
       >
         <Tab.Screen name="Thông tin chi tiết xe" component={VehicleInfo} />
