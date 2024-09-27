@@ -156,7 +156,7 @@ const CreateBooking = ({ centerList, maintenanceCenterId, vehicleListByClient })
       const adjustedBookingDate = new Date(selectedDate);
       const [hours, minutes] = selectedTimeSlot.split(':').map(Number);
       adjustedBookingDate.setHours(hours + 7, minutes, 0, 0); // Thêm 7 tiếng
-
+      console.log(vehicle + maintenanceCenter + selectedPlan + note + odoBooking + adjustedBookingDate);
       const response = await axios.post(
         `${BASE_URL}/Bookings/PostMaintenanceBooking`,
         {

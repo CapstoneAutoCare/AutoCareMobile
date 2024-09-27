@@ -131,7 +131,7 @@ const RequestInfoTab = ({ request, updateStatus, error, profile, assignTask}) =>
   const fetchMaintenanceVehiclesDetails = async () => {
     try {
       console.log("fetch vehicledetail");
-      const response = await axiosClient.get(`MaintenanceInformations/GetListByPlanAndVehicleAndCenterAndStatusWatingbycar?planId=${request.maintenancePlanId}&vehicleId=${request.responseVehicles.vehiclesId}&centerId=${request.responseCenter.maintenanceCenterId}`);
+      const response = await axiosClient.get(`MaintenanceInformations/GetListByPlanAndVehicleAndCenterAndStatusCREATEDBYCLIENT?planId=${request.maintenancePlanId}&vehicleId=${request.responseVehicles.vehiclesId}&centerId=${request.responseCenter.maintenanceCenterId}`);
       setServicePackages(response.data);
     } catch (error) {
       console.error("Error fetching vehicle packages:", error);
@@ -426,21 +426,7 @@ const handleOdooUpdate = async () => {
     alert("Đã xảy ra lỗi khi cập nhật số Odoo.");
   }
 };
-const fetchOdooHistories = async () =>{
-  const odoDataResponse = await axiosClient.get(`/OdoHistories/GetOdoByInforId?id=${mInfoId}`);
-      if (odoDataResponse.status === 200) {
-        const odoData = odoDataResponse.data;
-        // Set Odoo data to state or context to display in the UI
-        setOdooDetails({
-          odoHistoryName: odoData.odoHistoryName,
-          odo: odoData.odo,
-          createdDate: odoData.createdDate,
-          description: odoData.description,
-        });
-      } else {
-        alert("Lỗi", "Không thể lấy dữ liệu Odoo. Vui lòng thử lại.");
-      }
-    }
+
 
 const getLastStatus = () => {
   const statuses = maintenanceInfo?.status;

@@ -75,7 +75,7 @@ const TransactionHistoryScreen = () => {
               </Text>
               <Text style={styles.transactionItem}>
                 <Text style={styles.boldText}>Nội dung:</Text>{" Đăng ký gói "}
-                {transaction?.responseMaintenancePlan?.maintenancePlanName} 
+                {transaction?.responseMaintenancePlan?.maintenancePlanName} + {` cho xe ${transaction?.responseVehicles?.licensePlate} tại trung tâm ${transaction?.responseCenter?.maintenanceCenterName}`}
               </Text>
             </View>
           ))

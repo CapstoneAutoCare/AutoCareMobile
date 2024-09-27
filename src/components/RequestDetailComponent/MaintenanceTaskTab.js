@@ -21,7 +21,6 @@ const MaintenanceTaskTab = ({ maintenanceTasks, request, assignTask }) => {
     const [selectedStaff, setSelectedStaff] = useState(null);
     const dispatch = useDispatch();
     const [maintenanceInformation, setMaintenanceInformation] = useState([]);
-
     useEffect(() => {
         const fetchMaintenanceInformation = async () => {
             try {
@@ -45,6 +44,7 @@ const MaintenanceTaskTab = ({ maintenanceTasks, request, assignTask }) => {
 
         if (request.bookingId) {
             fetchMaintenanceInformation();
+            console.log("tech task"+maintenanceTasks);
         }
     }, [request.bookingId]);
 

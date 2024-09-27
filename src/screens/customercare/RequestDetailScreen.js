@@ -41,7 +41,7 @@ const RequestDetailScreen = () => {
         dispatch(fetchMaintenanceTasks());
       
     }
-  }, [requestId]);  // Thêm length để tránh vòng lặp
+  }, [requestId]);  
 
 
 
@@ -95,9 +95,13 @@ const RequestDetailScreen = () => {
     });
   };
 
-  const filteredMaintenanceTasks = maintenanceTasks.filter(
-    (task) => task.informationMaintenanceId === request?.responseMaintenanceInformation[0]?.informationMaintenanceId
-  );
+  const validInformationIds = request?.responseMaintenanceInformation
+  ?.filter((item) => item.status !== "CANCELLED")
+  .map((item) => item.informationMaintenanceId);
+
+const filteredMaintenanceTasks = maintenanceTasks.filter(
+  (task) => validInformationIds?.includes(task.informationMaintenanceId)
+);
 
   return (
     <View style={{ flex: 1 }}>
