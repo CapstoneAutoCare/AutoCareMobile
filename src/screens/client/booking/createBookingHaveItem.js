@@ -217,10 +217,7 @@ const CreateBookingHaveItem = ({
     alert("Form submitted!");
   };
   // Tạo một bản sao của bookingDate để tránh thay đổi trực tiếp
-  const adjustedBookingDate = new Date(bookingDate);
-
-  // Thêm 7 giờ vào thời gian
-  adjustedBookingDate.setHours(adjustedBookingDate.getHours() + 7);
+  
   const handleSignup = async () => {
     try {
       if (!note || !maintenanceCenter) {
@@ -229,6 +226,9 @@ const CreateBookingHaveItem = ({
       }
 
       const now = new Date();
+      const adjustedBookingDate = new Date(selectedDate);
+       const [hours, minutes] = selectedTimeSlot.split(':').map(Number);
+      adjustedBookingDate.setHours(hours + 7, minutes, 0, 0); // Thêm 7 tiếng
       const vietnamTime = new Date(now.getTime() + 7 * 60 * 60 * 1000);
       const accessToken = await AsyncStorage.getItem("ACCESS_TOKEN");
       console.log(vehicle, maintenanceCenter, note, odoBooking, adjustedBookingDate, spareParts, services)
@@ -323,7 +323,8 @@ const CreateBookingHaveItem = ({
       setFilteredServices(
         availableServices.filter(
           (service) =>
-            service?.vehicleModelName === selectedVehicle?.vehicleModelName
+            service?.vehicleModelName === selectedVehicle?.vehicleModelName &&
+            service?.boolean === false
         )
       );
       setFilteredOdo(
