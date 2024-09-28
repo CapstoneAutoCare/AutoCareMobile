@@ -231,8 +231,8 @@ export const cancel = createAsyncThunk(
       const response = await centerService.cancel(id);
       return response.data;
     } catch (error) {
-      console.log(error);
-      return rejectWithValue(error);
+      console.log(error.response.data.Exception);
+      return rejectWithValue(error.response.data.Exception);
     }
   }
 );

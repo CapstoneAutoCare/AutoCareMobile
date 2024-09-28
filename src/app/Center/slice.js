@@ -1,5 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { getCenterById, getListCare, getListCareById, getListCenter, getListCenterActive, getListInformations, getListService, getListServiceById, getListStaff, getListStaffById, getPackageById, getReceiptById, getService, getServiceByCenter } from "./actions";
+import { cancel, getCenterById, getListCare, getListCareById, getListCenter, getListCenterActive, getListInformations, getListService, getListServiceById, getListStaff, getListStaffById, getPackageById, getReceiptById, getService, getServiceByCenter } from "./actions";
 
 const accountSlice = createSlice({
   name: "center",
@@ -73,11 +73,20 @@ const accountSlice = createSlice({
     builder.addCase(getListCareById.fulfilled, (state, action) => {
       state.loading = false;
       state.careById = action.payload;
+      // alert("hủy đặt lịch thành công!");
+
     })
     builder.addCase(getListCenterActive.fulfilled, (state, action) => {
       state.loading = false;
       state.centerList = action.payload;
-    });
+    })
+    builder.addCase(cancel.rejected, (state, action) => {
+      state.loading = false;
+      alert("Đã xảy ra lỗi vui lòng thử lại sau! " + action.payload);
+
+      // state.centerList = action.payload;
+    })
+      ;
   },
 });
 

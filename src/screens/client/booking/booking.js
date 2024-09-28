@@ -74,7 +74,7 @@ const Booking = () => {
     : sortedBookingList;
   const handleCancel = async (id) => {
     await dispatch(cancel(id));
-    alert("hủy đặt lịch thành công!");
+    // alert("hủy đặt lịch thành công!");
     fetchGetListBooking();
   };
   return (
