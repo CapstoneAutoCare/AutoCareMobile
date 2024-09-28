@@ -104,11 +104,11 @@ const Receipts = ({ route }) => {
           <View style={{ alignItems: "left" }}>
             <Text style={styles.name}>{receiptById.receiptName}</Text>
             <Text style={styles.status}>
-              Tổng phụ thu: {receiptById?.subTotal}
+              Tổng phụ thu: {receiptById?.subTotal} VND
             </Text>
-            <Text style={styles.status}>Thuế VAT: {receiptById?.vat}</Text>
+            <Text style={styles.status}>Thuế VAT: {receiptById?.vat}%</Text>
             <Text style={styles.status}>
-              Tổng chi phí: {receiptById?.totalAmount}
+              Tổng chi phí: {receiptById?.totalAmount} VND
             </Text>
             <Text style={styles.status}>
               Lưu ý: {receiptById?.responseMaintenanceInformation?.note}

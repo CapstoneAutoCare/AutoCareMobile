@@ -171,9 +171,9 @@ const InforDetail = ({ route }) => {
               {moment(info?.finishedDate).format("DD/MM/YYYY HH:mm")}
             </Text>
             <Text style={styles.centerName}>Thông tin: {info.note}</Text>
-            <Text style={styles.centerName}>
+            {/* <Text style={styles.centerName}>
               Tổng tiền: {info.totalPrice} Đồng
-            </Text>
+            </Text> */}
           </View>
           <Pressable
               onPress={() =>

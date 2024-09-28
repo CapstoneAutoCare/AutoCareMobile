@@ -201,7 +201,7 @@ const MaintenanceInformations = () => {
                         fontWeight: "500",
                       }}
                     >
-                      TỔNG GIÁ
+                      TRẠNG THÁI
                     </Text>
                     <View style={{ flexDirection: "row" }}>
                       <Text
@@ -212,7 +212,7 @@ const MaintenanceInformations = () => {
                           marginTop: 4,
                         }}
                       >
-                        {item?.totalPrice} VND
+                        {statusLabels[item?.status]}
                       </Text>
                     </View>
                   </View>
