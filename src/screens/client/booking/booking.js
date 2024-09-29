@@ -379,7 +379,7 @@ const Booking = () => {
                 });
               }}
             >
-              <Text style={styles.modalButtonText}>Đặt lịch</Text>
+              <Text style={styles.modalButtonText}>Đặt lịch sửa chữa</Text>
             </TouchableOpacity>
             <TouchableOpacity
               style={styles.modalButton}
@@ -391,7 +391,7 @@ const Booking = () => {
                 });
               }}
             >
-              <Text style={styles.modalButtonText}>Đặt lịch theo gói Odo</Text>
+              <Text style={styles.modalButtonText}>Đặt lịch bảo dưỡng</Text>
             </TouchableOpacity>
             <TouchableOpacity
               style={[styles.modalButton, { backgroundColor: "red" }]}

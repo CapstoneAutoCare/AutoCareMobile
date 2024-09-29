@@ -8,6 +8,7 @@ import {
   ScrollView,
   Modal,
   FlatList,
+  Alert
 } from "react-native";
 import { Picker } from "@react-native-picker/picker";
 import DateTimePicker from "@react-native-community/datetimepicker";
@@ -107,38 +108,48 @@ const CreateBooking = ({ centerList, maintenanceCenterId, vehicleListByClient })
 
   const fetchMaintenanceVehiclesDetails = async () => {
     try {
-      const accessToken = await AsyncStorage.getItem("ACCESS_TOKEN");
-      const response = await axios.get(
-        `${BASE_URL}/MaintenanceVehiclesDetails/GetListByVehicleId?vehicleId=${vehicle}`,
-        {
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-          },
+        const accessToken = await AsyncStorage.getItem("ACCESS_TOKEN");
+        const response = await axios.get(
+            `${BASE_URL}/MaintenanceVehiclesDetails/GetListByVehicleId?vehicleId=${vehicle}`,
+            {
+                headers: {
+                    Authorization: `Bearer ${accessToken}`,
+                },
+            }
+        );
+
+        const details = response.data;
+
+        if (details.length === 0) {
+            
+            Alert.alert(
+                "Thông báo",
+                "Xe này chưa được đăng ký gói bảo dưỡng tại trung tâm, vui lòng đăng ký để được tiếp tục"
+            );
+            return;
         }
-      );
 
-      const details = response.data;
-      setMaintenanceDetails(details);
+        setMaintenanceDetails(details);
 
-      // Gộp các object theo maintenancePlanId
-      const groupedPlans = Object.values(
-        details.reduce((acc, item) => {
-          const planId = item.responseMaintenanceSchedules.maintenancePlanId;
-          if (!acc[planId]) {
-            acc[planId] = {
-              maintenancePlanId: planId,
-              ...item.responseMaintenanceSchedules,
-            };
-          }
-          return acc;
-        }, {})
-      );
+        // Gộp các object theo maintenancePlanId
+        const groupedPlans = Object.values(
+            details.reduce((acc, item) => {
+                const planId = item.responseMaintenanceSchedules.maintenancePlanId;
+                if (!acc[planId]) {
+                    acc[planId] = {
+                        maintenancePlanId: planId,
+                        ...item.responseMaintenanceSchedules,
+                    };
+                }
+                return acc;
+            }, {})
+        );
 
-      setMaintenancePlans(groupedPlans);  // Luôn hiển thị dropdown chọn gói bảo dưỡng
+        setMaintenancePlans(groupedPlans);  
     } catch (error) {
-      console.error("Error fetching maintenance vehicle details:", error);
+        console.error("Error fetching maintenance vehicle details:", error);
     }
-  };
+};
 
 
 

@@ -355,7 +355,7 @@ const MaintenanceCenterInfoScreen = ({ }) => {
                                 ({ item }) => (
                                     <TouchableOpacity onPress={() => openDetailModal(item, 'service')}>
                                         <Text style={styles.itemText}>
-                                            {"Dịch vụ" + " dành cho xe " + item.vehiclesBrandName + " " + item.vehicleModelName}
+                                            {"Dịch vụ " + item.maintenanceServiceName + " dành cho xe " + item.vehiclesBrandName + " " + item.vehicleModelName}
                                         </Text>
                                     </TouchableOpacity>
                                 )
@@ -469,7 +469,7 @@ const MaintenanceCenterInfoScreen = ({ }) => {
                     <View style={styles.modalContainer}>
                         <View style={styles.modalContent}>
                             <Text style={styles.detailText}>Thông tin dịch vụ</Text>
-                            <Text style={styles.itemText}>{selectedData?.sparePartsItemName}</Text>
+                            <Text style={styles.itemText}>{selectedData?.maintenanceServiceName}</Text>
                             <Text style={styles.itemText}>Giá tiền: {formatCurrency(selectedData?.acturalCost)}</Text>
                             <Text style={styles.itemText}>Lưu ý: {selectedData?.note}</Text>
                             <Text style={styles.itemText}>Dành cho mẫu xe: {selectedData?.vehicleModelName}</Text>
